@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Publications — SNU Reality Lab</title>
+  <meta name="description" content="Publications from Reality Lab @ SNU." />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L7781B19XD');
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ["Avenir","Avenir Next","Helvetica Neue","Helvetica","Arial","sans-serif"] } } },
+      darkMode: 'class',
+    }
+  </script>
+  <link rel="icon" href="../favicon/favicon.ico" />
+  <style>
+    html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+    .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: none; } }
+
+    /* ---------- Nav (matches the rest of the site) ---------- */
+    .site-nav {
+      background-color: #fafafa;
+      border-bottom: 1px solid #b8c4dc;
+      position: sticky; top: 0; z-index: 1000;
+      width: 100%; padding: 0;
+    }
+    .site-nav .nav-inner {
+      max-width: 79.2rem; margin: 0 auto; padding: 0 1rem;
+      display: flex; align-items: center; justify-content: flex-start;
+      min-height: 3.75rem; gap: 2rem;
+    }
+    .site-nav .nav-inner .nav-logo-wrap { margin-left: auto; flex-shrink: 0; }
+    .site-nav .nav-inner ul {
+      list-style: none; margin: 0; margin-left: 0.5rem; padding: 0;
+      display: flex; align-items: center; gap: 1.8rem; flex-wrap: nowrap;
+    }
+    .site-nav .nav-inner li { flex: none; }
+    .site-nav .nav-inner a {
+      display: block; padding: 0.35rem 0;
+      text-decoration: none; color: #000;
+      font-size: 1.1rem; font-weight: 500;
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      transition: opacity 0.15s ease;
+    }
+    .site-nav .nav-inner a:hover { opacity: 0.75; }
+    .site-nav .nav-inner a.active { font-weight: 700; }
+    .site-nav .nav-inner a.brand,
+    .site-nav .brand {
+      font-size: 0.8rem !important; font-weight: 700;
+      color: #000; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .site-nav .nav-logo { height: 3rem; width: auto; }
+    .site-nav .nav-brand-group { display: flex; align-items: center; gap: 0.5rem; }
+    .site-nav .nav-lab-logo-img { width: 3rem; height: auto; display: block; }
+    .dark .site-nav { background-color: #2a2a2a; border-bottom-color: #3d3d3d; }
+    .dark .site-nav .nav-inner a { color: #e5e7eb; }
+    .dark .site-nav .nav-lab-logo-img,
+    .dark .site-nav .nav-logo { filter: grayscale(1) brightness(0) invert(1); }
+    @media (max-width: 767px) {
+      .site-nav .nav-inner {
+        display: grid; grid-template-columns: auto minmax(0, 1fr);
+        align-items: center; min-height: auto; gap: 0.45rem;
+        padding-top: 0.4rem; padding-bottom: 0.4rem;
+      }
+      .site-nav .nav-inner .nav-logo-wrap { display: none; }
+      .site-nav .nav-inner ul {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem 0.8rem; margin-left: 0; width: 100%;
+      }
+      .site-nav .nav-inner li a {
+        width: 100%; text-align: center; padding: 0.14rem 0.1rem;
+        font-size: 0.9rem; line-height: 1.15;
+      }
+    }
+
+    /* ---------- Page layout ---------- */
+    #main-body {
+      max-width: 79.2rem;
+      margin: 0 auto;
+      padding: 1.8rem 1rem 4rem;
+    }
+
+    .pub-year {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #64748b;
+      margin: 1.4rem 0 0.55rem;
+    }
+    .pub-year:first-child { margin-top: 0.4rem; }
+    .dark .pub-year { color: #94a3b8; }
+
+    .pub-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* ---------- Cards: plain white with a hairline gray border ---------- */
+    .pub-card {
+      border: 1px solid #f2f3f6;
+      border-radius: 0.7rem;
+      padding: 0.55rem 1rem 0.55rem 0.55rem;
+      background: #ffffff;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pub-card:hover {
+      transform: translateY(-1px);
+      border-color: #d8dde6;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+    .dark .pub-card {
+      background: #2a2e38;
+      border-color: #2f323b;
+    }
+    .dark .pub-card:hover {
+      border-color: #404552;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+    }
+
+    .pub-card-main {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: stretch;
+      min-height: 181px;
+    }
+    @media (max-width: 767px) {
+      .pub-card-main { grid-template-columns: 1fr; min-height: 0; gap: 0.55rem; }
+      .pub-card { padding: 0.65rem 0.65rem 0.55rem; }
+    }
+    .pub-teaser {
+      width: 250px;
+      height: 181px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background: #eef2f7;
+      display: flex; align-items: center; justify-content: center;
+      color: #64748b;
+      font-size: 0.72rem;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
+    .dark .pub-teaser { background: #2f343f; color: #94a3b8; }
+    .pub-teaser img, .pub-teaser video {
+      width: 100%; height: 100%; display: block; object-fit: cover;
+    }
+    @media (max-width: 767px) {
+      .pub-teaser { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    }
+    .pub-copy {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      padding: 0.2rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.35rem;
+    }
+    .pub-title {
+      font-weight: 600;
+      font-size: 1.32rem;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+    }
+    .pub-authors {
+      font-size: 0.98rem;
+      color: #475569;
+      line-height: 1.4;
+      font-style: italic;
+    }
+    .dark .pub-authors { color: #cbd5e1; }
+    .pub-venue {
+      font-size: 0.96rem;
+      color: #64748b;
+    }
+    .dark .pub-venue { color: #94a3b8; }
+    .pub-links {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    .pub-links .pub-link,
+    .pub-links .pub-link-button {
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 0;
+      border-radius: 0.4rem;
+      background: #eef2f7;
+      color: #334155;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+      font-family: inherit;
+    }
+    .pub-links .pub-link:hover,
+    .pub-links .pub-link-button:hover {
+      background: #dbe3ee;
+      color: #0f172a;
+      transform: translateY(-1px);
+    }
+    .dark .pub-links .pub-link,
+    .dark .pub-links .pub-link-button {
+      background: #353944; color: #e2e8f0;
+    }
+    .dark .pub-links .pub-link:hover,
+    .dark .pub-links .pub-link-button:hover {
+      background: #434956; color: #f8fafc;
+    }
+
+    /* ---------- BibTeX modal ---------- */
+    .bibtex-modal {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: min(38vw, 450px);
+      height: 100vh;
+      z-index: 1200;
+      opacity: 0;
+      transform: translateX(102%);
+      pointer-events: none;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+    }
+    .bibtex-modal.is-open { opacity: 1; transform: translateX(0); pointer-events: auto; }
+    .bibtex-dialog {
+      width: 100%; height: 100%; overflow: hidden;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      background: #fff;
+      border-radius: 0.65rem 0 0 0.65rem;
+      box-shadow: -18px 18px 38px rgba(2, 6, 23, 0.22);
+    }
+    .bibtex-side-controls {
+      display: flex; flex-direction: column; gap: 0.45rem;
+      padding: 0.6rem 0.55rem;
+      background: #f8fafc;
+    }
+    .bibtex-content {
+      margin: 0; padding: 0.8rem 0.9rem;
+      font-size: 0.86rem; line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap; word-break: break-word; color: #0f172a;
+      overflow: auto;
+    }
+    .bibtex-close, .bibtex-copy {
+      border: 0;
+      border-radius: 0.4rem;
+      background: #eef2f7;
+      color: #0f172a;
+      font-size: 0.78rem; font-weight: 600; line-height: 1.15;
+      min-width: 74px; text-align: center;
+      padding: 0.4rem 0.3rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .bibtex-close:hover, .bibtex-copy:hover { background: #dbe3ee; }
+    .bibtex-copy.is-copied { background: #dbeafe; color: #1d4ed8; }
+    .dark .bibtex-dialog { background: #22252c; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
+    .dark .bibtex-side-controls { background: #2a2e36; }
+    .dark .bibtex-content { color: #e5e7eb; }
+    .dark .bibtex-close, .dark .bibtex-copy { background: #353944; color: #e5e7eb; }
+    .dark .bibtex-close:hover, .dark .bibtex-copy:hover { background: #434956; }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../data/publications.js"></script>
+  <script src="../data/flip.js"></script>
+</head>
+<body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../" class="nav-lab-logo" aria-label="Reality Lab">
+          <img src="../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img">
+        </a>
+        <a href="../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="../team/">Team</a></li>
+        <li><a href="./" class="active">Publications</a></li>
+        <li><a href="../teaching/">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" aria-label="Seoul National University" class="nav-logo-wrap">
+        <img src="../logo/snu_ui.png" alt="SNU Logo" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <main id="main-body" class="fade-in">
+    <div id="publicationCards" class="pub-cards"></div>
+  </main>
+
+  <div id="bibtexModal" class="bibtex-modal" aria-hidden="true">
+    <div class="bibtex-dialog" role="dialog" aria-modal="true" aria-label="BibTeX panel">
+      <pre id="bibtexContent" class="bibtex-content"></pre>
+      <div class="bibtex-side-controls">
+        <button id="bibtexCopyBtn" class="bibtex-copy" type="button">Copy to<br>clipboard</button>
+        <button id="bibtexCloseBtn" class="bibtex-close" type="button" aria-label="Close BibTeX modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-[#b8c4dc] dark:border-[#3d3d3d]">
+    <div class="mx-auto px-4 flex flex-col items-end justify-center py-8" style="max-width: 79.2rem;">
+      <div class="text-lg font-medium text-neutral-600 dark:text-neutral-100 flex items-center gap-2 text-right">
+        <span>© <span id="year"></span> SNU Reality Lab.</span>
+        <span id="themeToggle" class="ml-2 cursor-pointer select-none underline hover:text-amber-600 dark:hover:text-amber-400 transition items-center gap-2 h-[1.7em] align-middle">
+          <i data-lucide="moon" class="align-middle"></i>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // file:// fallback so folder URLs work locally too
+    if (window.location.protocol === 'file:') {
+      document.addEventListener('click', function(e) {
+        if (e.defaultPrevented) return;
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || /^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+        if (href.endsWith('/')) {
+          e.preventDefault();
+          window.location.href = href + 'index.html';
+        }
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function createBibtexKey(pub) {
+      var firstAuthor = String(pub.authors || '').split(',')[0] || 'author';
+      var surnameRaw = firstAuthor.trim().split(/\s+/).slice(-1)[0] || 'author';
+      var surname = surnameRaw.toLowerCase().replace(/[^a-z0-9]/g, '') || 'author';
+      var year = String(pub.year || '');
+      var firstWord = String(pub.shortTitle || pub.longTitle || '')
+        .toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/)[0] || 'paper';
+      return surname + year + firstWord;
+    }
+    function generateBibtex(pub) {
+      var key = createBibtexKey(pub);
+      return [
+        '@article{' + key + ',',
+        '  title={' + (pub.longTitle || pub.shortTitle || '') + '},',
+        '  author={' + (pub.authors || '') + '},',
+        '  journal={' + (pub.venue || '') + '},',
+        '  year={' + (pub.year || '') + '}',
+        '}'
+      ].join('\n');
+    }
+    function formatVenueLine(pub) {
+      var venue = String(pub.venue || '').trim();
+      var year = pub.year;
+      if (!venue) return year ? String(year) : '';
+      if (!year) return venue;
+      if (new RegExp('\\b' + year + '\\b').test(venue)) return venue;
+      var conf = /\b(SIGGRAPH|SIGGRAPH Asia|CVPR|ICCV|ECCV|NeurIPS|ICLR|AAAI|UIST|CHI|ICCP)\b/i;
+      if (conf.test(venue)) return venue + ' ' + year;
+      return venue + ' (' + year + ')';
+    }
+
+    var bibtexByPubId = {};
+    var bibtexModal = document.getElementById('bibtexModal');
+    var bibtexContent = document.getElementById('bibtexContent');
+    var bibtexCopyBtn = document.getElementById('bibtexCopyBtn');
+    var bibtexCloseBtn = document.getElementById('bibtexCloseBtn');
+
+    function openBibtex(pubId) {
+      var bib = bibtexByPubId[pubId];
+      if (!bib) return;
+      var alreadyOpen = bibtexModal.classList.contains('is-open');
+      if (alreadyOpen && bibtexModal.dataset.pubId === pubId) { closeBibtex(); return; }
+      bibtexModal.dataset.pubId = pubId;
+      bibtexContent.textContent = bib;
+      bibtexModal.classList.add('is-open');
+      bibtexCopyBtn.classList.remove('is-copied');
+      bibtexCopyBtn.innerHTML = 'Copy to<br>clipboard';
+    }
+    function closeBibtex() {
+      bibtexModal.classList.remove('is-open');
+      delete bibtexModal.dataset.pubId;
+    }
+
+    (function renderPublications() {
+      var root = document.getElementById('publicationCards');
+      var rows = Array.isArray(window.HOME_PUBLICATIONS) ? window.HOME_PUBLICATIONS : [];
+      var byYear = {}; var years = [];
+      rows.forEach(function(p) {
+        var y = p.year;
+        if (byYear[y] == null) { years.push(y); byYear[y] = []; }
+        byYear[y].push(p);
+      });
+      years.sort(function(a, b) { return b - a; });
+      var html = '';
+      years.forEach(function(year) {
+        html += '<div class="pub-year">' + year + '</div>';
+        byYear[year].forEach(function(pub, idx) {
+          var pubId = pub.id || ('pub-' + year + '-' + idx);
+          bibtexByPubId[pubId] = pub.bibtex || generateBibtex(pub);
+          var teaserInner;
+          if (pub.teaserImage) {
+            var isVideo = /\.mp4$/i.test(pub.teaserImage);
+            teaserInner = isVideo
+              ? '<video src="' + pub.teaserImage + '" autoplay muted loop playsinline></video>'
+              : '<img src="' + pub.teaserImage + '" alt="' + escapeHtml(pub.shortTitle || '') + ' teaser" loading="lazy" />';
+          } else { teaserInner = 'Teaser'; }
+          var teaserWrap = pub.teaserLink
+            ? '<a href="' + escapeHtml(pub.teaserLink) + '" target="_blank" rel="noopener" class="block w-full h-full">' + teaserInner + '</a>'
+            : teaserInner;
+          var projectLabel = (pub.venue === 'Nature' || pub.venue === 'Nature Photonics') ? 'Article' : 'Project Page';
+          var links = '';
+          if (pub.projectLink || pub.teaserLink) {
+            links += '<a class="pub-link" href="' + escapeHtml(pub.projectLink || pub.teaserLink) + '" target="_blank" rel="noopener">' + projectLabel + '</a>';
+          }
+          if (pub.arxivLink) {
+            links += '<a class="pub-link" href="' + escapeHtml(pub.arxivLink) + '" target="_blank" rel="noopener">Arxiv</a>';
+          }
+          links += '<button type="button" class="pub-link-button js-open-bibtex" data-pub-id="' + escapeHtml(pubId) + '">BibTeX</button>';
+          var cardLink = pub.projectLink || pub.teaserLink || '';
+          var cardAttrs = 'class="pub-card" data-pub-id="' + escapeHtml(pubId) + '"';
+          if (cardLink) cardAttrs += ' data-link="' + escapeHtml(cardLink) + '" style="cursor:pointer;"';
+          html += (
+            '<article ' + cardAttrs + '>' +
+              '<div class="pub-card-main">' +
+                '<div class="pub-teaser">' + teaserWrap + '</div>' +
+                '<div class="pub-copy">' +
+                  '<div class="pub-title">' + escapeHtml(pub.longTitle || pub.shortTitle || '') + '</div>' +
+                  '<div class="pub-venue">' + escapeHtml(formatVenueLine(pub)) + '</div>' +
+                  '<div class="pub-authors">' + escapeHtml(pub.authors || pub.shortAuthors || '') + '</div>' +
+                  '<div class="pub-links">' + links + '</div>' +
+                '</div>' +
+              '</div>' +
+            '</article>'
+          );
+        });
+      });
+      root.innerHTML = html;
+      // FLIP cards in from where they sat on the home page.
+      if (window.FLIP) {
+        FLIP.play('.pub-card', 'pubId',
+          FLIP.consume('flip-pubs-from-home'));
+      }
+    })();
+
+    // Capture rects on nav-home clicks so the landing FLIPs cards back.
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.site-nav .nav-lab-logo, .site-nav a.brand'),
+      function(a) {
+        a.addEventListener('click', function() {
+          if (window.FLIP) {
+            FLIP.store('flip-pubs-from-pubs',
+              FLIP.captureMany('.pub-card', 'pubId'));
+          }
+        }, true);
+      }
+    );
+
+    document.addEventListener('click', function(e) {
+      var bib = e.target && e.target.closest ? e.target.closest('.js-open-bibtex') : null;
+      if (bib) {
+        e.preventDefault();
+        openBibtex(bib.getAttribute('data-pub-id') || '');
+        return;
+      }
+      // Click anywhere on a card body navigates to projectLink / teaserLink
+      // unless the click landed on an interactive child (link/button).
+      if (e.target.closest('a, button')) return;
+      var card = e.target.closest('.pub-card');
+      if (!card || !card.dataset.link) return;
+      window.open(card.dataset.link, '_blank', 'noopener');
+    });
+    bibtexCloseBtn.addEventListener('click', closeBibtex);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && bibtexModal.classList.contains('is-open')) closeBibtex();
+    });
+    bibtexCopyBtn.addEventListener('click', function() {
+      var text = bibtexContent ? bibtexContent.textContent : '';
+      if (!text) return;
+      var done = function() {
+        bibtexCopyBtn.classList.add('is-copied');
+        bibtexCopyBtn.innerHTML = 'Copied to<br>clipboard';
+        setTimeout(function() {
+          bibtexCopyBtn.classList.remove('is-copied');
+          bibtexCopyBtn.innerHTML = 'Copy to<br>clipboard';
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, done);
+      } else { done(); }
+    });
+
+    lucide.createIcons();
+    var root = document.documentElement;
+    var themeToggle = document.getElementById('themeToggle');
+    var storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      root.classList.add('dark');
+    }
+    themeToggle.addEventListener('click', function() {
+      root.classList.toggle('dark');
+      localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

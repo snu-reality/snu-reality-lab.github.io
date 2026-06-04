@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teaching — SNU Reality Lab</title>
+  <meta name="description" content="Teaching from Reality Lab @ SNU." />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L7781B19XD');
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ["Avenir","Avenir Next","Helvetica Neue","Helvetica","Arial","sans-serif"] } } },
+      darkMode: 'class',
+    }
+  </script>
+  <link rel="icon" href="../favicon/favicon.ico" />
+  <style>
+    html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+    .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: none; } }
+
+    /* ---------- Nav ---------- */
+    .site-nav {
+      background-color: #fafafa;
+      border-bottom: 1px solid #b8c4dc;
+      position: sticky; top: 0; z-index: 1000;
+      width: 100%; padding: 0;
+    }
+    .site-nav .nav-inner {
+      max-width: 79.2rem; margin: 0 auto; padding: 0 1rem;
+      display: flex; align-items: center; justify-content: flex-start;
+      min-height: 3.75rem; gap: 2rem;
+    }
+    .site-nav .nav-inner .nav-logo-wrap { margin-left: auto; flex-shrink: 0; }
+    .site-nav .nav-inner ul {
+      list-style: none; margin: 0; margin-left: 0.5rem; padding: 0;
+      display: flex; align-items: center; gap: 1.8rem; flex-wrap: nowrap;
+    }
+    .site-nav .nav-inner li { flex: none; }
+    .site-nav .nav-inner a {
+      display: block; padding: 0.35rem 0;
+      text-decoration: none; color: #000;
+      font-size: 1.1rem; font-weight: 500;
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      transition: opacity 0.15s ease;
+    }
+    .site-nav .nav-inner a:hover { opacity: 0.75; }
+    .site-nav .nav-inner a.active { font-weight: 700; }
+    .site-nav .nav-inner a.brand,
+    .site-nav .brand {
+      font-size: 0.8rem !important; font-weight: 700;
+      color: #000; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .site-nav .nav-logo { height: 3rem; width: auto; }
+    .site-nav .nav-brand-group { display: flex; align-items: center; gap: 0.5rem; }
+    .site-nav .nav-lab-logo-img { width: 3rem; height: auto; display: block; }
+    .dark .site-nav { background-color: #2a2a2a; border-bottom-color: #3d3d3d; }
+    .dark .site-nav .nav-inner a { color: #e5e7eb; }
+    .dark .site-nav .nav-lab-logo-img,
+    .dark .site-nav .nav-logo { filter: grayscale(1) brightness(0) invert(1); }
+    @media (max-width: 767px) {
+      .site-nav .nav-inner {
+        display: grid; grid-template-columns: auto minmax(0, 1fr);
+        align-items: center; min-height: auto; gap: 0.45rem;
+        padding-top: 0.4rem; padding-bottom: 0.4rem;
+      }
+      .site-nav .nav-inner .nav-logo-wrap { display: none; }
+      .site-nav .nav-inner ul {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem 0.8rem; margin-left: 0; width: 100%;
+      }
+      .site-nav .nav-inner li a {
+        width: 100%; text-align: center; padding: 0.14rem 0.1rem;
+        font-size: 0.9rem; line-height: 1.15;
+      }
+    }
+
+    /* ---------- Page ---------- */
+    #main-body {
+      max-width: 79.2rem;
+      margin: 0 auto;
+      padding: 1.8rem 1rem 4rem;
+    }
+
+    .teach-year {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #64748b;
+      margin: 1.4rem 0 0.55rem;
+    }
+    .teach-year:first-child { margin-top: 0.4rem; }
+    .dark .teach-year { color: #94a3b8; }
+
+    .teach-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* ---------- Card: plain white with a hairline gray border ---------- */
+    .teach-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #f2f3f6;
+      border-radius: 0.7rem;
+      padding: 0.55rem 1rem 0.55rem 0.55rem;
+      background: #ffffff;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .teach-card:hover {
+      transform: translateY(-1px);
+      border-color: #d8dde6;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+    .dark .teach-card {
+      background: #2a2e38;
+      border-color: #2f323b;
+    }
+    .dark .teach-card:hover {
+      border-color: #404552;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+    }
+
+    .teach-card-main {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: stretch;
+      min-height: 181px;
+    }
+    @media (max-width: 767px) {
+      .teach-card-main { grid-template-columns: 1fr; min-height: 0; gap: 0.55rem; }
+      .teach-card { padding: 0.65rem 0.65rem 0.55rem; }
+    }
+    .teach-teaser {
+      width: 250px; height: 181px;
+      border-radius: 0.5rem; overflow: hidden;
+      background: #eef2f7;
+      display: flex; align-items: center; justify-content: center;
+      color: #64748b; font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.01em;
+    }
+    .dark .teach-teaser { background: #2f343f; color: #94a3b8; }
+    .teach-teaser img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    @media (max-width: 767px) {
+      .teach-teaser { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    }
+    .teach-copy {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      padding: 0.2rem 0;
+      display: flex; flex-direction: column;
+      gap: 0.35rem;
+    }
+    .teach-title {
+      font-weight: 600;
+      font-size: 1.4rem;
+      line-height: 1.25;
+    }
+    .teach-meta {
+      font-size: 1rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .dark .teach-meta { color: #94a3b8; }
+    .teach-description {
+      font-size: 0.98rem;
+      line-height: 1.5;
+      color: #475569;
+    }
+    .dark .teach-description { color: #cbd5e1; }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../data/teaching.js"></script>
+  <script src="../data/flip.js"></script>
+</head>
+<body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../" class="nav-lab-logo" aria-label="Reality Lab">
+          <img src="../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img">
+        </a>
+        <a href="../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="../team/">Team</a></li>
+        <li><a href="../publications/">Publications</a></li>
+        <li><a href="./" class="active">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" aria-label="Seoul National University" class="nav-logo-wrap">
+        <img src="../logo/snu_ui.png" alt="SNU Logo" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <main id="main-body" class="fade-in">
+    <div id="teachingCards" class="teach-cards"></div>
+  </main>
+
+  <footer class="border-t border-[#b8c4dc] dark:border-[#3d3d3d]">
+    <div class="mx-auto px-4 flex flex-col items-end justify-center py-8" style="max-width: 79.2rem;">
+      <div class="text-lg font-medium text-neutral-600 dark:text-neutral-100 flex items-center gap-2 text-right">
+        <span>© <span id="year"></span> SNU Reality Lab.</span>
+        <span id="themeToggle" class="ml-2 cursor-pointer select-none underline hover:text-amber-600 dark:hover:text-amber-400 transition items-center gap-2 h-[1.7em] align-middle">
+          <i data-lucide="moon" class="align-middle"></i>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // file:// fallback
+    if (window.location.protocol === 'file:') {
+      document.addEventListener('click', function(e) {
+        if (e.defaultPrevented) return;
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || /^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+        if (href.endsWith('/')) {
+          e.preventDefault();
+          window.location.href = href + 'index.html';
+        }
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    (function renderTeaching() {
+      var root = document.getElementById('teachingCards');
+      var rows = Array.isArray(window.HOME_TEACHING) ? window.HOME_TEACHING : [];
+      // Iterate in original array order so the teach-id (which falls back
+      // to 'teach-' + idx) matches the landing page's id scheme.
+      var html = '';
+      var lastYear = null;
+      rows.forEach(function(item, idx) {
+        if (item.year !== lastYear) {
+          html += '<div class="teach-year">' + escapeHtml(item.year) + '</div>';
+          lastYear = item.year;
+        }
+        var teachId = item.id || ('teach-' + idx);
+        var teaserContent = item.teaserImage
+          ? '<img src="' + escapeHtml(item.teaserImage) + '" alt="Teaching teaser" loading="lazy" />'
+          : 'Teaser';
+        html += (
+          '<a class="teach-card" data-teach-id="' + escapeHtml(teachId) + '" href="' + escapeHtml(item.link || '#') + '">' +
+            '<div class="teach-card-main">' +
+              '<div class="teach-teaser">' + teaserContent + '</div>' +
+              '<div class="teach-copy">' +
+                '<div class="teach-title">' +
+                  (item.courseCode ? escapeHtml(item.courseCode) + ': ' : '') +
+                  escapeHtml(item.longTitle || item.shortTitle || '') +
+                '</div>' +
+                '<div class="teach-meta">' + escapeHtml(item.longMeta || item.shortMeta || '') + '</div>' +
+                (item.description ? '<div class="teach-description">' + escapeHtml(item.description) + '</div>' : '') +
+              '</div>' +
+            '</div>' +
+          '</a>'
+        );
+      });
+      root.innerHTML = html;
+      // FLIP cards in from where they sat on the home page.
+      if (window.FLIP) {
+        FLIP.play('.teach-card', 'teachId',
+          FLIP.consume('flip-teach-from-home'));
+      }
+    })();
+
+    // Capture rects on nav-home clicks so the landing FLIPs cards back.
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.site-nav .nav-lab-logo, .site-nav a.brand'),
+      function(a) {
+        a.addEventListener('click', function() {
+          if (window.FLIP) {
+            FLIP.store('flip-teach-from-teach',
+              FLIP.captureMany('.teach-card', 'teachId'));
+          }
+        }, true);
+      }
+    );
+
+    lucide.createIcons();
+    var root = document.documentElement;
+    var themeToggle = document.getElementById('themeToggle');
+    var storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      root.classList.add('dark');
+    }
+    themeToggle.addEventListener('click', function() {
+      root.classList.toggle('dark');
+      localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Lounge — SNU Reality Lab</title>
+  <meta name="description" content="Internal resources for SNU Reality Lab members." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ["Avenir","Avenir Next","Helvetica Neue","Helvetica","Arial","sans-serif"] } } },
+      darkMode: 'class',
+    }
+  </script>
+  <link rel="icon" href="../favicon/favicon.ico" />
+  <style>
+    html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+    .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: none; } }
+
+    /* ---------- Nav (matches landing) ---------- */
+    .site-nav {
+      background-color: #fafafa;
+      border-bottom: 1px solid #b8c4dc;
+      position: sticky; top: 0; z-index: 1000;
+      width: 100%; padding: 0;
+    }
+    .site-nav .nav-inner {
+      max-width: 79.2rem; margin: 0 auto; padding: 0 1rem;
+      display: flex; align-items: center; justify-content: flex-start;
+      min-height: 3.75rem; gap: 2rem;
+    }
+    .site-nav .nav-inner .nav-logo-wrap { margin-left: auto; flex-shrink: 0; }
+    .site-nav .nav-inner ul {
+      list-style: none; margin: 0; margin-left: 0.5rem; padding: 0;
+      display: flex; align-items: center; gap: 1.8rem; flex-wrap: nowrap;
+    }
+    .site-nav .nav-inner li { flex: none; }
+    .site-nav .nav-inner a {
+      display: block; padding: 0.35rem 0;
+      text-decoration: none; color: #000;
+      font-size: 1.1rem; font-weight: 500;
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      transition: opacity 0.15s ease;
+    }
+    .site-nav .nav-inner a:hover { opacity: 0.75; }
+    .site-nav .nav-inner a.brand,
+    .site-nav .brand {
+      font-size: 0.8rem !important; font-weight: 700;
+      color: #000; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .site-nav .nav-logo { height: 3rem; width: auto; }
+    .site-nav .nav-brand-group { display: flex; align-items: center; gap: 0.5rem; }
+    .site-nav .nav-lab-logo-img { width: 3rem; height: auto; display: block; }
+    .dark .site-nav { background-color: #2a2a2a; border-bottom-color: #3d3d3d; }
+    .dark .site-nav .nav-inner a { color: #e5e7eb; }
+    .dark .site-nav .nav-lab-logo-img,
+    .dark .site-nav .nav-logo { filter: grayscale(1) brightness(0) invert(1); }
+    @media (max-width: 767px) {
+      .site-nav .nav-inner {
+        display: grid; grid-template-columns: auto minmax(0, 1fr);
+        align-items: center; min-height: auto; gap: 0.45rem;
+        padding-top: 0.4rem; padding-bottom: 0.4rem;
+      }
+      .site-nav .nav-inner .nav-logo-wrap { display: none; }
+      .site-nav .nav-inner ul {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem 0.8rem; margin-left: 0; width: 100%;
+      }
+      .site-nav .nav-inner li a {
+        width: 100%; text-align: center; padding: 0.14rem 0.1rem;
+        font-size: 0.9rem; line-height: 1.15;
+      }
+    }
+
+    /* ---------- Page ---------- */
+    #main-body {
+      max-width: 79.2rem;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+    .intro {
+      color: #475569;
+      line-height: 1.55;
+      font-size: 1rem;
+    }
+    .dark .intro { color: #cbd5e1; }
+    .intro strong { color: #0f172a; font-weight: 600; }
+    .dark .intro strong { color: #f1f5f9; }
+    .intro p { margin-top: 0; }
+    .intro p + p { margin-top: 0.35rem; }
+
+    /* ---------- Compact resource list ----------
+       No boxes, no numbers, no host labels. Hairline dividers
+       with a sweeping highlight + sliding arrow on hover. */
+    .res-list {
+      margin-top: 1.6rem;
+      border-top: 1px solid #0f172a;
+    }
+    .dark .res-list { border-top-color: #e2e8f0; }
+
+    .res {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.95rem 0.6rem 0.95rem 0.6rem;
+      border-bottom: 1px solid #cbd5e1;
+      color: inherit;
+      text-decoration: none;
+      isolation: isolate;
+      transition: padding-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .dark .res { border-bottom-color: #3d3d3d; }
+
+    .res::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(15,23,42,0.045), rgba(15,23,42,0));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .dark .res::before {
+      background: linear-gradient(90deg, rgba(226,232,240,0.08), rgba(226,232,240,0));
+    }
+    .res:hover::before { transform: scaleX(1); }
+    .res:hover { padding-left: 1rem; }
+
+    .res-body { min-width: 0; }
+    .res-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.005em;
+    }
+    .res-desc {
+      margin-top: 0.18rem;
+      max-width: 62ch;
+      color: #64748b;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+    .dark .res-desc { color: #94a3b8; }
+
+    .res-arrow {
+      align-self: center;
+      width: 1.8rem; height: 1.8rem;
+      display: flex; align-items: center; justify-content: center;
+      color: #0f172a;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+      opacity: 0.4;
+    }
+    .dark .res-arrow { color: #f1f5f9; }
+    .res-arrow svg { width: 1.05rem; height: 1.05rem; }
+    .res:hover .res-arrow { transform: translateX(7px); opacity: 1; }
+
+    @media (max-width: 600px) {
+      .res { padding: 0.85rem 0.3rem; }
+      .res-title { font-size: 1rem; }
+      .res-desc { font-size: 0.85rem; }
+    }
+  </style>
+  <script src="../data/internal.js"></script>
+</head>
+<body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../" class="nav-lab-logo" aria-label="Reality Lab">
+          <img src="../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img">
+        </a>
+        <a href="../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="../team/">Team</a></li>
+        <li><a href="../publications/">Publications</a></li>
+        <li><a href="../teaching/">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" aria-label="Seoul National University" class="nav-logo-wrap">
+        <img src="../logo/snu_ui.png" alt="SNU Logo" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <main id="main-body" class="fade-in">
+    <div class="intro">
+      <p>Information and resources for <strong>current members of the SNU Reality Lab</strong>.</p>
+      <p>If you've recently joined, open any link below and request access — Suyeon will approve.</p>
+    </div>
+
+    <div id="resList" class="res-list"></div>
+  </main>
+
+  <footer class="border-t border-[#b8c4dc] dark:border-[#3d3d3d]">
+    <div class="mx-auto px-4 py-6 text-right text-sm text-neutral-500" style="max-width: 79.2rem;">
+      © <span id="year"></span> SNU Reality Lab · Lounge
+    </div>
+  </footer>
+
+  <script>
+    // file:// fallback so folder URLs work when opened locally without a server
+    if (window.location.protocol === 'file:') {
+      document.addEventListener('click', function(e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || /^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+        if (href.endsWith('/')) {
+          e.preventDefault();
+          window.location.href = href + 'index.html';
+        }
+      }, true);
+    }
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    (function renderResources() {
+      var root = document.getElementById('resList');
+      var rows = Array.isArray(window.INTERNAL_RESOURCES) ? window.INTERNAL_RESOURCES : [];
+      if (!rows.length) {
+        root.innerHTML = '<p class="intro" style="padding:1rem 0;">No resources yet — add entries in <code>data/internal.js</code>.</p>';
+        return;
+      }
+      var arrowSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>';
+      root.innerHTML = rows.map(function(r) {
+        return (
+          '<a class="res" href="' + r.url + '" target="_blank" rel="noopener">' +
+            '<div class="res-body">' +
+              '<div class="res-title">' + r.title + '</div>' +
+              (r.description ? '<div class="res-desc">' + r.description + '</div>' : '') +
+            '</div>' +
+            '<div class="res-arrow">' + arrowSVG + '</div>' +
+          '</a>'
+        );
+      }).join('');
+    })();
+
+    var root = document.documentElement;
+    var storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      root.classList.add('dark');
+    }
+  </script>
+</body>
+</html>

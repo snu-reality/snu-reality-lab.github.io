@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team — SNU Reality Lab</title>
+  <meta name="description" content="People of Reality Lab @ SNU." />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L7781B19XD');
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ["Avenir","Avenir Next","Helvetica Neue","Helvetica","Arial","sans-serif"] } } },
+      darkMode: 'class',
+    }
+  </script>
+  <link rel="icon" href="../favicon/favicon.ico" />
+  <style>
+    html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+
+    /* Cross-document view transitions (Chrome 126+, Edge, Safari 18+) */
+    @view-transition { navigation: auto; }
+    ::view-transition-group(*) { animation-duration: 520ms; }
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation-duration: 320ms; }
+
+    .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: none; } }
+
+    /* ---------- Nav (matches landing) ---------- */
+    .site-nav {
+      background-color: #fafafa;
+      border-bottom: 1px solid #b8c4dc;
+      position: sticky; top: 0; z-index: 1000;
+      width: 100%; padding: 0;
+    }
+    .site-nav .nav-inner {
+      max-width: 79.2rem; margin: 0 auto; padding: 0 1rem;
+      display: flex; align-items: center; justify-content: flex-start;
+      min-height: 3.75rem; gap: 2rem;
+    }
+    .site-nav .nav-inner .nav-logo-wrap { margin-left: auto; flex-shrink: 0; }
+    .site-nav .nav-inner ul {
+      list-style: none; margin: 0; margin-left: 0.5rem; padding: 0;
+      display: flex; align-items: center; gap: 1.8rem; flex-wrap: nowrap;
+    }
+    .site-nav .nav-inner li { flex: none; }
+    .site-nav .nav-inner a {
+      display: block; padding: 0.35rem 0;
+      text-decoration: none; color: #000;
+      font-size: 1.1rem; font-weight: 500;
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      transition: opacity 0.15s ease;
+    }
+    .site-nav .nav-inner a:hover { opacity: 0.75; }
+    .site-nav .nav-inner a.brand,
+    .site-nav .brand {
+      font-size: 0.8rem !important; font-weight: 700;
+      color: #000; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .site-nav .nav-logo { height: 3rem; width: auto; }
+    .site-nav .nav-brand-group { display: flex; align-items: center; gap: 0.5rem; }
+    .site-nav .nav-lab-logo-img { width: 3rem; height: auto; display: block; }
+    .dark .site-nav { background-color: #2a2a2a; border-bottom-color: #3d3d3d; }
+    .dark .site-nav .nav-inner a { color: #e5e7eb; }
+    .dark .site-nav .nav-lab-logo-img,
+    .dark .site-nav .nav-logo { filter: grayscale(1) brightness(0) invert(1); }
+    .site-nav .nav-inner a.active { font-weight: 700; }
+    @media (max-width: 767px) {
+      .site-nav .nav-inner {
+        display: grid; grid-template-columns: auto minmax(0, 1fr);
+        align-items: center; min-height: auto; gap: 0.45rem;
+        padding-top: 0.4rem; padding-bottom: 0.4rem;
+      }
+      .site-nav .nav-inner .nav-logo-wrap { display: none; }
+      .site-nav .nav-inner ul {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem 0.8rem; margin-left: 0; width: 100%;
+      }
+      .site-nav .nav-inner li a {
+        width: 100%; text-align: center; padding: 0.14rem 0.1rem;
+        font-size: 0.9rem; line-height: 1.15;
+      }
+    }
+
+    #main-body { max-width: 79.2rem; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
+
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.6rem 1.2rem;
+    }
+    @media (max-width: 640px) {
+      .people-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem 0.9rem; }
+    }
+    .person-card {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      text-decoration: none; color: inherit;
+    }
+    .person-photo {
+      width: 100%; aspect-ratio: 1 / 1;
+      border-radius: 0.75rem; overflow: hidden;
+      background: #e9eef6;
+      display: flex; align-items: center; justify-content: center;
+      color: #64748b; font-weight: 700; font-size: 2.2rem; letter-spacing: 0.02em;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .dark .person-photo { background: #303744; color: #cbd5e1; }
+    .person-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .person-card:hover .person-photo {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+    .person-name { margin-top: 0.6rem; font-weight: 600; font-size: 1rem; line-height: 1.2; }
+    .person-role { margin-top: 0.15rem; font-size: 0.86rem; color: #64748b; line-height: 1.25; }
+    .dark .person-role { color: #94a3b8; }
+
+    /* ---------- Join section ---------- */
+    #join {
+      margin-top: 3rem; padding-top: 1.6rem;
+      border-top: 1px solid rgba(184, 196, 220, 0.35);
+    }
+    .dark #join { border-top-color: rgba(61, 61, 61, 0.5); }
+    #join h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    /* No max-width on these paragraphs so each sentence stays on one line
+       at typical desktop widths (the second sentence is ~140 chars). */
+    #join p { color: #475569; line-height: 1.55; margin-bottom: 0.5rem; }
+    .dark #join p { color: #cbd5e1; }
+    #join a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../data/team.js"></script>
+</head>
+<body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../" class="nav-lab-logo" aria-label="Reality Lab">
+          <img src="../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img">
+        </a>
+        <a href="../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="./" class="active">Team</a></li>
+        <li><a href="../publications/">Publications</a></li>
+        <li><a href="../teaching/">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" aria-label="Seoul National University" class="nav-logo-wrap">
+        <img src="../logo/snu_ui.png" alt="SNU Logo" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <main id="main-body" class="fade-in">
+    <section id="team-section">
+      <div id="peopleGrid" class="people-grid"></div>
+
+      <section id="join">
+        <h2>Interested in joining us?</h2>
+        <div id="joinCopy"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="border-t border-[#b8c4dc] dark:border-[#3d3d3d]">
+    <div class="mx-auto px-4 flex flex-col items-end justify-center py-8" style="max-width: 79.2rem;">
+      <div class="text-lg font-medium text-neutral-600 dark:text-neutral-100 flex items-center gap-2 text-right">
+        <span>© <span id="year"></span> SNU Reality Lab.</span>
+        <span id="themeToggle" class="ml-2 cursor-pointer select-none underline hover:text-amber-600 dark:hover:text-amber-400 transition items-center gap-2 h-[1.7em] align-middle">
+          <i data-lucide="moon" class="align-middle"></i>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // file:// fallback — local browsers render directory URLs as folder
+    // listings instead of serving index.html. Rewrite "folder/" clicks
+    // to "folder/index.html" only when opened via file://.
+    if (window.location.protocol === 'file:') {
+      document.addEventListener('click', function(e) {
+        if (e.defaultPrevented) return;
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || /^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+        if (href.endsWith('/')) {
+          e.preventDefault();
+          window.location.href = href + 'index.html';
+        }
+      });
+    }
+
+    // Paths in data/team.js are root-relative. This page lives at /team/,
+    // so prepend ../ for any non-absolute, non-http path.
+    function resolvePath(p) {
+      if (!p) return p;
+      if (/^(https?:|data:|\/)/i.test(p)) return p;
+      return '../' + p;
+    }
+
+    (function renderTeam() {
+      var grid = document.getElementById('peopleGrid');
+      var members = Array.isArray(window.TEAM_MEMBERS) ? window.TEAM_MEMBERS : [];
+      grid.innerHTML = '';
+      members.forEach(function(m) {
+        var initials = (m.name || '?').split(/\s+/).map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+        var card = document.createElement(m.link ? 'a' : 'div');
+        card.className = 'person-card';
+        if (m.link) { card.href = m.link; card.target = '_blank'; card.rel = 'noopener'; }
+        var photoUrl = resolvePath(m.photo);
+        var photoHtml = photoUrl
+          ? '<img src="' + photoUrl + '" alt="' + (m.name || '') + '" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'' + initials + '\'}))"/>'
+          : '<span>' + initials + '</span>';
+        card.innerHTML =
+          '<div class="person-photo" data-id="' + m.id + '">' + photoHtml + '</div>' +
+          '<div class="person-name">' + (m.name || '') + '</div>' +
+          '<div class="person-role">' + (m.role || '') + '</div>';
+        grid.appendChild(card);
+      });
+
+      // ---- FLIP: when arriving from the landing page, fly each profile
+      //      photo OUT of the matching face overlay's position. ----
+      var stored = null;
+      try { stored = JSON.parse(sessionStorage.getItem('flip-from-landing') || 'null'); } catch (e) {}
+      if (stored) {
+        try { sessionStorage.removeItem('flip-from-landing'); } catch (e) {}
+        var active = [];
+        Array.prototype.forEach.call(grid.querySelectorAll('.person-photo[data-id]'), function(photo) {
+          var from = stored[photo.dataset.id];
+          if (!from) return;
+          var to = photo.getBoundingClientRect();
+          if (to.width === 0 || to.height === 0) return;
+          var dx = from.x - to.left;
+          var dy = from.y - to.top;
+          var sx = from.w / to.width;
+          var sy = from.h / to.height;
+          photo.style.transition = 'none';
+          photo.style.transformOrigin = 'top left';
+          photo.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(' + sx + ', ' + sy + ')';
+          photo.style.borderRadius = '50%';
+          active.push(photo);
+        });
+        if (active.length) {
+          void grid.offsetHeight;
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              active.forEach(function(photo) {
+                photo.style.transition = 'transform 620ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 620ms ease';
+                photo.style.transform = '';
+                photo.style.borderRadius = '';
+              });
+            });
+          });
+        }
+      }
+
+      // ---- Capture profile rects when navigating back to landing (brand /
+      //      logo clicks), so the landing can FLIP overlays into place. ----
+      function captureProfilesAndContinue() {
+        var rects = {};
+        Array.prototype.forEach.call(grid.querySelectorAll('.person-photo[data-id]'), function(el) {
+          var r = el.getBoundingClientRect();
+          rects[el.dataset.id] = { x: r.left, y: r.top, w: r.width, h: r.height };
+        });
+        try { sessionStorage.setItem('flip-from-team', JSON.stringify(rects)); } catch (e) {}
+      }
+      Array.prototype.forEach.call(
+        document.querySelectorAll('.site-nav .nav-lab-logo, .site-nav a.brand'),
+        function(a) { a.addEventListener('click', captureProfilesAndContinue, true); }
+      );
+    })();
+
+    (function renderJoinCopy() {
+      var wrap = document.getElementById('joinCopy');
+      var copy = window.TEAM_JOIN_COPY;
+      var paragraphs = Array.isArray(copy) ? copy : (typeof copy === 'string' ? [copy] : []);
+      wrap.innerHTML = paragraphs.map(function(line) {
+        var html = String(line).replace(/Suyeon/g, '<a href="mailto:suyeon.choi@snu.ac.kr">Suyeon</a>');
+        return '<p>' + html + '</p>';
+      }).join('');
+    })();
+
+    lucide.createIcons();
+    var root = document.documentElement;
+    var themeToggle = document.getElementById('themeToggle');
+    var storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      root.classList.add('dark');
+    }
+    themeToggle.addEventListener('click', function() {
+      root.classList.toggle('dark');
+      localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

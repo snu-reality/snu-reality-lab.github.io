@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SNU Reality Lab</title>
   <meta name="description" content="The website of Reality Lab @ SNU. Coming soon!" />
+  <link rel="icon" href="favicon/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="favicon/favicon-512.png" />
   <!-- <meta http-equiv="refresh" content="8;url=https://reality.snu.ac.kr/class/computational-imaging" /> -->
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
@@ -37,6 +41,49 @@
       scroll-behavior: smooth;
       scrollbar-gutter: stable;
     }
+    /* Cross-document view transitions (Chrome 126+, Edge, Safari 18+).
+       In other browsers this is a no-op — navigation still works, no animation. */
+    @view-transition { navigation: auto; }
+    ::view-transition-group(*) { animation-duration: 520ms; }
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation-duration: 320ms; }
+
+    /* ---------- Group photo face overlays ----------
+       Each member's face position is defined in data/team.js (facePosition).
+       Overlays are positioned over the group photo as percentage boxes and
+       carry a unique view-transition-name so the browser can animate them
+       smoothly into the team page's profile cards (and back). */
+    .group-photo-wrap { position: relative; overflow: hidden; }
+    .face-overlay {
+      position: absolute;
+      /* Centered via margin offsets (set in JS) so `transform` stays free
+         for the FLIP animation when navigating between / and /team/. */
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e9eef6;
+      pointer-events: none;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.85), 0 6px 16px rgba(0,0,0,0.18);
+      transform-origin: top left;
+      will-change: transform, border-radius, opacity;
+      /* Hidden by default. The FLIP playback (team → home) briefly turns
+         them visible, animates them into place, then fades them back out.
+         Going the other way (home → team), the rect is still computed
+         from the invisible overlay so the team cards know where to fly
+         out from. */
+      opacity: 0;
+    }
+    .dark .face-overlay { background: #303744; box-shadow: 0 0 0 2px rgba(255,255,255,0.18), 0 6px 16px rgba(0,0,0,0.4); }
+    .face-overlay img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .face-overlay .face-initials {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      color: #64748b; font-weight: 700; font-size: 0.95rem;
+    }
+    .dark .face-overlay .face-initials { color: #cbd5e1; }
     /* Simple fade-in animation */
     .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
     @keyframes fadeIn { to { opacity: 1; transform: none; } }
@@ -229,13 +276,7 @@
         display: none;
       }
     }
-    /* Teaching card: light navy border to match nav */
-    #teaching article {
-      border: 1px solid #b8c4dc;
-    }
-    .dark #teaching article {
-      border-color: #4a4a4a;
-    }
+    /* Teaching card: uses the same look as .pub-card (set below). */
     /* Teaching card mobile: image full-width with fixed ratio, text stacked below */
     #teaching .teaching-card-img {
       min-height: 0;
@@ -318,15 +359,15 @@
       display: block;
     }
     .pub-card {
-      border: 1px solid #b8c4dc;
-      border-radius: 0.45rem;
-      padding: 0.35rem 0.9rem 0.35rem 0.35rem;
-      background: #fff;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      border: 1px solid #f2f3f6;
+      border-radius: 0.55rem;
+      padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+      background: #ffffff;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
     .dark .pub-card {
-      background: #2f2f2f;
-      border-color: #4a4a4a;
+      background: #2a2e38;
+      border-color: #2f323b;
     }
     .pub-card-main {
       display: grid;
@@ -437,8 +478,13 @@
       font-size: 0.84rem;
     }
     .pub-card:hover {
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.09);
       transform: translateY(-1px);
+      border-color: #d8dde6;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    }
+    .dark .pub-card:hover {
+      border-color: #404552;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     }
     #home #publications .pub-card.pub-only {
       display: none;
@@ -538,17 +584,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #b8c4dc;
-      border-radius: 0.38rem;
-      background: #f8fafc;
+      border: 0;
+      border-radius: 0.4rem;
+      background: #eef2f7;
       color: #334155;
       text-decoration: none;
       font-size: 0.82rem;
       font-weight: 600;
       line-height: 1;
-      padding: 0.36rem 0.56rem;
+      padding: 0.4rem 0.6rem;
       cursor: pointer;
-      transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+      transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
     }
     .pub-links .pub-link-button {
       margin: 0;
@@ -556,23 +602,21 @@
     }
     .pub-links .pub-link:hover,
     .pub-links .pub-link-button:hover {
-      background: #eef2f7;
-      border-color: #94a3b8;
+      background: #dbe3ee;
       color: #0f172a;
+      transform: translateY(-1px);
     }
     body.publication-mode #home #publications .pub-links {
       display: flex;
     }
     .dark .pub-links .pub-link,
     .dark .pub-links .pub-link-button {
-      border-color: #4a4a4a;
-      background: #2f333c;
+      background: #353944;
       color: #e2e8f0;
     }
     .dark .pub-links .pub-link:hover,
     .dark .pub-links .pub-link-button:hover {
-      background: #3a3f49;
-      border-color: #64748b;
+      background: #434956;
       color: #f8fafc;
     }
     .bibtex-modal {
@@ -848,12 +892,12 @@
         <a href="#home" class="brand">SNU <br> REALITY <br> LAB</a>
       </div>
       <ul>
-        <li><a href="#team">Team</a></li>
-        <li><a href="#publications">Publications</a></li>
-        <li><a href="#teaching">Teaching</a></li>
+        <li><a href="team/">Team</a></li>
+        <li><a href="publications/">Publications</a></li>
+        <li><a href="teaching/">Teaching</a></li>
       </ul>
       <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" aria-label="Seoul National University" class="nav-logo-wrap">
-        <img src="snu_ui.png" alt="SNU Logo" class="nav-logo" />
+        <img src="logo/snu_ui.png" alt="SNU Logo" class="nav-logo" />
       </a>
     </div>
   </nav>
@@ -948,12 +992,14 @@
   <script src="data/publications.js"></script>
   <script src="data/news.js"></script>
   <script src="data/teaching.js"></script>
+  <script src="data/team.js"></script>
+  <script src="data/flip.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var teamLink = document.querySelector('.site-nav a[href="#team"]');
-      var teachingLink = document.querySelector('.site-nav a[href="#teaching"]');
+      var teamLink = document.querySelector('.site-nav a[href="team/"]');
+      var teachingLink = document.querySelector('.site-nav a[href="teaching/"]');
       var newsLink = document.querySelector('.site-nav a[href="#news"]');
-      var publicationLink = document.querySelector('.site-nav a[href="#publications"]');
+      var publicationLink = document.querySelector('.site-nav a[href="publications/"]');
       var brandLink = document.querySelector('.site-nav a.brand');
       var navLogo = document.querySelector('.site-nav .nav-lab-logo');
       var body = document.body;
@@ -1129,6 +1175,12 @@
             var pubId = card.dataset.pubId;
             var projectLink = pub.projectLink || pub.teaserLink || '';
             var arxivLink = pub.arxivLink || '';
+            // Whole-card click target — project page first, teaser link as fallback.
+            var cardLink = pub.projectLink || pub.teaserLink || '';
+            if (cardLink) {
+              card.dataset.link = cardLink;
+              card.style.cursor = 'pointer';
+            }
             bibtexByPubId[pubId] = pub.bibtex || generateBibtex(pub);
             if (pub.homeVisible === false) card.classList.add('pub-only');
             var teaserContent;
@@ -1171,6 +1223,11 @@
       }
 
       renderHomePublications();
+      // FLIP back from /publications/ if we just came from there.
+      if (window.FLIP) {
+        FLIP.play('#publicationCards .pub-card', 'pubId',
+          FLIP.consume('flip-pubs-from-pubs'));
+      }
 
       function renderHomeNews() {
         if (!newsCardsRoot) return;
@@ -1182,7 +1239,7 @@
           card.dataset.newsId = item.id || ('news-' + idx);
           card.innerHTML =
             '<div class="text-xs text-neutral-500">' + (item.dateLabel || '') + '</div>' +
-            '<div class="font-semibold leading-snug mt-1">' + (item.title || '') + '</div>';
+            '<div class="leading-snug mt-1">' + (item.title || '') + '</div>';
           newsCardsRoot.appendChild(card);
         });
       }
@@ -1224,13 +1281,26 @@
       }
 
       renderTeachingCards();
+      // FLIP back from /teaching/ if we just came from there.
+      if (window.FLIP) {
+        FLIP.play('#teachingCards .pub-card', 'teachId',
+          FLIP.consume('flip-teach-from-teach'));
+      }
 
       if (publicationCardsRoot) {
         publicationCardsRoot.addEventListener('click', function(e) {
-          var target = e.target && e.target.closest ? e.target.closest('.js-open-bibtex') : null;
-          if (!target) return;
-          e.preventDefault();
-          openBibtexModal(target.getAttribute('data-pub-id') || '', target.getAttribute('data-pub-title') || '', target);
+          var bibtexBtn = e.target && e.target.closest ? e.target.closest('.js-open-bibtex') : null;
+          if (bibtexBtn) {
+            e.preventDefault();
+            openBibtexModal(bibtexBtn.getAttribute('data-pub-id') || '', bibtexBtn.getAttribute('data-pub-title') || '', bibtexBtn);
+            return;
+          }
+          // Click anywhere on the card body navigates to projectLink (or teaserLink)
+          // unless the click landed on an interactive child (link/button).
+          if (e.target.closest('a, button')) return;
+          var card = e.target.closest('.pub-card');
+          if (!card || !card.dataset.link) return;
+          window.open(card.dataset.link, '_blank', 'noopener');
         });
       }
       if (bibtexCloseBtn) bibtexCloseBtn.addEventListener('click', closeBibtexModal);
@@ -1476,9 +1546,9 @@
         }
         animateTeachingCardsLayout(function() {
           body.classList.remove('teaching-mode');
-        }, 810, {
-          moveDurationMs: 810,
-          scaleDurationMs: 130,
+        }, 972, {
+          moveDurationMs: 972,
+          scaleDurationMs: 156,
           anchorRightEdge: true
         });
         fadeInCards('#publicationCards .pub-card, #newsCards .news-card');
@@ -1489,46 +1559,101 @@
         window.history.replaceState(null, '', window.location.pathname + window.location.search);
       }
 
-      if (window.location.hash === '#teaching') {
+      // ----- Clean URLs via History API ---------------------------------
+      // Goal: clicking Publications updates URL to .../publications/ (and
+      // /teaching/ for Teaching) without leaving the landing page, so the
+      // inline mode animation still plays. Direct visits to /publications/
+      // are handled by a tiny stub at publications/index.html that bounces
+      // here with a sessionStorage flag.
+      function getBasePath() {
+        var p = window.location.pathname;
+        p = p.replace(/(publications|teaching)\/?$/, '');
+        p = p.replace(/index\.html?$/, '');
+        if (!p.endsWith('/')) p += '/';
+        return p;
+      }
+      function setUrl(mode, replace) {
+        if (!window.history || !window.history.pushState) return;
+        var target = getBasePath() + (mode ? mode + '/' : '');
+        if (window.location.pathname === target) return;
+        try {
+          if (replace) history.replaceState({ mode: mode || null }, '', target);
+          else history.pushState({ mode: mode || null }, '', target);
+        } catch (e) {
+          // pushState can throw on some file:// setups; fall back silently.
+        }
+      }
+
+      // ----- File:// click interceptor ----------------------------------
+      // Local file:// browsers won't render a directory URL — they'd show
+      // a folder listing for things like "team/". Rewrite such clicks to
+      // explicit "team/index.html". Skipped if another handler already
+      // called preventDefault (e.g., inline mode toggles).
+      if (window.location.protocol === 'file:') {
+        document.addEventListener('click', function(e) {
+          if (e.defaultPrevented) return;
+          var a = e.target && e.target.closest ? e.target.closest('a') : null;
+          if (!a) return;
+          var href = a.getAttribute('href');
+          if (!href || /^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+          if (href.endsWith('/')) {
+            e.preventDefault();
+            window.location.href = href + 'index.html';
+          }
+        });
+      }
+
+      // ----- Initial mode: stub-redirect flag OR direct pathname --------
+      var openMode = null;
+      try { openMode = sessionStorage.getItem('openMode'); } catch (e) {}
+      if (openMode) {
+        try { sessionStorage.removeItem('openMode'); } catch (e) {}
+      } else {
+        var p = window.location.pathname;
+        if (/\/publications\/?$/.test(p)) openMode = 'publications';
+        else if (/\/teaching\/?$/.test(p)) openMode = 'teaching';
+      }
+      if (openMode === 'teaching') {
         body.classList.remove('publication-mode');
         body.classList.add('teaching-mode');
         window.scrollTo(0, 0);
-      } else if (window.location.hash === '#publications') {
+        setUrl('teaching', true);
+      } else if (openMode === 'publications') {
         body.classList.remove('teaching-mode');
         body.classList.add('publication-mode');
         window.scrollTo(0, 0);
+        setUrl('publications', true);
       }
+      // Legacy: clean any leftover #hash in URL.
       clearHashFromUrl();
-      if (teachingLink) {
-        teachingLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          closeBibtexModal();
-          if (body.classList.contains('publication-mode')) {
-            var home = document.getElementById('home');
-            var oldTransition = home ? home.style.transition : '';
-            if (home) home.style.transition = 'none';
+
+      // ----- Back / forward navigation sync ----------------------------
+      window.addEventListener('popstate', function() {
+        var path = window.location.pathname;
+        if (/\/publications\/?$/.test(path)) {
+          if (!body.classList.contains('publication-mode')) {
+            body.classList.remove('teaching-mode');
+            body.classList.add('publication-mode');
+          }
+        } else if (/\/teaching\/?$/.test(path)) {
+          if (!body.classList.contains('teaching-mode')) {
             body.classList.remove('publication-mode');
             body.classList.add('teaching-mode');
-            window.scrollTo(0, 0);
-            fadeInCards('#teachingCards .pub-card');
-            clearHashFromUrl();
-            if (home) {
-              void home.offsetHeight;
-              home.style.transition = oldTransition;
-            }
-            return;
           }
-          if (!body.classList.contains('teaching-mode')) {
-            animateTeachingCardsLayout(function() {
-              body.classList.add('teaching-mode');
-            }, 540);
-            window.scrollTo(0, 0);
-            clearHashFromUrl();
-            return;
+        } else {
+          if (body.classList.contains('publication-mode')) clearPublicationMode();
+          else if (body.classList.contains('teaching-mode')) clearTeachingMode();
+        }
+      });
+      if (teachingLink) {
+        // Real navigation to /teaching/ — clean up modal and capture
+        // current card rects so the destination page can FLIP them in.
+        teachingLink.addEventListener('click', function() {
+          closeBibtexModal();
+          if (window.FLIP) {
+            FLIP.store('flip-teach-from-home',
+              FLIP.captureMany('#teachingCards .pub-card', 'teachId'));
           }
-          body.classList.add('teaching-mode');
-          window.scrollTo(0, 0);
-          clearHashFromUrl();
         });
       }
       if (newsLink) {
@@ -1543,38 +1668,28 @@
           }
           var news = document.getElementById('news');
           if (news) requestAnimationFrame(function() { news.scrollIntoView({ behavior: 'auto', block: 'start' }); });
-          clearHashFromUrl();
+          setUrl(null);
         });
       }
       if (teamLink) {
+        // Team link is a real navigation to /team/. We just make sure we
+        // exit any inline mode (publications/teaching) cleanly before the
+        // browser starts the cross-document view transition.
         teamLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (body.classList.contains('teaching-mode') || body.classList.contains('publication-mode')) {
-            if (body.classList.contains('publication-mode')) {
-              clearPublicationMode();
-            } else {
-              clearTeachingMode();
-            }
-          }
-          requestAnimationFrame(function() { window.scrollTo(0, 0); });
-          clearHashFromUrl();
+          if (body.classList.contains('publication-mode')) body.classList.remove('publication-mode');
+          if (body.classList.contains('teaching-mode')) body.classList.remove('teaching-mode');
+          closeBibtexModal();
         });
       }
       if (publicationLink) {
-        publicationLink.addEventListener('click', function(e) {
-          e.preventDefault();
+        // Real navigation to /publications/ — clean up modal and capture
+        // current card rects so the destination page can FLIP them in.
+        publicationLink.addEventListener('click', function() {
           closeBibtexModal();
-          if (body.classList.contains('teaching-mode')) {
-            body.classList.remove('teaching-mode');
-            body.classList.add('publication-mode');
-            window.scrollTo(0, 0);
-            fadeInCards('#publicationCards .pub-card');
-            clearHashFromUrl();
-            return;
+          if (window.FLIP) {
+            FLIP.store('flip-pubs-from-home',
+              FLIP.captureMany('#publicationCards .pub-card', 'pubId'));
           }
-          window.scrollTo(0, 0);
-          setPublicationMode();
-          clearHashFromUrl();
         });
       }
       function goHome(e) {
@@ -1587,15 +1702,31 @@
           }
         }
         requestAnimationFrame(function() { window.scrollTo(0, 0); });
-        clearHashFromUrl();
+        setUrl(null);
       }
       if (brandLink) brandLink.addEventListener('click', goHome);
       if (navLogo) navLogo.addEventListener('click', goHome);
 
+      // Expand buttons → real navigation to the standalone pages, also
+      // capturing card rects so the destination FLIPs cleanly.
       var expandPub = document.querySelector('.expand-btn-publications');
       var expandTeach = document.querySelector('.expand-btn-teaching');
-      if (expandPub && publicationLink) expandPub.addEventListener('click', function(e) { e.preventDefault(); publicationLink.click(); });
-      if (expandTeach && teachingLink) expandTeach.addEventListener('click', function(e) { e.preventDefault(); teachingLink.click(); });
+      if (expandPub) expandPub.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (window.FLIP) {
+          FLIP.store('flip-pubs-from-home',
+            FLIP.captureMany('#publicationCards .pub-card', 'pubId'));
+        }
+        window.location.href = 'publications/';
+      });
+      if (expandTeach) expandTeach.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (window.FLIP) {
+          FLIP.store('flip-teach-from-home',
+            FLIP.captureMany('#teachingCards .pub-card', 'teachId'));
+        }
+        window.location.href = 'teaching/';
+      });
     });
   </script>
 
@@ -1608,14 +1739,13 @@
             We design next-generation physical interfaces that connect humans, machines, graphics, and AI agents, enabling seamless interactions among them. These have a wide range of applications across spatial computing, scientific imaging, robotics, fabrication, as well as computer graphics and vision.
           </p>
         </div>
-        <div class="mt-6 rounded-2xl overflow-hidden border border-black/10 dark:border-white/10">
-          <div class="w-full aspect-[2048/915] bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-300 flex items-center justify-center text-center px-4">
-            <div>
-              <div class="mt-2">The website of Reality Lab @ Seoul National University. Coming soon!</div>
-              <div class="mt-2">We're redirecting you to Suyeon's webpage in <span id="redirectCountdown">20</span>s...</div>
-              <div class="mt-2">Placeholder for the group photo or banner</div>
-            </div>
-          </div>
+        <div class="mt-6 rounded-2xl overflow-hidden border-0 group-photo-wrap" id="groupPhotoWrap">
+          <!-- Blank placeholder for the eventual group photo / banner -->
+          <div class="w-full aspect-[2048/915] bg-white dark:bg-neutral-900"></div>
+          <!-- Face overlays rendered from data/team.js (invisible at rest;
+               briefly visible during the FLIP animation when arriving from
+               /team/, then fade back out). -->
+          <div id="faceOverlays"></div>
         </div>
       </div>
       <section id="publications" class="fade-in">
@@ -1697,22 +1827,139 @@
     // Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Redirect countdown
-    const redirectCountdownEl = document.getElementById('redirectCountdown');
-    const redirectTargetUrl = 'https://choisuyeon.github.io/';
-    const redirectDelaySeconds = 20;
-    if (redirectCountdownEl) {
-      let secondsRemaining = redirectDelaySeconds;
-      redirectCountdownEl.textContent = String(secondsRemaining);
-      const countdownTimer = setInterval(function() {
-        secondsRemaining = Math.max(0, secondsRemaining - 1);
-        redirectCountdownEl.textContent = String(secondsRemaining);
-        if (secondsRemaining <= 0) clearInterval(countdownTimer);
-      }, 1000);
-      setTimeout(function() {
-        window.location.href = redirectTargetUrl;
-      }, redirectDelaySeconds * 1000);
-    }
+    // ---------- Group-photo face overlays + cross-page FLIP animation ----------
+    (function renderFaceOverlays() {
+      var wrap = document.getElementById('faceOverlays');
+      if (!wrap) return;
+      var members = Array.isArray(window.TEAM_MEMBERS) ? window.TEAM_MEMBERS : [];
+      var photoBox = document.getElementById('groupPhotoWrap');
+      // Overlay diameter (px) = facePosition.size (% of photo width) * actual photo width / 100.
+      // Centering is done with margin offsets (not transform) so the transform
+      // property stays free for the FLIP animation when navigating from /team/.
+      function layout() {
+        if (!photoBox) return;
+        var w = photoBox.clientWidth;
+        Array.prototype.forEach.call(wrap.children, function(node) {
+          var pct = parseFloat(node.dataset.sizePct || '8');
+          var d = Math.max(28, w * pct / 100);
+          node.style.width = d + 'px';
+          node.style.height = d + 'px';
+          node.style.marginLeft = '-' + (d / 2) + 'px';
+          node.style.marginTop = '-' + (d / 2) + 'px';
+        });
+      }
+      members.forEach(function(m) {
+        var fp = m.facePosition || { left: 50, top: 50, size: 8 };
+        var el = document.createElement('div');
+        el.className = 'face-overlay';
+        el.style.left = fp.left + '%';
+        el.style.top = fp.top + '%';
+        el.dataset.sizePct = String(fp.size || 8);
+        el.dataset.id = m.id;
+        var initials = (m.name || '?').split(/\s+/).map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+        if (m.photo) {
+          var img = document.createElement('img');
+          img.src = m.photo;
+          img.alt = m.name || '';
+          img.onerror = function() {
+            var span = document.createElement('span');
+            span.className = 'face-initials';
+            span.textContent = initials;
+            img.replaceWith(span);
+          };
+          el.appendChild(img);
+        } else {
+          var span = document.createElement('span');
+          span.className = 'face-initials';
+          span.textContent = initials;
+          el.appendChild(span);
+        }
+        wrap.appendChild(el);
+      });
+      layout();
+      window.addEventListener('resize', layout);
+
+      // ---- FLIP: animate overlays into place from where the team page's
+      //      profile photos were, when arriving from /team/. ----
+      var stored = null;
+      try { stored = JSON.parse(sessionStorage.getItem('flip-from-team') || 'null'); } catch (e) {}
+      if (stored) {
+        try { sessionStorage.removeItem('flip-from-team'); } catch (e) {}
+        var overlays = Array.prototype.slice.call(wrap.querySelectorAll('.face-overlay[data-id]'));
+        var active = [];
+        overlays.forEach(function(el) {
+          var from = stored[el.dataset.id];
+          if (!from) return;
+          var to = el.getBoundingClientRect();
+          if (to.width === 0 || to.height === 0) return;
+          var dx = from.x - to.left;
+          var dy = from.y - to.top;
+          var sx = from.w / to.width;
+          var sy = from.h / to.height;
+          el.style.transition = 'none';
+          // Make the overlay visible for the duration of the FLIP.
+          el.style.opacity = '1';
+          el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(' + sx + ', ' + sy + ')';
+          el.style.borderRadius = '12px';
+          active.push(el);
+        });
+        if (active.length) {
+          // Force a layout flush so the "from" transform is the starting state.
+          void wrap.offsetHeight;
+          var FLIP_MS = 620;
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              active.forEach(function(el) {
+                el.style.transition =
+                  'transform ' + FLIP_MS + 'ms cubic-bezier(0.22, 1, 0.36, 1), ' +
+                  'border-radius ' + FLIP_MS + 'ms ease';
+                el.style.transform = '';
+                el.style.borderRadius = '';
+              });
+              // After the photos land at the face positions, fade them out
+              // so the home page returns to its "no icons visible" rest state.
+              setTimeout(function() {
+                active.forEach(function(el) {
+                  el.style.transition = 'opacity 380ms ease';
+                  el.style.opacity = '0';
+                });
+              }, FLIP_MS + 80);
+            });
+          });
+        }
+      }
+
+      // ---- Capture overlay rects on Team-link click, so the team page
+      //      can FLIP its profile photos out from these positions. ----
+      var teamNav = document.querySelector('.site-nav a[href="team/"]');
+      if (teamNav) {
+        teamNav.addEventListener('click', function() {
+          var rects = {};
+          Array.prototype.forEach.call(wrap.querySelectorAll('.face-overlay[data-id]'), function(el) {
+            var r = el.getBoundingClientRect();
+            rects[el.dataset.id] = { x: r.left, y: r.top, w: r.width, h: r.height };
+          });
+          try { sessionStorage.setItem('flip-from-landing', JSON.stringify(rects)); } catch (e) {}
+        }, true);
+      }
+    })();
+
+    // Redirect countdown — disabled for now (was forwarding to Suyeon's personal site after 20s).
+    // const redirectCountdownEl = document.getElementById('redirectCountdown');
+    // const redirectTargetUrl = 'https://choisuyeon.github.io/';
+    // const redirectDelaySeconds = 20;
+    // if (redirectCountdownEl) {
+    //   let secondsRemaining = redirectDelaySeconds;
+    //   redirectCountdownEl.textContent = String(secondsRemaining);
+    //   const countdownTimer = setInterval(function() {
+    //     secondsRemaining = Math.max(0, secondsRemaining - 1);
+    //     redirectCountdownEl.textContent = String(secondsRemaining);
+    //     if (secondsRemaining <= 0) clearInterval(countdownTimer);
+    //   }, 1000);
+    //   setTimeout(function() {
+    //     window.location.href = redirectTargetUrl;
+    //   }, redirectDelaySeconds * 1000);
+    // }
 
     // DATA (minimal so other sections don't break if absent)
     const DATA = window.DATA || { highlights: [], publications: [], projects: [], talks: [], people: [] };
