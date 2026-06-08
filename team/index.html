@@ -217,7 +217,7 @@
         if (m.link) { card.href = m.link; card.target = '_blank'; card.rel = 'noopener'; }
         var photoUrl = resolvePath(m.photo);
         var photoHtml = photoUrl
-          ? '<img src="' + photoUrl + '" alt="' + (m.name || '') + '" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'' + initials + '\'}))"/>'
+          ? '<img src="' + photoUrl + '"' + (m.photoStyle ? ' style="' + m.photoStyle + '"' : '') + ' alt="' + (m.name || '') + '" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'' + initials + '\'}))"/>'
           : '<span>' + initials + '</span>';
         card.innerHTML =
           '<div class="person-photo" data-id="' + m.id + '">' + photoHtml + '</div>' +

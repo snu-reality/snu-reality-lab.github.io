@@ -35,16 +35,17 @@ window.TEAM_MEMBERS = [
     id: "jinwoo",
     name: "Jinwoo Lee",
     role: "Incoming Graduate Student",
-    photo: "",
-    link: "https://scholar.google.com/citations?user=Nn5VCx0AAAAJ",
+    photo: "team/photos/JinwooLee.jpg",
+    photoStyle: "transform: scale(1.45); transform-origin: 50% 15%;",
+    link: "https://www.linkedin.com/in/jinwoo-lee-6424281aa",
     facePosition: { left: 38, top: 50, size: 8 }
   },
   {
     id: "yujin",
     name: "Yujin Kim",
     role: "Incoming Graduate Student",
-    photo: "",
-    link: "https://scholar.google.com/citations?user=d3bHAWMAAAAJ",
+    photo: "team/photos/YujinKim.jpg",
+    link: "https://yuzzznh.github.io/",
     facePosition: { left: 50, top: 45, size: 10 }
   }
 ];
