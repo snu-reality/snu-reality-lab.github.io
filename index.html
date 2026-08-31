@@ -994,6 +994,7 @@
   <script src="data/teaching.js"></script>
   <script src="data/team.js"></script>
   <script src="data/flip.js"></script>
+  <script src="data/teaser-hero.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var teamLink = document.querySelector('.site-nav a[href="team/"]');
@@ -1257,7 +1258,7 @@
           card.innerHTML =
             '<a href="' + (item.link || '#') + '" class="block">' +
               '<div class="pub-card-main">' +
-                '<div class="pub-teaser">' +
+                '<div class="pub-teaser"' + (item.liveTeaser ? ' data-live-teaser="1"' : '') + '>' +
                   ((item.teaserImage)
                     ? '<img src="' + item.teaserImage + '" alt="Teaching teaser" class="w-full h-full object-cover" loading="lazy" />'
                     : 'Teaser') +
@@ -1281,6 +1282,7 @@
       }
 
       renderTeachingCards();
+      if (window.LIVE_TEASER) window.LIVE_TEASER.init();
       // FLIP back from /teaching/ if we just came from there.
       if (window.FLIP) {
         FLIP.play('#teachingCards .pub-card', 'teachId',

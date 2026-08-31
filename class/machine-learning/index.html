@@ -1,0 +1,1955 @@
+<!--
+  Barebones Course Website Template
+
+  This template provides a simple structure for an academic course homepage.
+  It uses Seoul National University’s blue (#003380) as an accent color,
+  complemented by a clean white background. The layout includes a header,
+  navigation bar, and several sections commonly found on university course
+  websites—overview, logistics, schedule, materials, and office hours.
+
+  To use this file:
+    • Open it in a browser to preview the design.
+    • Replace the placeholder text and links with actual course content.
+    • Modify or remove sections as needed to suit your course.
+    • For more customization, adjust the CSS within the <style> tag.
+
+  Color rationale:
+    Seoul National University’s official brand uses a distinctive blue hue.
+    According to a description of the university’s logo on the branding
+    information website logotyp.us, “the Seoul National University logo
+    features an abstract symbol rendered in blue (#003380)”【109237020576305†L52-L59】.
+    This template adopts that color for headers, navigation, table borders
+    and highlights to evoke a visual connection to SNU.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="../../favicon/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../../favicon/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../../favicon/favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../../favicon/favicon-512.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-L7781B19XD');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4190.428 Introduction to Machine Learning – Seoul National University</title>
+  <style>
+  /* Define CSS variables so the hero image height can mirror the header height. */
+    :root {
+      /* Increase the header height so that the teaser image can be taller.
+         A taller hero image provides a more engaging visual above the
+         navigation bar, similar to other course homepages. */
+      --header-height: 300px;
+      /* Increase the hero image height independently of the header so it can
+         occupy more vertical space without altering the header layout. The height
+         is set 10% larger than before to create a more impactful teaser image. */
+      --hero-height: 420px;
+      /* interactive hero band */
+      --hero-stage-height: 280px;
+    }
+    /*
+      Smooth scrolling for in-page anchor links.
+      Applying this rule to the html element ensures that when a link
+      with a fragment identifier (e.g., #schedule) is clicked, the browser
+      scrolls smoothly instead of jumping directly to the target.
+    */
+    html {
+      scroll-behavior: smooth;
+    }
+    /*
+      Basic reset and typography
+    */
+    body {
+      margin: 0;
+      padding: 0;
+      /* Use Avenir if available; fall back to Helvetica and system sans‑serif fonts */
+      font-family: "Avenir", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #ffffff; /* keep the page predominantly white */
+      color: #000000; /* primary text color changed to black */
+      line-height: 1.6;
+    }
+
+    /*
+      Global hyperlink styling: use SNU blue for links and underline on hover.
+      Navigation links have separate styles defined below.
+    */
+    a {
+      color: #003380;
+    }
+    a:hover,
+    a:focus {
+      text-decoration: underline;
+    }
+
+    /*
+      Header styling
+    */
+    header {
+      background-color: #ffffff; /* keep the header white */
+      color: #000000; /* black text */
+      border-bottom: none;
+      /* Reduce padding around the title to minimize excess white space above and below it.
+         Specify separate values so the bottom padding can be smaller than the top. */
+      padding: 1rem 1rem 0;
+      /* Add a small margin beneath the header so the teaser image doesn’t touch the title directly. */
+      margin-bottom: 0.5rem;
+      text-align: center;
+      position: relative; /* allow absolute positioning of the logo */
+      /* The header’s height will adapt to its content, eliminating unused space between
+         the title and the teaser image. We remove the minimum height to prevent a large
+         gap below the title when the content is shorter than the defined header height. */
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+
+    /* Smaller subtitle inside the main heading */
+    header h1 .subtitle {
+      font-size: 0.8em;
+      display: block;
+    }
+    header p {
+      margin: 0.3rem 0 0;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+
+    header .logo {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 80px;
+      height: auto;
+    }
+    header .lab-logo {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      transform-origin: center;
+    }
+    header .lab-logo .logo-img {
+      width: 80px;
+      height: auto;
+      display: block;
+    }
+
+    /*
+      Navigation bar styles
+      The navigation is a horizontal list of anchor links that scroll to
+      different sections of the page. On hover, the link background darkens.
+    */
+    nav {
+      /* The navigation bar sits beneath the hero image. It remains sticky at the top
+         of the viewport and uses a white background with a thin blue underline.
+         By default, it spans the full width of the page to ensure it stays visible
+         while scrolling. */
+      background-color: #ffffff;
+      border-bottom: 2px solid #003380;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+      /* Remove default padding so child containers can control alignment. */
+      padding: 0;
+    }
+    nav .nav-inner {
+      /* Limit the inner navigation container to the same width as the content and
+         center it within the full-width sticky bar. It hides horizontal overflow
+         so that the list can slide without clipping outside the container. */
+      max-width: 1080px;
+      margin: 0 auto;
+      /* Hide horizontal overflow so the nav list can be translated via CSS
+         transforms.  We deliberately hide the scrollbar because the
+         navigation movement is controlled programmatically. */
+      /* Allow nav items to extend beyond the container when sliding so that
+         text remains fully visible instead of being clipped at the
+         container’s edges.  We rely on a transform to translate the list,
+         and overflow must be visible for the effect to work. */
+      overflow: visible;
+      /* Pad the navigation inner container so the left edge of the nav text aligns
+         with the padding used in the sections (1rem). This ensures the nav text
+         aligns with the corresponding section headings. */
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      /* No padding on the ul itself; padding is applied on the nav container
+         so that translation aligns the active link with the nav’s left edge. */
+      padding: 0;
+      /* Remove width constraint so the list can slide horizontally beyond the viewport. */
+      width: max-content;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      transition: transform 0.12s ease-out;
+      min-height: 100%;
+    }
+    nav li {
+      /* Do not stretch navigation items; let them take only as much width as they need */
+      flex: none;
+    }
+    nav a {
+      display: block;
+      padding: 0.35rem 0;
+      text-align: left;
+      text-decoration: none;
+      color: #000000;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: font-size 0.15s ease, font-weight 0.15s ease;
+    }
+    nav a.active {
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+      box-sizing: border-box;
+    }
+    nav a:hover,
+    nav a:focus {
+      color: #000000;
+    }
+
+    /*
+      Section styles
+    */
+    section {
+      padding: 1.28rem 1rem;
+      max-width: 1080px;
+      margin: auto;
+    }
+    section h2 {
+      border-bottom: none;
+      margin: 0 0 0.3rem 0;
+      padding: 0;
+      font-family: "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+      box-sizing: border-box;
+    }
+
+    /*
+      Section elements maintain default scroll behavior. The headings may be
+      covered by the sticky navigation bar when navigated via hash links as
+      requested.
+    */
+
+    #previous-offerings p,
+    #previous-offerings h3,
+    #previous-offerings ul { margin: 0.4rem 0; }
+    #previous-offerings h3 { margin-top: 0.6rem; margin-bottom: 0.25rem; }
+    #previous-offerings ul { padding-left: 1.4rem; }
+    #previous-offerings li { margin: 0.15rem 0; }
+
+    #coursework h3 { margin-top: 0.9rem; margin-bottom: 0.35rem; }
+    #coursework h3:first-of-type { margin-top: 0.5rem; }
+    #coursework p, #coursework ul { margin: 0.5rem 0; }
+    #coursework li { margin: 0.25rem 0; }
+
+    /*
+      Table styles for schedule and other tabular information
+    */
+    .schedule-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    table td, table th {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    th, td {
+      border: 1px solid #003380;
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+    }
+    /* Schedule table: no vertical borders, compact first 3 columns, description column wide */
+    .schedule-wrap table th,
+    .schedule-wrap table td {
+      border-left: none;
+      border-right: none;
+    }
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child { width: 3%; }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) { width: 5%; }
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(3) { width: 10%; }
+    .schedule-wrap table th:nth-child(4),
+    .schedule-wrap table td:nth-child(4) { width: 55%; }
+    .schedule-wrap table th:nth-child(5),
+    .schedule-wrap table td:nth-child(5) { width: 15%; }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) { width: 24%; }
+    .schedule-wrap table td:nth-child(4) strong { font-weight: 700; }
+    th {
+      background-color: #f1f6ff; /* light tint for header cells */
+      color: #000000;
+    }
+    /* HW out row: light sky blue */
+    tbody tr.row-hw-out {
+      background-color: #e0f4ff;
+    }
+    /* Due week row: light gray */
+    tbody tr.row-due {
+      background-color: #e8e8e8;
+    }
+    /* Children's Day (어린이날) week: red */
+    tbody tr.row-childrens-day {
+      background-color: #ffcdd2;
+    }
+    /* Midterm and project presentation: light green (연두색) */
+    tbody tr.row-midterm,
+    tbody tr.row-project-presentation {
+      background-color: #c8e6c9;
+    }
+    /* Week column: do not encroach; only Week cells (col-week) stay white; header row fully colored */
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child {
+      min-width: 2.8em;
+      white-space: nowrap;
+    }
+    .schedule-wrap table tbody td.col-week {
+      background-color: #ffffff !important;
+    }
+
+    /*
+      Image placeholder styling
+      This div provides a dashed outline area for inserting a course-related image.
+      It is centered on the page with a subtle grey border and italicized text
+      instructing the viewer that an image will be placed here. Adjust the
+      dimensions as needed when replacing the placeholder with a real image.
+    */
+    /*
+      Hero image styling
+      The course teaser image spans the full width of the page and maintains
+      its aspect ratio. It sits above the navigation bar.
+    */
+    .hero-image {
+      width: 100%;
+      height: auto;
+      /* Do not allow the teaser image to exceed the height of the header area.
+         It uses a separate CSS variable so it can be taller than the header. */
+      max-height: var(--hero-height);
+      object-fit: cover;
+      display: block;
+      margin: 0;
+    }
+
+    /*
+      Instructor avatars and layout
+      The instructors section uses a flex container to lay out each instructor
+      side-by-side on larger screens and wrap them on smaller screens.
+      Avatars are circular placeholders with initials; you can replace the
+      initials with actual photos by setting the background-image property.
+    */
+    /*
+      Instructor and TA card styling
+      Align avatars and names to the left for a more traditional listing, similar to
+      Stanford’s EE367 website. Each card uses flexbox to place the circular avatar
+      beside the person’s name.
+    */
+    .instructor-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .instructor-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    /* Generic avatar styling for placeholders when a profile photo is not available. */
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: #c6d4f8; /* light blue background for placeholders */
+      color: #003380;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .instructor-card .info {
+      text-align: left;
+    }
+
+    /*
+      Separator between name and role. A light blue vertical line visually
+      distinguishes the person’s name from their role on a single line.
+    */
+    /* Separator between instructor and TA in the staff row.  The separator stretches to
+       match the height of the taller staff card so the vertical line spans beyond
+       the profile pictures. */
+    .staff-row .separator {
+  /* Let the separator stretch the full height of the staff row so the
+     vertical line extends above and below the profile pictures.  We
+     remove the fixed height and allow flexbox to stretch the element. */
+  align-self: stretch;
+  border-left: 2px solid #c6d4f8;
+  margin: 0 1rem;
+    }
+
+    /* Course staff layout: display the instructor and TA side by side */
+    .staff-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .staff-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 160px;
+    }
+    .staff-card .role-title {
+      /* Enlarge the role label to improve readability */
+      font-size: 1.3rem;
+      color: #000000;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+    .staff-card .name {
+      margin-top: 0.3rem;
+      /* Enlarge the staff member name for emphasis */
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    .staff-card-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+    .staff-card-link:hover {
+      text-decoration: underline;
+    }
+    .staff-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /*
+      Footer styling
+    */
+    footer {
+      background-color: #ffffff; /* white footer */
+      /* Use black text throughout the footer for consistency with the rest of the page. */
+      color: #000000;
+      border-top: 2px solid #003380;
+      text-align: right;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+  /* Responsive adjustments */
+  /*
+    Hide the SNU logo when the viewport width is narrow so it doesn’t intrude
+    into the page content.  On smaller screens the logo can overlap the
+    navigation or body text, so we remove it below this breakpoint.  The
+    breakpoint is set slightly above the content width (900px) to ensure
+    adequate breathing room.
+  */
+  @media (max-width: 1120px) {
+    header .logo,
+    header .lab-logo {
+      display: none;
+    }
+  }
+
+  /* Schedule table: smaller text, padding, and adjusted column ratios on mobile */
+  @media (max-width: 768px) {
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child { width: 4%; }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) { width: 7%; }
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(3) { width: 9%; }
+    .schedule-wrap table th:nth-child(4),
+    .schedule-wrap table td:nth-child(4) { width: 59%; }
+    .schedule-wrap table th:nth-child(5),
+    .schedule-wrap table td:nth-child(5) { width: 8%; }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) { width: 12%; }
+    .schedule-wrap table th,
+    .schedule-wrap table td {
+      font-size: 0.76rem;
+      padding: 0.24rem 0.3rem;
+      line-height: 1.3;
+    }
+    .schedule-wrap table th:nth-child(1),
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(1),
+    .schedule-wrap table td:nth-child(3) {
+      font-size: 0.68rem;
+      padding: 0.22rem 0.26rem;
+    }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) {
+      font-size: 0.74rem;
+      padding: 0.22rem 0.26rem;
+    }
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child {
+      min-width: 2em;
+    }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) {
+      font-size: 0.52rem !important;
+      padding: 0.18rem 0.2rem;
+      line-height: 1.2;
+    }
+    .schedule-wrap table tbody td:nth-child(6) {
+      font-size: 0.52rem !important;
+      padding: 0.18rem 0.2rem;
+      line-height: 1.2;
+    }
+    .schedule-wrap table td:nth-child(6) a,
+    .schedule-wrap table tbody td:nth-child(6) a {
+      font-size: 0.52rem !important;
+    }
+    .schedule-wrap td.col-readings,
+    .schedule-wrap td.col-readings a {
+      font-size: 0.52rem !important;
+    }
+  }
+
+
+
+    /* ---- Interactive loss-landscape hero ---------------------------------
+       A live WebGL rendering of a neural-network loss surface. Moving the
+       pointer orbits the camera; pressing or dragging sends a ripple through
+       the terrain; double-clicking drops a ball.
+       Under prefers-reduced-motion the canvas still renders, but holds a single
+       still frame and only animates while the pointer is actually on it - the
+       setting asks for no *unsolicited* motion, not for a dead page. */
+    .hero-stage {
+      position: relative;
+      width: 100%;
+      height: min(23vw, var(--hero-stage-height));
+      margin: 0;
+      overflow: hidden;
+      background-color: #ffffff;
+      transition: height 0.25s ease;
+    }
+    .hero-stage.off { height: 0; }
+    /* Feather the frame edges into the page so the clipped surface does not end
+       on a hard straight line; no mask-composite support needed. */
+    .hero-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background:
+        linear-gradient(to right,  #ffffff, rgba(255,255,255,0) 4%),
+        linear-gradient(to left,   #ffffff, rgba(255,255,255,0) 4%),
+        linear-gradient(to bottom, #ffffff, rgba(255,255,255,0) 3%),
+        linear-gradient(to top,    #ffffff, rgba(255,255,255,0) 6%);
+    }
+    .hero-stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      touch-action: pan-y;
+    }
+    .hero-stage.live canvas { opacity: 1; }
+    .hero-hint {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: 0.9rem;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      color: #55607a;
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 999px;
+      padding: 0.25rem 0.85rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .hero-stage.live .hero-hint { opacity: 1; }
+    .hero-stage.touched .hero-hint { opacity: 0; }
+
+  </style>
+</head>
+<body>
+  <!-- Header with course title and term -->
+  <header>
+    <a href="https://reality.snu.ac.kr/" target="_blank" rel="noopener" class="lab-logo" aria-label="Reality Lab">
+      <img src="../../logo/blue-1x.png" alt="Reality Lab logo" class="logo-img">
+    </a>
+    <!-- Seoul National University logo, linked to the university website. -->
+    <a href="https://en.snu.ac.kr/" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Seoul_national_university_emblem.svg/500px-Seoul_national_university_emblem.svg.png" alt="SNU logo" class="logo">
+    </a>
+    <h1>4190.428: Introduction to Machine Learning</h1>
+    <p>Fall 2026</p>
+  </header>
+
+  <!-- Course teaser: interactive loss landscape, drawn live. No image asset -
+       a downscaled JPEG looked poor stretched across the band. If WebGL cannot
+       run at all the band collapses (.off) rather than leaving a white gap. -->
+  <div class="hero-stage" id="heroStage">
+    <canvas id="heroCanvas" aria-hidden="true"></canvas>
+    <div class="hero-hint">move to orbit &middot; drag to ripple &middot; double-click to drop a ball</div>
+  </div>
+
+  <!-- Navigation bar with section anchors. -->
+  <nav>
+    <div class="nav-inner">
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#logistics">Logistics</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#coursework">Coursework</a></li>
+        <li><a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Overview section -->
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>
+      Machine learning systems have broad applications across humanities, arts, science and engineering
+      disciplines, consumer electronics, and modern computing systems.  In this course, students will learn the
+      fundamental concepts and principles of <strong>machine learning</strong>, including supervised,
+      unsupervised and reinforcement learning.  The course introduces the underlying model
+      architectures, algorithms, and mathematical foundations of these learning paradigms.
+    </p>
+    <p>
+      Designed as an introductory course, it covers classical methods for pattern recognition, probabilistic
+      modeling and sequential decision&#8209;making, while also introducing recent advances in representation
+      learning and scalable generative modeling.
+    </p>
+  </section>
+
+  <!-- Course staff: instructor and teaching assistants -->
+  <section id="instructors">
+    <div class="staff-row">
+      <!-- Instructor card -->
+      <div class="staff-card">
+        <div class="role-title">Instructor</div>
+        <a href="https://choisuyeon.github.io/" target="_blank" rel="noopener" class="staff-card-link">
+          <img src="https://choisuyeon.github.io/assets/images/profile2.jpg" alt="Suyeon Choi" class="staff-photo">
+          <div class="name">Suyeon Choi</div>
+        </a>
+      </div>
+      <span class="separator"></span>
+      <!-- Teaching assistants -->
+      <div style="display:flex; flex-direction:column;">
+        <div class="role-title" style="font-size:1.3rem; font-weight:400; margin-bottom:0.4rem;">Teaching&nbsp;Assistants</div>
+        <div style="display:flex; gap:1.25rem; flex-wrap:wrap;">
+          <div class="staff-card">
+            <a href="https://www.linkedin.com/in/jinwoo-lee-6424281aa" target="_blank" rel="noopener" class="staff-card-link">
+              <span style="display:block; width:120px; height:120px; border-radius:50%; overflow:hidden; flex-shrink:0;">
+                <img src="../../team/photos/JinwooLee.jpg" alt="Jinwoo Lee" style="width:100%; height:100%; object-fit:cover; display:block; transform:scale(1.45); transform-origin:50% 15%;">
+              </span>
+              <div class="name">Jinwoo Lee</div>
+            </a>
+          </div>
+          <div class="staff-card">
+            <a href="https://yuzzznh.github.io/" target="_blank" rel="noopener" class="staff-card-link">
+              <img src="../../team/photos/YujinKim.jpg" alt="Yujin Kim" class="staff-photo">
+              <div class="name">Yujin Kim</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Logistics section -->
+  <section id="logistics">
+    <h2>Logistics</h2>
+    <p><strong>Lectures</strong>: Tuesdays and Thursdays, 5:00&ndash;6:15&nbsp;pm in Rm 209, Bldg 302.</p>
+    <p>
+      <strong>Instructor office hours</strong>: Mondays 11:30&nbsp;am&ndash;12:00&nbsp;pm in Rm 321, Bldg 302;
+      discussion about course material and projects.
+    </p>
+    <p>
+      <strong>TA office hours</strong>: questions about homework and lectures.<br>
+      Yujin's OH: Tuesdays 6:15&ndash;7:15&nbsp;pm, location TBA.<br>
+      Jinwoo's OH: Thursdays 4:00&ndash;5:00&nbsp;pm, location TBA.<br>
+      To contact the TAs, please email
+      <a href="mailto:ml-fall-2026-teaching-staff@reality.snu.ac.kr">ml-fall-2026-teaching-staff@reality.snu.ac.kr</a>.
+    </p>
+    <p>
+      <strong>Textbook</strong>: There is no required textbook for the course; links to readings and course notes
+      are provided in the <a href="#schedule">Schedule</a>.
+    </p>
+    <p>
+      <strong>Contact</strong>: Course announcements and general information will be posted on the course forum on
+      <a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a>.
+      To reach the teaching staff, please email
+      <a href="mailto:ml-fall-2026-teaching-staff@reality.snu.ac.kr">ml-fall-2026-teaching-staff@reality.snu.ac.kr</a>.
+    </p>
+  </section>
+
+  <!-- Schedule section -->
+  <section id="schedule">
+    <h2>Schedule</h2>
+    <p>The table below outlines the weekly topics and key milestones. Slides and readings will be linked here as the course progresses.</p>
+    <div class="schedule-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Wk</th>
+          <th>Date</th>
+          <th>Event</th>
+          <th>Description</th>
+          <th>Files</th>
+          <th class="col-readings">Readings</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2" class="col-week">1</td>
+          <td>9/1</td><td>Lecture&nbsp;1</td>
+          <td><strong>Introduction, Overview, Fast Forward</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>9/3</td><td>Lecture&nbsp;2</td>
+          <td><strong>Supervised learning, gradient descent</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">2</td>
+          <td>9/8</td><td>Lecture&nbsp;3</td>
+          <td><strong>Generalized linear models, regression</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>9/10</td><td>Lecture&nbsp;4</td>
+          <td><strong>Multi-class classification, feature representation</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="3" class="col-week">3</td>
+          <td>9/15</td><td>Lecture&nbsp;5</td>
+          <td><strong>Kernel methods</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>9/17</td><td>Lecture&nbsp;6</td>
+          <td><strong>Support vector machines</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>9/18</td><td>HW&nbsp;1&nbsp;out</td><td></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">4</td>
+          <td>9/22</td><td>Lecture&nbsp;7</td>
+          <td><strong>K-means clustering, EM, GMMs</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-childrens-day">
+          <td>9/24</td><td>No class</td>
+          <td>Chuseok holiday (추석)</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="4" class="col-week">5</td>
+          <td>9/29</td><td>Lecture&nbsp;8</td>
+          <td><strong>Principal component analysis</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>10/1</td><td>Lecture&nbsp;9</td>
+          <td><strong>Neural network architectures</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-due">
+          <td>10/2</td><td>HW&nbsp;1&nbsp;due</td>
+          <td>Homework&nbsp;1 due at 11:59&nbsp;pm</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>10/2</td><td>HW&nbsp;2&nbsp;out</td><td></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">6</td>
+          <td>10/6</td><td>Lecture&nbsp;10</td>
+          <td><strong>Neural network training</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>10/8</td><td>Lecture&nbsp;11</td>
+          <td><strong>Generalization, regularization</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="3" class="col-week">7</td>
+          <td>10/13</td><td>Lecture&nbsp;12</td>
+          <td><strong>Generalization, regularization</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>10/15</td><td>Lecture&nbsp;13</td>
+          <td><strong>Deep learning</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-due">
+          <td>10/16</td><td>HW&nbsp;2&nbsp;due</td>
+          <td>Homework&nbsp;2 due at 11:59&nbsp;pm</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr class="row-midterm">
+          <td rowspan="2" class="col-week">8</td>
+          <td>10/20</td><td>Midterm</td>
+          <td>In-class exam (closed book)</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>10/22</td><td>Lecture&nbsp;14</td>
+          <td><strong>Discussion on midterm</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">9</td>
+          <td>10/27</td><td>Lecture&nbsp;15</td>
+          <td><strong>Machine learning applications</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>10/29</td><td>Lecture&nbsp;16</td>
+          <td><strong>Variational auto-encoder</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="3" class="col-week">10</td>
+          <td>11/3</td><td>Lecture&nbsp;17</td>
+          <td><strong>Generative modeling</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>11/5</td><td>Lecture&nbsp;18</td>
+          <td><strong>Diffusion models</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>11/6</td><td>HW&nbsp;3&nbsp;out</td><td></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">11</td>
+          <td>11/10</td><td>Lecture&nbsp;19</td>
+          <td><strong>Flow matching</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>11/12</td><td>Lecture&nbsp;20</td>
+          <td><strong>Representation learning, embeddings and contrastive learning</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="4" class="col-week">12</td>
+          <td>11/17</td><td>Lecture&nbsp;21</td>
+          <td><strong>Sequential models</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>11/19</td><td>Lecture&nbsp;22</td>
+          <td><strong>Transformers</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-due">
+          <td>11/20</td><td>HW&nbsp;3&nbsp;due</td>
+          <td>Homework&nbsp;3 due at 11:59&nbsp;pm</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>11/20</td><td>HW&nbsp;4&nbsp;out</td><td></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">13</td>
+          <td>11/24</td><td>Lecture&nbsp;23</td>
+          <td><strong>Reinforcement learning</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>11/26</td><td>Lecture&nbsp;24</td>
+          <td><strong>Guest lecture</strong><br>Sungyoon Kim (Stanford University)</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="3" class="col-week">14</td>
+          <td>12/1</td><td>Lecture&nbsp;25</td>
+          <td><strong>Reinforcement learning</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr>
+          <td>12/3</td><td>Lecture&nbsp;26</td>
+          <td><strong>Guest lecture</strong><br>Dr. Wanhee Lee (Tesla)</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-due">
+          <td>12/4</td><td>HW&nbsp;4&nbsp;due</td>
+          <td>Homework&nbsp;4 due at 11:59&nbsp;pm</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2" class="col-week">15</td>
+          <td>12/8</td><td>Lecture&nbsp;27</td>
+          <td><strong>Non-parametric methods</strong></td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+        <tr class="row-midterm">
+          <td>12/10</td><td>Final&nbsp;Exam</td>
+          <td>In-class exam (closed book)</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+
+        <tr>
+          <td class="col-week">16</td>
+          <td>12/15</td><td>Lecture&nbsp;28</td>
+          <td><strong>Discussion on final</strong><br>Last day of class</td>
+          <td></td><td class="col-readings"></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- Coursework section -->
+  <section id="coursework">
+    <h2>Coursework</h2>
+
+    <h3>Helpful Background</h3>
+    <ul>
+      <li><strong>Coding Experience (especially Python):</strong> All assignments will be in Python. Even though we don't assume prior experience in Python, you should familiarize yourself, for example by working through some online Python tutorials.</li>
+      <li><strong>Calculus, Linear Algebra:</strong> Basic understanding of matrix algebra (e.g., least squares, orthogonality, eigendecomposition, SVD) will be helpful (e.g., <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=F31.201">공학수학1/2</a>, <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=881.007&lang=ko">선형대수학</a>).</li>
+      <li><strong>Probability and Statistics:</strong> Familiarity with probability theory, random variables and Bayes' theorem (e.g., <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=430.314">확률과정의 기초</a>, <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=M2608.002700">확률그래프모델</a>).</li>
+    </ul>
+
+    <h3>eTL</h3>
+    <p>All assignments should be submitted on <a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a>. Course announcements, lecture materials and the discussion forum also live there.</p>
+
+    <h3>Assignments (10%)</h3>
+    <p>There will be 4 homework assignments (see <a href="#schedule">Schedule</a>) in this class, each worth 25% of the assignment grade. These assignments contain theoretical questions as well as implementations of techniques that we discuss in class. Please refer to the assignment writeups (available in the Files column of the Schedule) for details. After you finish, submit your code and report on eTL.</p>
+    <p><strong>Collaboration Policy:</strong> Students are permitted to work together on homework assignments in small groups. However, while students can discuss the assignments together, they must compose their solutions individually. Students must not view or copy code of other students or solutions available on the internet. Names of collaborators must be listed on submitted assignments. Submitting plagiarized solutions is an academic offense and can have severe penalties.</p>
+    <p><strong>AI Assistants Policy:</strong> Generative AI may be used as a supplementary learning tool in this course. Students may use generative AI to explore ideas or topics needed to complete assignments and to analyze data. However, if generative AI is used to complete an assignment, the name of the tool used, the process of its use, and the generated content must be clearly stated in the assignment.</p>
+
+    <h3>Midterm (45%)</h3>
+    <p>There will be an in-class, closed-book midterm on <strong>October 20</strong>.</p>
+
+    <h3>Final Exam (45%)</h3>
+    <p>There will be an in-class, closed-book final exam on <strong>December 10</strong>.</p>
+
+    <h3>Attendance</h3>
+    <p>Attendance does not count toward your grade. However, by university policy, students who are
+    absent for more than 1/3 of class days will receive an &ldquo;F&rdquo; or &ldquo;U&rdquo; grade. If you
+    do not expect to be able to meet this requirement, we recommend that you not take this course; please
+    contact the teaching staff in advance.</p>
+
+  </section>
+
+  <section id="Acknowledgements">
+    <h2>Acknowledgements</h2>
+    <p>
+      We gratefully thank <a href="https://jaesik.info/" target="_blank" rel="noopener">Jaesik Park</a> for generously sharing his course
+      materials, on which much of this class is based. Some of the materials used in class build on
+      those from other instructors, as noted in the slides. Feel free to use these slides for academic
+      or research purposes, but please maintain all acknowledgments.
+    </p>
+    <p>
+      This webpage is based on
+      <a href="https://reality.snu.ac.kr/class/computational-imaging/" target="_blank" rel="noopener">this website</a>.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    4190.428: Introduction to Machine Learning &middot; Fall&nbsp;2026 &middot; Seoul National University
+  </footer>
+
+  <!-- Lab logo: rotate on load, hover = keep spinning, mouseleave = settle at discrete angle -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const labLogo = document.querySelector('header .lab-logo');
+      if (!labLogo) return;
+      const discreteAngles = [0, 60, 120, 180, 240, 300];
+      let currentAngle = 0;
+      let hoverRaf = null;
+      let isSettling = false;
+      const degPerSec = 220;
+      function applyAngle(deg) {
+        labLogo.style.transform = 'rotate(' + deg + 'deg)';
+      }
+      function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+      function randomDiscrete() {
+        return discreteAngles[Math.floor(Math.random() * discreteAngles.length)];
+      }
+      function nearestDiscrete(angle) {
+        let n = ((angle % 360) + 360) % 360;
+        const idx = Math.round(n / 60) % 6;
+        return discreteAngles[idx];
+      }
+      function shortestPath(from, toD) {
+        let n = from % 360;
+        if (n < 0) n += 360;
+        let diff = toD - n;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        return from + diff;
+      }
+      function runInitialAnimation() {
+        const duration = 2000;
+        const cycles = 2;
+        const endDeg = randomDiscrete();
+        const totalDeg = cycles * 360 + endDeg;
+        const startTime = performance.now();
+        function tick(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const eased = easeOutCubic(t);
+          currentAngle = totalDeg * eased;
+          applyAngle(currentAngle);
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+      function startHoverSpin() {
+        if (isSettling) return;
+        let lastTime = performance.now();
+        function spin(now) {
+          const dt = (now - lastTime) / 1000;
+          lastTime = now;
+          currentAngle += degPerSec * dt;
+          applyAngle(currentAngle);
+          hoverRaf = requestAnimationFrame(spin);
+        }
+        hoverRaf = requestAnimationFrame(spin);
+      }
+      function stopHoverSpinAndSettle() {
+        if (hoverRaf != null) {
+          cancelAnimationFrame(hoverRaf);
+          hoverRaf = null;
+        }
+        isSettling = true;
+        const startAngle = currentAngle;
+        const targetD = nearestDiscrete(startAngle);
+        const targetAngle = shortestPath(startAngle, targetD);
+        const duration = 400;
+        const startTime = performance.now();
+        function tick(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const eased = easeOutCubic(t);
+          currentAngle = startAngle + (targetAngle - startAngle) * eased;
+          applyAngle(currentAngle);
+          if (t < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            currentAngle = targetAngle;
+            isSettling = false;
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+      labLogo.addEventListener('mouseenter', startHoverSpin);
+      labLogo.addEventListener('mouseleave', stopHoverSpinAndSettle);
+      runInitialAnimation();
+    });
+  </script>
+  <!-- Script to animate navigation bar positioning, font sizes, and scroll offsets -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nav = document.querySelector('nav');
+      const navInner = document.querySelector('nav .nav-inner');
+      const navUl = navInner && navInner.querySelector('ul');
+      const navLinks = Array.from(document.querySelectorAll('nav a'));
+      if (!nav || !navInner || !navUl || !navLinks.length) return;
+
+      const sections = navLinks.map(link => {
+        const href = link.getAttribute('href') || '';
+        const id = href.replace(/^#/, '').trim();
+        return id ? document.getElementById(id) : null;
+      });
+
+      let navPositions = [];
+      let sectionOffsets = [];
+      let navInnerPadLeft = 0;
+
+      function getUlTranslateX() {
+        const style = getComputedStyle(navUl);
+        const m = style.transform.match(/matrix\(([^)]+)\)/);
+        if (!m) return 0;
+        const parts = m[1].split(/,\s*/);
+        return parts.length >= 6 ? parseFloat(parts[4]) : 0;
+      }
+
+      function computePositions() {
+        const innerStyles = getComputedStyle(navInner);
+        navInnerPadLeft = parseFloat(innerStyles.paddingLeft) || 0;
+        navPositions = navLinks.map(link => link.parentElement.offsetLeft);
+        sectionOffsets = sections.map(section => {
+          if (!section) return Infinity;
+          const h2 = section.querySelector('h2');
+          if (!h2) return Infinity;
+          const rect = h2.getBoundingClientRect();
+          return rect.top + window.pageYOffset;
+        });
+      }
+
+      // Scroll so the section h2 is exactly at viewport top (under the nav), so nav text and h2 text overlap
+      function scrollToSection(target) {
+        const h2 = target && target.querySelector('h2');
+        if (!h2) return;
+        const h2Top = h2.getBoundingClientRect().top + window.pageYOffset;
+        const y = Math.max(0, h2Top - 18);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+
+      // Interpolate nav position and font sizes based on scroll position
+      function updateNavOnScroll() {
+        const navHeight = nav.getBoundingClientRect().height;
+        // Compute the scroll position relative to the top of the document plus nav height.
+        // Determine the current scroll position relative to the document, offset by the
+        // height of the sticky navigation bar.  This represents the y‑coordinate
+        // at which the top of the content is visible just below the nav bar.
+        const scrollY = window.pageYOffset;
+        let currentIndex = 0;
+        for (let i = 0; i < sectionOffsets.length; i++) {
+          if (scrollY >= sectionOffsets[i]) {
+            currentIndex = i;
+          } else {
+            break;
+          }
+        }
+        const nextIndex = Math.min(currentIndex + 1, sections.length - 1);
+        // Compute interpolation factor t between the current section and the next
+        // section.  t ranges from 0 (top of current section) to 1 (top of next
+        // section) and is used to smoothly interpolate navigation position and
+        // font sizes.  When currentIndex === nextIndex (i.e., at the last
+        // section), t remains 0.
+        let t = 0;
+        const startOffset = sectionOffsets[currentIndex];
+        const endOffset = sectionOffsets[nextIndex];
+        const denom = endOffset - startOffset;
+        if (denom > 0 && currentIndex !== nextIndex) {
+          t = (scrollY - startOffset) / denom;
+          // Clamp t between 0 and 1.
+          t = Math.max(0, Math.min(1, t));
+        }
+        // Compute the desired translation so the active link aligns with the inner
+        // container’s left edge.  We translate the list in the negative
+        // direction so that the current navigation link sits flush against
+        // the left margin of the nav container.  We clamp the translation
+        // between the limits of the container so that the list never scrolls
+        // beyond its bounds.  If the list is narrower than its container,
+        // we still allow translation within the available space.
+        // Determine the horizontal position of the current and next
+        // navigation items relative to the left padding of the nav-inner
+        // container.  We compute these values dynamically using
+        // getBoundingClientRect() so they account for any changes in
+        // font size or layout (e.g., when the active item grows).
+        // Target X = nav-inner content left (same as section h2). getBoundingClientRect() returns
+        // positions after the ul's transform, so subtract current translateX to get base (layout) positions.
+        const innerRect = navInner.getBoundingClientRect();
+        const targetX = innerRect.left + navInnerPadLeft;
+        const currentTranslateX = getUlTranslateX();
+        const currentLink = navLinks[currentIndex];
+        const nextLink = navLinks[nextIndex];
+        const currentLinkRect = currentLink ? currentLink.getBoundingClientRect() : { left: targetX };
+        const nextLinkRect = nextLink ? nextLink.getBoundingClientRect() : { left: targetX };
+        const currentBaseLeft = currentLinkRect.left - currentTranslateX;
+        const nextBaseLeft = nextLinkRect.left - currentTranslateX;
+        const interpBaseLeft = currentBaseLeft + (nextBaseLeft - currentBaseLeft) * t;
+        const translation = targetX - interpBaseLeft;
+        navUl.style.transform = `translateX(${translation}px)`;
+        // Update font sizes and weights for each nav link based on interpolation between sections.
+        navLinks.forEach((link, index) => {
+          if (index === currentIndex || index === nextIndex) {
+            let size, weight;
+            const baseSize = 1.1;
+            const maxSize = 1.7;
+            if (index === currentIndex && currentIndex !== nextIndex) {
+              size = maxSize - (maxSize - baseSize) * t;
+              weight = 700 - 200 * t;
+            } else if (index === nextIndex && currentIndex !== nextIndex) {
+              size = baseSize + (maxSize - baseSize) * t;
+              weight = 500 + 200 * t;
+            } else {
+              // When currentIndex === nextIndex
+              size = maxSize;
+              weight = 700;
+            }
+            link.style.fontSize = `${size}rem`;
+            link.style.fontWeight = weight;
+          } else {
+            link.style.fontSize = '1.1rem';
+            link.style.fontWeight = 500;
+          }
+        });
+      }
+
+      // Attach click handlers to nav links (only intercept in-page anchors)
+      navLinks.forEach((link, idx) => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href') || '';
+          if (href.startsWith('#')) {
+            e.preventDefault();
+            const target = sections[idx];
+            if (target) {
+              scrollToSection(target);
+            }
+          }
+          // External links (e.g. eTL): let default navigation happen
+        });
+      });
+
+      // Recompute positions on load and on resize
+      computePositions();
+      // Recompute positions once all assets (like images) have loaded to ensure
+      // section offsets reflect the final layout.
+      window.addEventListener('load', computePositions);
+      window.addEventListener('resize', computePositions);
+      // Instead of relying on scroll events, continuously update the navigation
+      // bar on each animation frame.  This ensures smooth interpolation of
+      // navigation positions and font sizes regardless of whether scroll
+      // events fire (which can be unreliable on local file URLs).  The
+      // updateNavOnScroll function will be invoked at roughly 60fps.
+      function navLoop() {
+        updateNavOnScroll();
+        requestAnimationFrame(navLoop);
+      }
+      requestAnimationFrame(navLoop);
+      // Trigger an initial update
+      updateNavOnScroll();
+    });
+  </script>
+  <!-- Interactive loss-landscape hero (no external dependencies) -->
+  <script>
+  (function () {
+    var stage = document.getElementById('heroStage');
+    var canvas = document.getElementById('heroCanvas');
+    if (!stage || !canvas) return;
+
+    // Every path that gives up on the live canvas reports why. Open the page with
+    // #herodebug in the URL to see the reason on the page instead of the console.
+    var DEBUG = /herodebug/.test(location.hash + location.search);
+    function bail(why) {
+      try {
+        console.warn('[hero] showing the static fallback: ' + why);
+        if (!DEBUG) stage.classList.add('off');   // collapse the band, no gap
+        if (DEBUG) {
+          var el = stage.querySelector('.hero-hint');
+          if (el) {
+            el.textContent = 'hero: ' + why;
+            el.style.opacity = '1';
+            el.style.maxWidth = '90%';
+            el.style.whiteSpace = 'normal';
+          }
+        }
+      } catch (e) {}
+      return undefined;
+    }
+
+    // Reduced motion parks the automatic drift; it does not switch the hero off.
+    // Motion the visitor asks for by pointing at it is still fine.
+    var MOTION = !(window.matchMedia &&
+                   window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var hovering = false;
+
+    var T = window.HERO_TUNE || {};
+    var gl = null, glErr = '';
+    try {
+      // opaque canvas cleared to the page colour: the terrain's faded rim then
+      // blends into plain white with no alpha compositing at the mesh boundary
+      gl = canvas.getContext('webgl', {antialias: true, alpha: false})
+        || canvas.getContext('experimental-webgl', {antialias: true, alpha: false});
+    } catch (e) { gl = null; glErr = ' (' + e.message + ')'; }
+    if (!gl) return bail('this browser gave no WebGL context' + glErr +
+      ' - usually hardware acceleration is switched off');
+
+    if (DEBUG) {
+      try {
+        var dbg = gl.getExtension('WEBGL_debug_renderer_info');
+        console.info('[hero] renderer:', dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '(hidden)');
+      } catch (e) {}
+    }
+
+    // A lost context (GPU reset, driver update, laptop switching GPUs) would
+    // otherwise leave a frozen canvas covering the fallback image.
+    canvas.addEventListener('webglcontextlost', function (ev) {
+      ev.preventDefault();
+      stage.classList.remove('live');
+      bail('the GPU dropped the WebGL context');
+    }, false);
+
+    // ---------------------------------------------------------------- surface
+    // A fresh landscape on every load. Same distributions that generated
+    // the original render, so the character stays constant while the terrain does not.
+    // Pin one with HERO_TUNE.seed if you ever need a reproducible render.
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        var t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    var SEED = (T.seed !== undefined) ? T.seed : (Math.random() * 4294967296) >>> 0;
+    var rnd = mulberry32(SEED);
+    var B = [];
+    for (var bi = 0; bi < 70; bi++) {
+      B.push(-9.5 + rnd() * 19.0,                        // cx
+             -4.5 + rnd() * 9.0,                         // cy
+             0.35 + rnd() * 0.70,                        // sx
+             0.30 + rnd() * 0.55,                        // sy
+             (0.9 + rnd() * 1.7) * (rnd() < 0.52 ? -1 : 1),   // amplitude
+             rnd() * Math.PI);                           // rotation
+    }
+    var NB = B.length / 6;
+
+    var XMIN = -9, XMAX = 9, YMIN = -4, YMAX = 4;
+    var narrow = window.innerWidth < 760;
+    var NX = narrow ? 170 : 260;
+    var NY = narrow ? 84 : 128;
+    var N = NX * NY;
+
+    var xs = new Float32Array(NX), ys = new Float32Array(NY);
+    for (var i = 0; i < NX; i++) xs[i] = XMIN + (XMAX - XMIN) * i / (NX - 1);
+    for (var j = 0; j < NY; j++) ys[j] = YMIN + (YMAX - YMIN) * j / (NY - 1);
+
+    var base = new Float32Array(N);
+    (function buildBase() {
+      for (var j = 0; j < NY; j++) {
+        var y = ys[j];
+        for (var i = 0; i < NX; i++) {
+          var x = xs[i], z = 0;
+          for (var b = 0; b < NB; b++) {
+            var o = b * 6;
+            var cx = B[o], cy = B[o + 1], sx = B[o + 2], sy = B[o + 3],
+                amp = B[o + 4], rot = B[o + 5];
+            var ct = Math.cos(rot), st = Math.sin(rot);
+            var dx = x - cx, dy = y - cy;
+            var xr = dx * ct + dy * st, yr = -dx * st + dy * ct;
+            z += amp * Math.exp(-(xr * xr / (2 * sx * sx) + yr * yr / (2 * sy * sy)));
+          }
+          z += 0.22 * Math.sin(1.7 * x + 0.5 * y) * Math.cos(2.1 * y - 0.3 * x);
+          z += 0.11 * Math.sin(3.9 * x - 1.1 * y) * Math.cos(3.4 * y + 0.7 * x);
+          z += 0.05 * Math.sin(7.7 * x + 2.6 * y) * Math.cos(6.9 * y);
+          z += 0.024 * Math.sin(13.1 * x - 5.3 * y);
+          base[j * NX + i] = z;
+        }
+      }
+      var mn = Infinity;
+      for (var k = 0; k < N; k++) if (base[k] < mn) mn = base[k];
+      for (var k2 = 0; k2 < N; k2++) base[k2] -= mn;
+    })();
+
+    var ZMAX = 0; for (var k = 0; k < N; k++) if (base[k] > ZMAX) ZMAX = base[k];
+
+    // box-space scales, mirroring matplotlib set_box_aspect((4.2, 1.9, 0.80))
+    var SX = 4.2 / (XMAX - XMIN), SY = 1.9 / (YMAX - YMIN), SZ = 0.80 / ZMAX;
+
+    // ------------------------------------------------------------- wave state
+    var disp = new Float32Array(N), vel = new Float32Array(N);
+    var height = new Float32Array(N);
+    var C2 = 4000, KSPR = 8.0, DAMP = 1.7;
+    // CFL bound for the 2-D wave equation on a unit grid: C2*h*h*2 <= 1.
+    // A stalled frame (background tab, slow device) once pushed h past this and
+    // the field exploded into NaN, so the substep size is now capped, not fixed.
+    var HMAX = Math.sqrt(0.25 / (2 * C2));
+
+    function stepWaves(dt) {
+      var steps = Math.max(1, Math.min(8, Math.ceil(dt / HMAX)));
+      var h = dt / steps;
+      for (var s = 0; s < steps; s++) {
+        for (var j = 1; j < NY - 1; j++) {
+          var row = j * NX;
+          for (var i = 1; i < NX - 1; i++) {
+            var idx = row + i, d = disp[idx];
+            var lap = disp[idx - 1] + disp[idx + 1] + disp[idx - NX] + disp[idx + NX] - 4 * d;
+            vel[idx] += (C2 * lap - KSPR * d - DAMP * vel[idx]) * h;
+          }
+        }
+        for (var k = 0; k < N; k++) disp[k] += vel[k] * h;
+      }
+    }
+
+    function sane() {           // belt-and-braces: never let NaN reach the GPU
+      var m = disp[(NY >> 1) * NX + (NX >> 1)];
+      if (m === m && Math.abs(m) < 1e3) return true;
+      disp.fill(0); vel.fill(0);
+      return false;
+    }
+
+    function energy() {
+      var e = 0;
+      for (var k = 0; k < N; k += 7) e += disp[k] * disp[k] + 0.02 * vel[k] * vel[k];
+      return e;
+    }
+
+    // ------------------------------------------------------------- geometry
+    var aXY = new Float32Array(N * 2);
+    for (var j = 0; j < NY; j++)
+      for (var i = 0; i < NX; i++) {
+        aXY[(j * NX + i) * 2] = xs[i];
+        aXY[(j * NX + i) * 2 + 1] = ys[j];
+      }
+
+    var aH = new Float32Array(N);
+    var aN = new Float32Array(N * 3);
+    var dxu = (xs[1] - xs[0]), dyu = (ys[1] - ys[0]);
+
+    function updateGeometry() {
+      for (var k = 0; k < N; k++) height[k] = base[k] + disp[k];
+      aH.set(height);
+      for (var j = 0; j < NY; j++) {
+        var row = j * NX;
+        var jm = (j > 0 ? row - NX : row), jp = (j < NY - 1 ? row + NX : row);
+        var fy = (j > 0 && j < NY - 1) ? 2 : 1;
+        for (var i = 0; i < NX; i++) {
+          var idx = row + i;
+          var im = (i > 0 ? idx - 1 : idx), ip = (i < NX - 1 ? idx + 1 : idx);
+          var fx = (i > 0 && i < NX - 1) ? 2 : 1;
+          var ddx = (height[ip] - height[im]) / (fx * dxu) * (SZ / SX);
+          var ddy = (height[jp + i] - height[jm + i]) / (fy * dyu) * (SZ / SY);
+          var nx = -ddx, ny = -ddy, nz = 1;
+          var inv = 1 / Math.sqrt(nx * nx + ny * ny + 1);
+          aN[idx * 3] = nx * inv; aN[idx * 3 + 1] = ny * inv; aN[idx * 3 + 2] = nz * inv;
+        }
+      }
+    }
+
+    var indices = [];
+    var Big = (N > 65535) && gl.getExtension('OES_element_index_uint');
+    for (var j = 0; j < NY - 1; j++)
+      for (var i = 0; i < NX - 1; i++) {
+        var a = j * NX + i, b2 = a + 1, c = a + NX, d2 = c + 1;
+        indices.push(a, c, b2, b2, c, d2);
+      }
+    var idxArr = Big ? new Uint32Array(indices) : new Uint16Array(indices);
+    var idxType = Big ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
+    if (!Big && N > 65535)
+      return bail('no 32-bit index support and the grid needs ' + N + ' vertices');
+
+    // --------------------------------------------------------------- shaders
+    var VS = [
+      'attribute vec2 aXY; attribute float aH; attribute vec3 aN;',
+      'uniform vec2 uS; uniform float uSZ; uniform float uAz, uEl;',
+      'uniform vec2 uHalf; uniform vec2 uPan; uniform float uDepth;',
+      'uniform vec2 uDom; uniform vec2 uEdge;',
+      'varying float vT; varying vec3 vN; varying float vF;',
+      'void main(){',
+      '  // melt the terrain into the page at its own boundary: flatten the',
+      '  // height there (so the fringe never occludes the interior) and let',
+      '  // the fragment shader fade the colour out over the same band',
+      '  float ex = clamp((uDom.x - abs(aXY.x)) / uEdge.x, 0.0, 1.0);',
+      '  float ey = clamp((uDom.y - abs(aXY.y)) / uEdge.y, 0.0, 1.0);',
+      '  float f = ex*ey; f = f*f*(3.0 - 2.0*f);',
+      '  vF = f;',
+      '  float X = aXY.x*uS.x, Y = aXY.y*uS.y, Z = aH*uSZ*f;',
+      '  float ca=cos(uAz), sa=sin(uAz), ce=cos(uEl), se=sin(uEl);',
+      '  float Xc = -X*sa + Y*ca;',
+      '  float d  =  X*ca + Y*sa;',
+      '  float Yc = -d*se + Z*ce;',
+      '  float Zc =  d*ce + Z*se;',
+      '  vT = clamp(aH*uSZ/0.80, 0.0, 1.0);',
+      '  vN = aN;',
+      '  gl_Position = vec4((Xc-uPan.x)/uHalf.x, (Yc-uPan.y)/uHalf.y, -Zc/uDepth, 1.0);',
+      '}'
+    ].join('\n');
+
+    var FS = [
+      'precision highp float;',
+      'varying float vT; varying vec3 vN; varying float vF;',
+      'uniform vec3 uLight; uniform vec3 uBG;',
+      'vec3 ramp(float t){',
+      '  vec3 c0=vec3(0.1059,0.0431,0.2275), c1=vec3(0.2392,0.0706,0.4078);',
+      '  vec3 c2=vec3(0.4196,0.1137,0.5020), c3=vec3(0.7020,0.1725,0.4078);',
+      '  vec3 c4=vec3(0.8902,0.3333,0.2627), c5=vec3(0.9686,0.6275,0.1255);',
+      '  vec3 c6=vec3(1.0000,0.9059,0.6392);',
+      '  float s=t*6.0; vec3 c=c0;',
+      '  c=mix(c,c1,clamp(s,0.0,1.0));',
+      '  c=mix(c,c2,clamp(s-1.0,0.0,1.0));',
+      '  c=mix(c,c3,clamp(s-2.0,0.0,1.0));',
+      '  c=mix(c,c4,clamp(s-3.0,0.0,1.0));',
+      '  c=mix(c,c5,clamp(s-4.0,0.0,1.0));',
+      '  c=mix(c,c6,clamp(s-5.0,0.0,1.0));',
+      '  return c;',
+      '}',
+      'uniform vec2 uShade;',
+      'void main(){',
+      '  vec3 base = ramp(vT);',
+      '  vec3 n = normalize(vN);',
+      '  float lam = max(dot(n, normalize(uLight)), 0.0);',
+      '  // soft-light blend, as matplotlib LightSource(blend_mode="soft") does',
+      '  float it = clamp((lam - uShade.x) / max(uShade.y - uShade.x, 1e-3), 0.0, 1.0);',
+      '  vec3 col = 2.0*it*base + (1.0 - 2.0*it)*base*base;',
+      '  col = mix(uBG, col, vF);',
+      '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
+      '}'
+    ].join('\n');
+
+    var shaderLog = '';
+    function sh(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        shaderLog = gl.getShaderInfoLog(s) || 'unknown compile error';
+        console.error('[hero] shader:', shaderLog, '\n', src);
+        return null;
+      }
+      return s;
+    }
+    var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) return bail('shader would not compile: ' + shaderLog);
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      return bail('shader would not link: ' + (gl.getProgramInfoLog(prog) || 'unknown'));
+    }
+    gl.useProgram(prog);
+
+    var locXY = gl.getAttribLocation(prog, 'aXY'),
+        locH = gl.getAttribLocation(prog, 'aH'),
+        locN = gl.getAttribLocation(prog, 'aN');
+    var uS = gl.getUniformLocation(prog, 'uS'),
+        uSZ = gl.getUniformLocation(prog, 'uSZ'),
+        uAz = gl.getUniformLocation(prog, 'uAz'),
+        uEl = gl.getUniformLocation(prog, 'uEl'),
+        uHalf = gl.getUniformLocation(prog, 'uHalf'),
+        uPan = gl.getUniformLocation(prog, 'uPan'),
+        uDepth = gl.getUniformLocation(prog, 'uDepth'),
+        uLight = gl.getUniformLocation(prog, 'uLight'),
+        uShade = gl.getUniformLocation(prog, 'uShade'),
+        uDom = gl.getUniformLocation(prog, 'uDom'),
+        uEdge = gl.getUniformLocation(prog, 'uEdge'),
+        uBG = gl.getUniformLocation(prog, 'uBG');
+
+    var bufXY = gl.createBuffer(), bufH = gl.createBuffer(),
+        bufN = gl.createBuffer(), bufI = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufXY);
+    gl.bufferData(gl.ARRAY_BUFFER, aXY, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufI);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idxArr, gl.STATIC_DRAW);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.clearColor(1, 1, 1, 1);
+    gl.uniform2f(uS, SX, SY);
+    gl.uniform1f(uSZ, SZ);
+    gl.uniform3f(uLight, -0.700, 0.405, 0.588);
+    gl.uniform1f(uDepth, 4.0);
+    gl.uniform2f(uShade, (T.s0 !== undefined ? T.s0 : 0.00),
+                         (T.s1 !== undefined ? T.s1 : 0.70));
+    gl.uniform2f(uDom, XMAX, YMAX);
+    gl.uniform2f(uEdge, T.edgeX || 2.6, T.edgeY || 1.5);
+    gl.uniform3f(uBG, 1.0, 1.0, 1.0);
+
+    // ------------------------------------------------------- ball rendering
+    // The projection is deliberately anisotropic, so a real sphere mesh would
+    // project to an ellipse. Draw a screen-space impostor instead: a quad, with
+    // the sphere normal reconstructed per fragment. Always round, always lit.
+    var QUAD = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
+
+    var BVS = [
+      'attribute vec2 aQ;',
+      'uniform vec3 uC; uniform vec2 uRs;',
+      'uniform float uAz, uEl; uniform vec2 uHalf, uPan; uniform float uDepth;',
+      'varying vec2 vQ;',
+      'void main(){',
+      '  vQ = aQ;',
+      '  float ca=cos(uAz), sa=sin(uAz), ce=cos(uEl), se=sin(uEl);',
+      '  float Xc = -uC.x*sa + uC.y*ca;',
+      '  float d  =  uC.x*ca + uC.y*sa;',
+      '  float Yc = -d*se + uC.z*ce;',
+      '  float Zc =  d*ce + uC.z*se;',
+      '  vec2 cl = vec2((Xc-uPan.x)/uHalf.x, (Yc-uPan.y)/uHalf.y);',
+      '  gl_Position = vec4(cl + aQ*uRs, -Zc/uDepth, 1.0);',
+      '}'
+    ].join('\n');
+
+    var BFS = [
+      'precision highp float;',
+      'varying vec2 vQ;',
+      'uniform vec3 uLight, uRight, uUp, uEye;',
+      'void main(){',
+      '  float r2 = dot(vQ, vQ);',
+      '  if (r2 > 1.0) discard;',
+      '  float w = sqrt(1.0 - r2);',
+      '  vec3 n = normalize(uRight*vQ.x + uUp*vQ.y + uEye*w);',
+      '  vec3 L = normalize(uLight), V = normalize(uEye);',
+      '  float lam  = max(dot(n, L), 0.0);',
+      '  float fill = max(dot(n, V), 0.0);',
+      '  float spec = pow(max(dot(n, normalize(L + V)), 0.0), 70.0);',
+      '  float rim  = pow(1.0 - fill, 3.0);',
+      '  vec3 col = vec3(0.19) + vec3(0.40)*lam + vec3(0.34)*fill',
+      '           + vec3(1.0)*spec + vec3(0.33)*rim;',
+      '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
+      '}'
+    ].join('\n');
+
+    var bvs = sh(gl.VERTEX_SHADER, BVS), bfs = sh(gl.FRAGMENT_SHADER, BFS);
+    var bprog = null, bufBQ = null, bl = {};
+    if (bvs && bfs) {
+      bprog = gl.createProgram();
+      gl.attachShader(bprog, bvs); gl.attachShader(bprog, bfs); gl.linkProgram(bprog);
+      if (!gl.getProgramParameter(bprog, gl.LINK_STATUS)) bprog = null;
+    }
+    if (bprog) {
+      bufBQ = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufBQ);
+      gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW);
+      bl = {
+        aQ: gl.getAttribLocation(bprog, 'aQ'),
+        uC: gl.getUniformLocation(bprog, 'uC'),
+        uRs: gl.getUniformLocation(bprog, 'uRs'),
+        uAz: gl.getUniformLocation(bprog, 'uAz'),
+        uEl: gl.getUniformLocation(bprog, 'uEl'),
+        uHalf: gl.getUniformLocation(bprog, 'uHalf'),
+        uPan: gl.getUniformLocation(bprog, 'uPan'),
+        uDepth: gl.getUniformLocation(bprog, 'uDepth'),
+        uLight: gl.getUniformLocation(bprog, 'uLight'),
+        uRight: gl.getUniformLocation(bprog, 'uRight'),
+        uUp: gl.getUniformLocation(bprog, 'uUp'),
+        uEye: gl.getUniformLocation(bprog, 'uEye')
+      };
+    }
+
+    function drawBalls(azR, elR) {
+      if (!bprog || !balls.length) return;
+      var ca = Math.cos(azR), sa = Math.sin(azR),
+          ce = Math.cos(elR), se = Math.sin(elR);
+      gl.useProgram(bprog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufBQ);
+      gl.enableVertexAttribArray(bl.aQ);
+      gl.vertexAttribPointer(bl.aQ, 2, gl.FLOAT, false, 0, 0);
+      gl.uniform1f(bl.uAz, azR); gl.uniform1f(bl.uEl, elR);
+      gl.uniform2f(bl.uHalf, HALFX, HALFY);
+      gl.uniform2f(bl.uPan, PANX, PANY);
+      gl.uniform1f(bl.uDepth, 4.0);
+      gl.uniform3f(bl.uLight, -0.700, 0.405, 0.588);
+      // camera basis in world space, so the impostor normal can be lit correctly
+      gl.uniform3f(bl.uRight, -sa, ca, 0);
+      gl.uniform3f(bl.uUp, -ca*se, -sa*se, ce);
+      gl.uniform3f(bl.uEye, ca*ce, sa*ce, se);
+      var aspect = canvas.width / canvas.height;
+      for (var k = 0; k < balls.length; k++) {
+        var b = balls[k];
+        if (b.scale <= 0.01) continue;
+        var r = BALL_R * b.scale;
+        var rsx = r / HALFX;
+        gl.uniform2f(bl.uRs, rsx, rsx * aspect);
+        gl.uniform3f(bl.uC, b.x * SX, b.y * SY, b.z);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      gl.useProgram(prog);
+    }
+
+    // ---------------------------------------------------------------- camera
+    var AZ0 = -62, EL0 = 26;              // degrees
+    // Calibrated at a 1440x420 stage. ANISO keeps the same
+    // horizontal stretch matplotlib's axes had; halfY then tracks the canvas
+    // aspect so wider windows crop vertically, like object-fit: cover.
+    var HALFX = T.halfX || 2.50, ANISO = T.aniso || 2.00,
+        PANX = (T.panX !== undefined ? T.panX : 0.0),
+        PANY = (T.panY !== undefined ? T.panY : 0.243);
+    var HALFY = 0.974;
+    var az = AZ0, el = EL0, azT = 0, elT = 0;   // azT/elT are cursor offsets
+
+    function resize() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = stage.clientWidth, h = stage.clientHeight;
+      if (!w || !h) return false;
+      var cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw; canvas.height = ch;
+      }
+      gl.viewport(0, 0, cw, ch);
+      HALFY = T.halfY || (HALFX * (ch / cw) * ANISO);
+      gl.uniform2f(uHalf, HALFX, HALFY);
+      gl.uniform2f(uPan, PANX, PANY);
+      return true;
+    }
+
+    // --------------------------------------------------------- interaction
+    function toModel(px, py) {
+      // px, py in clip space [-1,1]; intersect the view ray with z = z0,
+      // iterating so the hit lands on the terrain rather than a flat plane.
+      var Xc = px * HALFX + PANX, Yc = py * HALFY + PANY;
+      var a = az * Math.PI / 180, e = el * Math.PI / 180;
+      var ca = Math.cos(a), sa = Math.sin(a), ce = Math.cos(e), se = Math.sin(e);
+      var z0 = 0.45, out = null;
+      for (var it = 0; it < 3; it++) {
+        var d = (z0 * ce - Yc) / Math.max(se, 1e-3);
+        var X = -sa * Xc + ca * d, Y = ca * Xc + sa * d;
+        var x = X / SX, y = Y / SY;
+        out = [x, y];
+        var gi = Math.round((x - XMIN) / (XMAX - XMIN) * (NX - 1));
+        var gj = Math.round((y - YMIN) / (YMAX - YMIN) * (NY - 1));
+        if (gi < 0 || gi >= NX || gj < 0 || gj >= NY) break;
+        z0 = height[gj * NX + gi] * SZ;
+      }
+      return out;
+    }
+
+    var BR = narrow ? 8 : 12;
+    function splash(x, y, amount, rad) {
+      var BRr = rad || BR;
+      var gi = Math.round((x - XMIN) / (XMAX - XMIN) * (NX - 1));
+      var gj = Math.round((y - YMIN) / (YMAX - YMIN) * (NY - 1));
+      var r2 = BRr * BRr;
+      for (var dj = -BRr * 2; dj <= BRr * 2; dj++) {
+        var j = gj + dj; if (j < 1 || j >= NY - 1) continue;
+        for (var di = -BRr * 2; di <= BRr * 2; di++) {
+          var i = gi + di; if (i < 1 || i >= NX - 1) continue;
+          var w = Math.exp(-(di * di + dj * dj) / (2 * r2));
+          if (w < 0.01) continue;
+          vel[j * NX + i] += amount * w;
+        }
+      }
+    }
+
+    // ------------------------------------------------------- rolling ball
+    // Double-click drops a steel ball; it runs downhill on the height field
+    // and settles in a local minimum -- gradient descent, made literal.
+    var balls = [];
+    var BALL_R = T.ballR || 0.032; // radius, box units
+    var GRAV = 2.8, FRIC = 0.75, MAXBALLS = 5;
+
+    function sampleH(x, y) {
+      var fi = (x - XMIN) / (XMAX - XMIN) * (NX - 1);
+      var fj = (y - YMIN) / (YMAX - YMIN) * (NY - 1);
+      var i0 = Math.max(0, Math.min(NX - 2, Math.floor(fi)));
+      var j0 = Math.max(0, Math.min(NY - 2, Math.floor(fj)));
+      var tx = Math.max(0, Math.min(1, fi - i0)), ty = Math.max(0, Math.min(1, fj - j0));
+      var a = height[j0 * NX + i0], b2 = height[j0 * NX + i0 + 1];
+      var c = height[(j0 + 1) * NX + i0], d2 = height[(j0 + 1) * NX + i0 + 1];
+      return (a * (1 - tx) + b2 * tx) * (1 - ty) + (c * (1 - tx) + d2 * tx) * ty;
+    }
+    function gradH(x, y) {
+      var e = 0.09;
+      return [(sampleH(x + e, y) - sampleH(x - e, y)) / (2 * e),
+              (sampleH(x, y + e) - sampleH(x, y - e)) / (2 * e)];
+    }
+
+    var GZ = 2.6, REST = 0.42, DROP = 0.62;   // box units
+
+    function dropBall(x, y) {
+      balls.push({x: x, y: y, vx: 0, vy: 0,
+                  z: sampleH(x, y) * SZ + DROP, vz: 0,
+                  air: true, age: 0, scale: 0});
+      if (balls.length > MAXBALLS) balls.shift();
+    }
+
+    function stepBalls(dt) {
+      for (var k = balls.length - 1; k >= 0; k--) {
+        var b = balls[k];
+        b.age += dt;
+        b.scale = Math.min(1, b.scale + dt * 8);          // pop in
+        var r = BALL_R * 0.80;
+        var rest = sampleH(b.x, b.y) * SZ + r;
+
+        if (b.air) {                                      // falling
+          b.vz -= GZ * dt;
+          b.z += b.vz * dt;
+          b.x += b.vx * dt; b.y += b.vy * dt;
+          if (b.z <= rest) {
+            var impact = -b.vz;
+            b.z = rest;
+            splash(b.x, b.y, -Math.min(impact, 1.6) * 2.4, 5);   // it lands
+            if (impact > 0.28) { b.vz = impact * REST; }
+            else { b.vz = 0; b.air = false; }
+          }
+          continue;
+        }
+
+        b.z = rest;                                       // rolling on the surface
+        var g = gradH(b.x, b.y);
+        b.vx += -GRAV * g[0] * dt;
+        b.vy += -GRAV * g[1] * dt;
+        var damp = Math.exp(-FRIC * dt);
+        b.vx *= damp; b.vy *= damp;
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        var sp = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        if (sp > 0.12) splash(b.x, b.y, -sp * 0.22, 4);   // a small wake
+        var out = (b.x < XMIN + 2.4 || b.x > XMAX - 2.4 ||
+                   b.y < YMIN + 1.4 || b.y > YMAX - 1.4);
+        if (out || b.age > 26) { balls.splice(k, 1); continue; }
+        if (b.age > 22) b.scale = Math.max(0, 1 - (b.age - 22) / 4);
+      }
+    }
+
+    var dragging = false, lastY = 0, touched = false;
+    function markTouched() {
+      if (!touched) { touched = true; stage.classList.add('touched'); }
+    }
+    function clip(ev) {
+      var r = canvas.getBoundingClientRect();
+      return [((ev.clientX - r.left) / r.width) * 2 - 1,
+              1 - ((ev.clientY - r.top) / r.height) * 2];
+    }
+
+    stage.addEventListener('pointerenter', function () { hovering = true; wake(); });
+    stage.addEventListener('pointermove', function (ev) {
+      hovering = true;
+      var c = clip(ev);
+      azT = c[0] * 26;
+      elT = -c[1] * 11;
+      if (dragging) {
+        var m = toModel(c[0], c[1]);
+        var dy = (ev.clientY - lastY);
+        lastY = ev.clientY;
+        if (m) splash(m[0], m[1], -dy * 0.11);
+        markTouched();
+      }
+      wake();
+    });
+    stage.addEventListener('pointerdown', function (ev) {
+      dragging = true; lastY = ev.clientY;
+      try { stage.setPointerCapture(ev.pointerId); } catch (e) {}
+      var c = clip(ev), m = toModel(c[0], c[1]);
+      if (m) splash(m[0], m[1], -5.0);
+      markTouched(); wake();
+    });
+    function endDrag(ev) {
+      dragging = false;
+      try { stage.releasePointerCapture(ev.pointerId); } catch (e) {}
+    }
+    stage.addEventListener('dblclick', function (ev) {
+      var c = clip(ev), m = toModel(c[0], c[1]);
+      if (m) dropBall(m[0], m[1]);
+      markTouched(); wake();
+    });
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('pointerleave', function (ev) {
+      dragging = false; hovering = false; azT = 0; elT = 0; wake();
+    });
+
+    // ------------------------------------------------------------- run loop
+    var visible = true, hidden = false, last = 0, idleT = 0, running = false;
+    var dirty = true, needUpload = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[0].isIntersecting; wake();
+      }, {threshold: 0.01}).observe(stage);
+    }
+    document.addEventListener('visibilitychange', function () {
+      hidden = document.hidden; wake();
+    });
+
+    function wake() { if (!running) { running = true; last = 0; requestAnimationFrame(frame); } }
+
+    function frame(t) {
+      if (!visible || hidden) { running = false; return; }
+      if (!resize()) { requestAnimationFrame(frame); return; }
+      var dt = last ? Math.min((t - last) / 1000, 0.033) : 1 / 60;
+      last = t;
+      idleT += dt;
+
+      // the landscape turns slowly on its own; the cursor nudges it from there
+      var driftA = MOTION ? Math.sin(idleT * 0.126) * 16.0 : 0;   // ~50 s sweep
+      var driftE = MOTION ? Math.sin(idleT * 0.170 + 1.1) * 3.0 : 0;
+      var ease = Math.min(1, dt * 4.5);
+      az += (AZ0 + driftA + azT - az) * ease;
+      el += (EL0 + driftE + elT - el) * ease;
+
+      // while the surface is moving we re-solve and re-upload; once it has
+      // settled we keep spinning the camera with no per-frame geometry cost
+      stepBalls(dt);
+      var live = dragging || balls.length > 0 || energy() > 1e-5;
+      if (live) { stepWaves(dt); sane(); updateGeometry(); needUpload = true; dirty = true; }
+      else if (dirty) { disp.fill(0); vel.fill(0); updateGeometry(); needUpload = true; dirty = false; }
+
+      gl.uniform1f(uAz, az * Math.PI / 180);
+      gl.uniform1f(uEl, el * Math.PI / 180);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufH);
+      if (needUpload) gl.bufferData(gl.ARRAY_BUFFER, aH, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(locH);
+      gl.vertexAttribPointer(locH, 1, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufN);
+      if (needUpload) gl.bufferData(gl.ARRAY_BUFFER, aN, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(locN);
+      gl.vertexAttribPointer(locN, 3, gl.FLOAT, false, 0, 0);
+      needUpload = false;
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufXY);
+      gl.enableVertexAttribArray(locXY);
+      gl.vertexAttribPointer(locXY, 2, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufI);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.drawElements(gl.TRIANGLES, idxArr.length, idxType, 0);
+      drawBalls(az * Math.PI / 180, el * Math.PI / 180);
+
+      if (!stage.classList.contains('live')) stage.classList.add('live');
+
+      // With reduced motion we hold a still frame: keep drawing only while the
+      // visitor is on the banner or something they started is still settling.
+      if (!MOTION && !hovering && !live &&
+          Math.abs(az - AZ0) < 0.05 && Math.abs(el - EL0) < 0.05) {
+        running = false; return;
+      }
+      requestAnimationFrame(frame);
+    }
+
+    updateGeometry();
+    wake();
+    window.addEventListener('resize', function () { resize(); wake(); });
+  })();
+  </script>
+</body>
+</html>

@@ -181,6 +181,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="../data/teaching.js"></script>
   <script src="../data/flip.js"></script>
+  <script src="../data/teaser-hero.js"></script>
 </head>
 <body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
 
@@ -259,7 +260,7 @@
         html += (
           '<a class="teach-card" data-teach-id="' + escapeHtml(teachId) + '" href="' + escapeHtml(item.link || '#') + '">' +
             '<div class="teach-card-main">' +
-              '<div class="teach-teaser">' + teaserContent + '</div>' +
+              '<div class="teach-teaser"' + (item.liveTeaser ? ' data-live-teaser="1"' : '') + '>' + teaserContent + '</div>' +
               '<div class="teach-copy">' +
                 '<div class="teach-title">' +
                   (item.courseCode ? escapeHtml(item.courseCode) + ': ' : '') +
@@ -273,6 +274,7 @@
         );
       });
       root.innerHTML = html;
+      if (window.LIVE_TEASER) window.LIVE_TEASER.init();
       // FLIP cards in from where they sat on the home page.
       if (window.FLIP) {
         FLIP.play('.teach-card', 'teachId',
