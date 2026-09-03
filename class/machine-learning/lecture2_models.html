@@ -1,0 +1,498 @@
+<title>Model Playground</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
+<style>
+:root{
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --hair:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#eb6834; --accent-soft:rgba(235,104,52,.30);
+  --series:#2a78d6;
+  --chip:#f0efec;
+  --ramp0:#fcfcfb; --ramp1:#cde2fb; --ramp2:#86b6ef; --ramp3:#3987e5; --ramp4:#1c5cab; --ramp5:#0d366b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --plane:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+    --hair:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12);
+    --accent:#f07a45; --accent-soft:rgba(240,122,69,.35);
+    --series:#3987e5;
+    --chip:#262624;
+    --ramp0:#1a1a19; --ramp1:#12305a; --ramp2:#1c5cab; --ramp3:#3987e5; --ramp4:#86b6ef; --ramp5:#cde2fb;
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d0d0d; --surface:#1a1a19;
+  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+  --hair:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12);
+  --accent:#f07a45; --accent-soft:rgba(240,122,69,.35);
+  --series:#3987e5;
+  --chip:#262624;
+  --ramp0:#1a1a19; --ramp1:#12305a; --ramp2:#1c5cab; --ramp3:#3987e5; --ramp4:#86b6ef; --ramp5:#cde2fb;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+[hidden]{display:none!important}
+body{
+  background:var(--plane); color:var(--ink);
+  font-family:"Avenir Next",Avenir,"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.45; min-height:100vh;
+}
+.wrap{max-width:1420px;margin:0 auto;padding:20px 24px 28px}
+header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.01em}
+.course{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.tabs{display:flex;gap:4px;background:var(--chip);border-radius:10px;padding:4px;margin-left:auto}
+.tabs button{
+  border:0;background:transparent;color:var(--ink2);font:inherit;font-weight:600;font-size:13.5px;
+  padding:7px 14px;border-radius:7px;cursor:pointer;
+}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tabs button:focus-visible,.btn:focus-visible,.icon-btn:focus-visible{outline:2px solid var(--series);outline-offset:2px}
+.icon-btn{
+  border:1px solid var(--hair);background:var(--surface);color:var(--ink2);border-radius:9px;
+  width:36px;height:36px;cursor:pointer;font-size:17px;line-height:1;
+}
+main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.85fr) minmax(260px,.7fr);gap:20px;align-items:start}
+.viewrow{display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+.tabs.mini{margin-left:0;padding:3px;border-radius:9px}
+.tabs.mini button{padding:5px 12px;font-size:12.5px}
+canvas{display:block;width:100%;height:auto;border-radius:12px}
+#f3d{cursor:grab;border:1px solid var(--hair)}
+#pspace{cursor:crosshair;border:1px solid var(--hair)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.k{display:inline-block}
+.k.surf{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--ramp1),var(--ramp4))}
+.k.reach{width:14px;height:14px;border-radius:4px;background:var(--muted);opacity:.35}
+.k.pt{width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--ring)}
+.hint{margin-top:8px;font-size:12px;color:var(--muted)}
+.hint kbd{font:inherit;font-weight:700;color:var(--ink2);background:var(--chip);border-radius:4px;padding:0 5px}
+.side,.ctlcol{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:14px 16px}
+.panel h2{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;margin-bottom:10px}
+.row label{font-size:12.5px;font-weight:700;letter-spacing:.03em;color:var(--ink2);font-family:"Times New Roman",serif;font-style:italic;font-size:15px}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px;text-align:right}
+.row input[type=range]{grid-column:1 / -1}
+input[type=range]{accent-color:var(--accent);min-width:0;width:100%}
+.btn{
+  border:1px solid var(--hair);background:var(--surface);color:var(--ink);
+  font:inherit;font-weight:700;font-size:13.5px;border-radius:9px;padding:8px 14px;cursor:pointer;width:100%;
+}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:active{transform:translateY(1px)}
+.check{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--ink);font-weight:600;cursor:pointer}
+.check input{accent-color:var(--accent);width:15px;height:15px;margin-top:2px}
+.formula{
+  font-size:15.5px;color:var(--ink);background:var(--chip);border-radius:9px;padding:10px 12px;
+  font-variant-numeric:tabular-nums;overflow-x:auto;white-space:nowrap;
+  font-family:"Times New Roman",serif;font-style:italic;
+}
+.fam{font-family:"Times New Roman",serif;font-style:italic;font-size:16.5px;color:var(--ink);margin:2px 0 8px}
+.note{font-size:13px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.chip{background:var(--chip);border-radius:9px;padding:8px 11px;margin-top:8px}
+.chip .lab{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.chip .val{font-size:15.5px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:1px;font-family:"Times New Roman",serif;font-style:italic}
+@media (max-width:1160px){
+  main{grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr)}
+  .fieldbox{grid-column:1;grid-row:1 / span 2}
+  .ctlcol{grid-column:2;grid-row:1}
+  .side{grid-column:2;grid-row:2}
+}
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  .fieldbox,.ctlcol,.side{grid-column:auto;grid-row:auto}
+  .tabs{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <h1>Model Playground</h1>
+    <div class="course">4190.428 &middot; Introduction to Machine Learning &middot; Lecture 2</div>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Function family">
+    <button id="tab-lin" aria-pressed="true">Linear</button>
+    <button id="tab-bump" aria-pressed="false">Exponential</button>
+    <button id="tab-wave" aria-pressed="false">Waves</button>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="Theme: system / light / dark" aria-label="Toggle theme">◐</button>
+</header>
+
+<main>
+  <div class="fieldbox">
+    <div class="viewrow">
+      <div class="tabs mini" role="group" aria-label="View">
+        <button id="view-2d" aria-pressed="true">2D &middot; scalar x</button>
+        <button id="view-3d" aria-pressed="false">3D &middot; x = (x₁, x₂)</button>
+      </div>
+    </div>
+    <canvas id="f3d" width="820" height="820" aria-label="The function f(x; theta) with noisy data to fit"></canvas>
+    <div class="legend">
+      <span><span class="k surf"></span> the current function <i>f</i>&thinsp;(&thinsp;·&thinsp;; <b>θ</b>)</span>
+      <span><span class="k pt"></span> noisy data — fit it by hand</span>
+      <span id="legReach" hidden><span class="k reach"></span> everything this family can reach</span>
+    </div>
+    <div class="hint" id="hintLine">Drag to rotate &middot; turn the knobs until the surface hugs the dots &middot; <kbd>R</kbd> random θ &middot; <kbd>N</kbd> new data</div>
+  </div>
+
+  <div class="ctlcol">
+    <div class="panel">
+      <h2>Knobs</h2>
+      <div class="row" id="r0"><label for="k0">θ₀</label><output id="o0">0.00</output><input type="range" id="k0" min="-2.5" max="2.5" step="0.01" value="0.5"></div>
+      <div class="row" id="r1"><label for="k1">θ₁</label><output id="o1">0.00</output><input type="range" id="k1" min="-2.5" max="2.5" step="0.01" value="1.2"></div>
+      <div class="row" id="r2"><label for="k2">θ₂</label><output id="o2">0.00</output><input type="range" id="k2" min="-2.5" max="2.5" step="0.01" value="-0.8"></div>
+      <div class="btns" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn primary" id="randBtn">⚡ Random θ</button>
+        <button class="btn" id="dataBtn">✦ New data</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>How good is your fit?</h2>
+      <div class="chip"><div class="lab">TOTAL LOSS 𝓛(θ) — SUM OF SQUARED MISSES</div><div class="val" id="lossVal">–</div></div>
+      <div class="note" style="margin-top:8px">turn the knobs, make this number small. You are doing — by hand — exactly what gradient descent will do for you.</div>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="panel">
+      <h2>The family</h2>
+      <div class="fam" id="famEq"></div>
+      <div class="note" id="famNote"></div>
+      <div class="formula" id="live"></div>
+      <div class="chip"><div class="lab" id="ptLab">θ — ONE POINT IN ℝ³</div><div class="val" id="ptVal">(0.5, 1.2, −0.8)</div></div>
+    </div>
+    <div class="panel" id="reachPanel">
+      <h2>Hypothesis class, as a set</h2>
+      <label class="check"><input type="checkbox" id="reachChk"> show everything this family can reach</label>
+      <div class="note" style="margin-top:8px">the gray region is every value this family can reach — with θ <b>unbounded</b>, not just this page's sliders. Linear and waves: everything. Exponential: only <b>y &gt; 0</b> — that wall is intrinsic; no θ ever crosses zero. Negative data + exponential family = <b>wrong hypothesis class</b>.</div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+"use strict";
+/* ---------- theme ---------- */
+const themeBtn=document.getElementById('themeBtn');
+const order=[null,'light','dark']; let tIdx=0;
+const savedT=(()=>{try{return localStorage.getItem('mp-theme')}catch(e){return null}})();
+if(savedT==='light'||savedT==='dark'){tIdx=order.indexOf(savedT);document.documentElement.dataset.theme=savedT;}
+themeBtn.addEventListener('click',()=>{
+  tIdx=(tIdx+1)%3;const v=order[tIdx];
+  if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;
+  try{v?localStorage.setItem('mp-theme',v):localStorage.removeItem('mp-theme')}catch(e){}
+  refreshStops();render();
+});
+const mq=matchMedia('(prefers-color-scheme: dark)');
+mq.addEventListener&&mq.addEventListener('change',()=>{refreshStops();render();});
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ---------- color ramp ---------- */
+let stops=[];
+function hex2rgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function refreshStops(){stops=[0,1,2,3,4,5].map(i=>hex2rgb(css('--ramp'+i)));}
+function colorAt(t){
+  t=Math.max(0,Math.min(1,t))*(stops.length-1);
+  const i0=Math.min(stops.length-2,Math.floor(t)),f=t-i0;
+  const r=Math.round(stops[i0][0]+(stops[i0+1][0]-stops[i0][0])*f);
+  const g=Math.round(stops[i0][1]+(stops[i0+1][1]-stops[i0][1])*f);
+  const b=Math.round(stops[i0][2]+(stops[i0+1][2]-stops[i0][2])*f);
+  return [r,g,b];
+}
+const fmt=v=>{const a=Math.abs(v);return (a>=100?v.toFixed(0):a>=10?v.toFixed(1):v.toFixed(2)).replace('-','−');};
+
+/* ---------- families ---------- */
+const KR=2.5, XR=3;
+const sgn=v=>v<0?' − ':' + ';
+const FAM={
+ lin:{
+  eq3:'f(x; θ) = θ₀ + θ₁x₁ + θ₂x₂', eq2:'f(x; θ) = θ₀ + θ₁x',
+  note3:'three knobs tilt and lift a plane — the deck’s linear model with d = 2. It can make <b>any plane</b>, and nothing but planes.',
+  note2:'the classic line: θ₀ slides it up and down (bias), θ₁ tilts it (slope).',
+  f3:(x1,x2,t)=>t[0]+t[1]*x1+t[2]*x2,
+  f2:(x,t)=>t[0]+t[1]*x,
+  lo2:x=>-999, hi2:x=>999,
+  zmin3:-9, zmax3:9, y2min:-7, y2max:7,
+  k3:[1,1,1], k2:[1,1,0],
+  live3:t=>'f = '+fmt(t[0])+sgn(t[1])+fmt(Math.abs(t[1]))+'·x₁'+sgn(t[2])+fmt(Math.abs(t[2]))+'·x₂',
+  live2:t=>'f = '+fmt(t[0])+sgn(t[1])+fmt(Math.abs(t[1]))+'·x',
+  gen3:()=>({t:[rr(2),rr(2),rr(2)], s:0.7}), gen2:()=>({t:[rr(2),rr(1.6),0], s:0.55}),
+ },
+ bump:{
+  eq3:'f(x; θ) = exp(θ₀ + θ₁x₁ + θ₂x₂)', eq2:'f(x; θ) = exp(θ₀ + θ₁x)',
+  note3:'an exponential of a linear score — always positive, and it explodes fast.',
+  note2:'always <b>positive</b>, whatever the knobs. Turn on the gray region: it never dips below zero — this family simply cannot say “negative”.',
+  f3:(x1,x2,t)=>Math.exp(t[0]+t[1]*x1+t[2]*x2),
+  f2:(x,t)=>Math.exp(t[0]+t[1]*x),
+  lo2:x=>0, hi2:x=>999,
+  zmin3:0, zmax3:8, y2min:-3, y2max:8,
+  k3:[1,1,1], k2:[1,1,0],
+  live3:t=>'f = exp('+fmt(t[0])+sgn(t[1])+fmt(Math.abs(t[1]))+'·x₁'+sgn(t[2])+fmt(Math.abs(t[2]))+'·x₂)',
+  live2:t=>'f = exp('+fmt(t[0])+sgn(t[1])+fmt(Math.abs(t[1]))+'·x)',
+  gen3:()=>({t:[rr(0.6),rr(0.5),rr(0.5)], s:0.35}), gen2:()=>({t:[rr(0.9),rr(0.7),0], s:0.28}),
+ },
+ wave:{
+  eq3:'f(x; θ) = θ₁ sin(θ₂x₁) cos(θ₂x₂)', eq2:'f(x; θ) = θ₁ sin(θ₂x)',
+  note3:'θ₁ is the volume, θ₂ the frequency — and θ₂ sits <b>inside</b> the sine: this family is nonlinear in its parameters.',
+  note2:'θ₁ is the volume, θ₂ the frequency. Note θ₂ sits <b>inside</b> the sine — nonlinear in θ. And every member passes through the origin: at x = 0 this family can only say 0.',
+  f3:(x1,x2,t)=>t[1]*Math.sin(t[2]*x1)*Math.cos(t[2]*x2),
+  f2:(x,t)=>t[1]*Math.sin(t[2]*x),
+  lo2:x=>-999, hi2:x=>999,
+  zmin3:-3.2, zmax3:3.2, y2min:-4.5, y2max:4.5,
+  k3:[0,1,1], k2:[0,1,1],
+  live3:t=>'f = '+fmt(t[1])+'·sin('+fmt(t[2])+'·x₁)·cos('+fmt(t[2])+'·x₂)',
+  live2:t=>'f = '+fmt(t[1])+'·sin('+fmt(t[2])+'·x)',
+  gen3:()=>({t:[0,amp(),frq()], s:0.35}), gen2:()=>({t:[0,amp(),frq()], s:0.35}),
+ },
+};
+function rr(a){return (Math.random()*2-1)*a;}
+function amp(){return (0.9+Math.random()*1.4)*(Math.random()<0.5?-1:1);}
+function frq(){return (0.6+Math.random()*1.4)*(Math.random()<0.5?-1:1);}
+let fam='lin', mode='2d', th=[0.5,1.2,-0.8], reach=false;
+let D3={x1:[],x2:[],y:[]}, D2={x:[],y:[]};
+
+function genData(){
+  const F=FAM[fam];
+  const g3=F.gen3(), g2=F.gen2();
+  D3={x1:[],x2:[],y:[]};
+  for(let i=0;i<36;i++){
+    const a=rr(2.7), b=rr(2.7);
+    D3.x1.push(a); D3.x2.push(b);
+    D3.y.push(F.f3(a,b,g3.t)+rr(g3.s)*1.2);
+  }
+  D2={x:[],y:[]};
+  for(let i=0;i<26;i++){
+    const a=rr(2.85);
+    D2.x.push(a);
+    D2.y.push(F.f2(a,g2.t)+rr(g2.s)*1.2);
+  }
+}
+function lossNow(){
+  const F=FAM[fam]; let s=0;
+  if(mode==='3d'){ for(let i=0;i<D3.x1.length;i++){const r=F.f3(D3.x1[i],D3.x2[i],th)-D3.y[i]; s+=r*r;} }
+  else { for(let i=0;i<D2.x.length;i++){const r=F.f2(D2.x[i],th)-D2.y[i]; s+=r*r;} }
+  return 0.5*s;
+}
+
+/* ---------- 3D ---------- */
+const f3d=document.getElementById('f3d'), fx=f3d.getContext('2d');
+let yaw=-0.62, elev=0.95, dragging=false, dX=0, dY=0;
+const G=66;
+function xat(i){return -XR+2*XR*i/G;}
+function project(u,v,zn,cx,cy,R,Hs){
+  const c=Math.cos(yaw), s=Math.sin(yaw);
+  const x1=u*c-v*s, y1=u*s+v*c;
+  const se=Math.sin(elev), ce=Math.cos(elev);
+  return [cx+x1*R, cy-y1*se*R-(zn-0.5)*ce*R*Hs*2, y1];
+}
+function znorm(z){const F=FAM[fam];return Math.max(-0.06,Math.min(1.06,(z-F.zmin3)/(F.zmax3-F.zmin3)));}
+function draw3D(){
+  const W=f3d.width,H=f3d.height;
+  fx.clearRect(0,0,W,H);
+  fx.fillStyle=css('--surface'); fx.fillRect(0,0,W,H);
+  const cx=W/2, cy=H*0.52, R=W*0.335, Hs=0.62;
+  const F=FAM[fam];
+  /* floor rim */
+  const E3=1.06;
+  const CR=[{u:-E3,v:-E3},{u:E3,v:-E3},{u:E3,v:E3},{u:-E3,v:E3}].map(o=>({u:o.u,v:o.v,p:project(o.u,o.v,0,cx,cy,R,Hs)}));
+  fx.strokeStyle=css('--hair'); fx.lineWidth=1.2;
+  fx.beginPath(); fx.moveTo(CR[0].p[0],CR[0].p[1]); fx.lineTo(CR[1].p[0],CR[1].p[1]);
+  fx.lineTo(CR[2].p[0],CR[2].p[1]); fx.lineTo(CR[3].p[0],CR[3].p[1]); fx.closePath(); fx.stroke();
+  const uNear=(CR[0].p[2]+CR[1].p[2]<=CR[3].p[2]+CR[2].p[2])?[CR[0],CR[1]]:[CR[3],CR[2]];
+  const vNear=(CR[1].p[2]+CR[2].p[2]<=CR[0].p[2]+CR[3].p[2])?[CR[1],CR[2]]:[CR[0],CR[3]];
+  let Fc=CR[0]; for(const c of CR) if(c.p[2]<Fc.p[2]) Fc=c;
+  const outU=(uNear[0]===Fc)?uNear[1]:uNear[0], outV=(vNear[0]===Fc)?vNear[1]:vNear[0];
+  const jb=Fc.p, jt=project(Fc.u,Fc.v,1.16,cx,cy,R,Hs);
+  /* surface mesh */
+  const P=new Array((G+1)*(G+1));
+  for(let j=0;j<=G;j++)for(let i=0;i<=G;i++){
+    const u=(i/G)*2-1, v=((G-j)/G)*2-1;
+    const zn=znorm(F.f3(xat(i),xat(G-j),th));
+    P[j*(G+1)+i]={pt:project(u,v,zn,cx,cy,R,Hs), zn:zn};
+  }
+  const quads=[];
+  for(let j=0;j<G;j++)for(let i=0;i<G;i++){
+    const a=P[j*(G+1)+i], b=P[j*(G+1)+i+1], c=P[(j+1)*(G+1)+i+1], d=P[(j+1)*(G+1)+i];
+    quads.push({a,b,c,d, depth:(a.pt[2]+b.pt[2]+c.pt[2]+d.pt[2])/4});
+  }
+  quads.sort((q1,q2)=>q2.depth-q1.depth);
+  const dark=css('--plane')==='#0d0d0d';
+  const L=[-0.45,-0.5,0.74];
+  for(const q of quads){
+    const zn=(q.a.zn+q.b.zn+q.c.zn+q.d.zn)/4;
+    const dzx=(q.b.zn-q.a.zn+q.c.zn-q.d.zn)/2, dzy=(q.d.zn-q.a.zn+q.c.zn-q.b.zn)/2;
+    let nx=-dzx*0.62*G/2, ny=-dzy*0.62*G/2, nz=1;
+    const nl=Math.hypot(nx,ny,nz); nx/=nl;ny/=nl;nz/=nl;
+    const light=Math.max(0,nx*L[0]+ny*L[1]+nz*L[2]);
+    const shade=0.72+0.42*light;
+    const base=colorAt(zn);
+    fx.fillStyle='rgba('+Math.min(255,base[0]*shade)+','+Math.min(255,base[1]*shade)+','+Math.min(255,base[2]*shade)+',0.92)';
+    fx.beginPath();
+    fx.moveTo(q.a.pt[0],q.a.pt[1]);fx.lineTo(q.b.pt[0],q.b.pt[1]);
+    fx.lineTo(q.c.pt[0],q.c.pt[1]);fx.lineTo(q.d.pt[0],q.d.pt[1]);
+    fx.closePath();fx.fill();
+    fx.strokeStyle=dark?'rgba(255,255,255,0.07)':'rgba(11,11,11,0.07)';
+    fx.lineWidth=0.6; fx.stroke();
+  }
+  /* data points, depth-aware size */
+  for(let i=0;i<D3.x1.length;i++){
+    const u=D3.x1[i]/XR, v=D3.x2[i]/XR;
+    const p=project(u,v,znorm(D3.y[i]),cx,cy,R,Hs);
+    fx.beginPath();fx.arc(p[0],p[1],5.5,0,7);
+    fx.fillStyle=css('--accent');fx.fill();
+    fx.lineWidth=1.8;fx.strokeStyle=css('--surface');fx.stroke();
+  }
+  /* axis triad */
+  fx.strokeStyle=css('--ink2'); fx.fillStyle=css('--ink2'); fx.lineWidth=2.2; fx.lineJoin='round'; fx.lineCap='round';
+  fx.beginPath();
+  fx.moveTo(Fc.p[0],Fc.p[1]); fx.lineTo(outU.p[0],outU.p[1]);
+  fx.moveTo(Fc.p[0],Fc.p[1]); fx.lineTo(outV.p[0],outV.p[1]);
+  fx.moveTo(jb[0],jb[1]); fx.lineTo(jt[0],jt[1]); fx.stroke();
+  const head=(p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],dl=Math.hypot(dx,dy)||1,ux=dx/dl,uy=dy/dl,sz=12;
+    fx.beginPath(); fx.moveTo(q[0],q[1]);
+    fx.lineTo(q[0]-ux*sz-uy*sz*0.52,q[1]-uy*sz+ux*sz*0.52);
+    fx.lineTo(q[0]-ux*sz+uy*sz*0.52,q[1]-uy*sz-ux*sz*0.52);
+    fx.closePath(); fx.fill();};
+  head(Fc.p,outU.p); head(Fc.p,outV.p); head(jb,jt);
+  fx.font='800 20px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fx.textAlign='center'; fx.textBaseline='middle';
+  const halo=(t,x,y)=>{fx.lineWidth=5;fx.strokeStyle=css('--surface');fx.strokeText(t,x,y);fx.fillStyle=css('--ink');fx.fillText(t,x,y);};
+  const past=(p,q,d)=>{const dx=q[0]-p[0],dy=q[1]-p[1],dl=Math.hypot(dx,dy)||1;
+    return [Math.max(26,Math.min(W-26,q[0]+dx/dl*d)),Math.max(22,Math.min(H-20,q[1]+dy/dl*d))];};
+  const lu=past(Fc.p,outU.p,26), lv=past(Fc.p,outV.p,26);
+  halo('x₁',lu[0],lu[1]); halo('x₂',lv[0],lv[1]);
+  halo('f(x;θ)', Math.max(52,Math.min(W-52,jt[0])), Math.max(jt[1]-20,22));
+  fx.textAlign='start'; fx.textBaseline='alphabetic';
+}
+f3d.addEventListener('pointerdown',ev=>{if(mode!=='3d')return;dragging=true;dX=ev.clientX;dY=ev.clientY;f3d.setPointerCapture(ev.pointerId);f3d.style.cursor='grabbing';});
+f3d.addEventListener('pointermove',ev=>{
+  if(mode!=='3d'||!dragging)return;
+  yaw+=(ev.clientX-dX)*0.008; elev=Math.max(0.28,Math.min(1.42,elev+(ev.clientY-dY)*0.006));
+  dX=ev.clientX;dY=ev.clientY;draw3D();
+});
+f3d.addEventListener('pointerup',()=>{dragging=false;if(mode==='3d')f3d.style.cursor='grab';});
+
+/* ---------- 2D ---------- */
+function draw2D(){
+  const W=f3d.width,H=f3d.height,F=FAM[fam];
+  const padL=70,padR=30,padT=30,padB=56;
+  const y0=F.y2min,y1=F.y2max;
+  const sx=x=>padL+(x+XR)/(2*XR)*(W-padL-padR);
+  const sy=y=>H-padB-(y-y0)/(y1-y0)*(H-padT-padB);
+  fx.clearRect(0,0,W,H);
+  fx.fillStyle=css('--surface'); fx.fillRect(0,0,W,H);
+  /* reach band (2D only) */
+  if(reach){
+    fx.beginPath();
+    for(let i=0;i<=200;i++){const x=-XR+2*XR*i/200;const yy=Math.min(y1,Math.max(y0,F.hi2(x)));i?fx.lineTo(sx(x),sy(yy)):fx.moveTo(sx(x),sy(yy));}
+    for(let i=200;i>=0;i--){const x=-XR+2*XR*i/200;const yy=Math.min(y1,Math.max(y0,F.lo2(x)));fx.lineTo(sx(x),sy(yy));}
+    fx.closePath();
+    const dark=css('--plane')==='#0d0d0d';
+    fx.fillStyle=dark?'rgba(200,200,200,0.16)':'rgba(110,110,110,0.15)';
+    fx.fill();
+  }
+  /* grid + axes */
+  fx.strokeStyle=css('--hair'); fx.lineWidth=1;
+  for(let gx=-3;gx<=3;gx++){fx.beginPath();fx.moveTo(sx(gx),sy(y0));fx.lineTo(sx(gx),sy(y1));fx.stroke();}
+  for(let gy=Math.ceil(y0);gy<=Math.floor(y1);gy++){fx.beginPath();fx.moveTo(sx(-XR),sy(gy));fx.lineTo(sx(XR),sy(gy));fx.stroke();}
+  fx.strokeStyle=css('--axis'); fx.lineWidth=1.8;
+  fx.beginPath();fx.moveTo(sx(-XR),sy(0));fx.lineTo(sx(XR),sy(0));fx.stroke();
+  fx.beginPath();fx.moveTo(sx(0),sy(y0));fx.lineTo(sx(0),sy(y1));fx.stroke();
+  fx.fillStyle=css('--muted'); fx.font='600 22px "Avenir Next",Avenir,sans-serif';
+  for(let gx=-3;gx<=3;gx++){ if(gx) fx.fillText(String(gx), sx(gx)-10, sy(0)+30); }
+  for(let gy=Math.ceil(y0);gy<=Math.floor(y1);gy++){ if(gy) fx.fillText(String(gy), sx(0)-38, sy(gy)+7); }
+  fx.font='800 26px "Avenir Next",Avenir,sans-serif'; fx.fillStyle=css('--ink');
+  fx.fillText('x', sx(XR)-22, sy(0)-16);
+  fx.fillText('f(x;θ)', sx(0)+14, sy(y1)+30);
+  /* data */
+  for(let i=0;i<D2.x.length;i++){
+    fx.beginPath();fx.arc(sx(D2.x[i]),sy(Math.min(y1,Math.max(y0,D2.y[i]))),7.5,0,7);
+    fx.fillStyle=css('--accent');fx.fill();
+    fx.lineWidth=2.2;fx.strokeStyle=css('--surface');fx.stroke();
+  }
+  /* current curve */
+  fx.strokeStyle=css('--series'); fx.lineWidth=4.5; fx.lineJoin='round';
+  fx.beginPath(); let pen=false;
+  for(let i=0;i<=300;i++){
+    const x=-XR+2*XR*i/300, yy=F.f2(x,th);
+    if(yy>y1+1.5||yy<y0-1.5){pen=false;continue;}
+    pen?fx.lineTo(sx(x),sy(yy)):fx.moveTo(sx(x),sy(yy)); pen=true;
+  }
+  fx.stroke();
+}
+
+/* ---------- knobs & readout ---------- */
+const k=[document.getElementById('k0'),document.getElementById('k1'),document.getElementById('k2')];
+const o=[document.getElementById('o0'),document.getElementById('o1'),document.getElementById('o2')];
+const rows=[document.getElementById('r0'),document.getElementById('r1'),document.getElementById('r2')];
+function syncKnobs(){for(let i=0;i<3;i++)k[i].value=th[i];}
+function readKnobs(){for(let i=0;i<3;i++)th[i]=+k[i].value;}
+for(const el of k) el.addEventListener('input',()=>{readKnobs();render();});
+document.getElementById('randBtn').addEventListener('click',rand);
+document.getElementById('dataBtn').addEventListener('click',()=>{genData();render();});
+function rand(){ th=[rr(2.2),rr(2.2),rr(2.2)]; syncKnobs(); render(); }
+document.addEventListener('keydown',ev=>{
+  if(ev.target.tagName==='INPUT')return;
+  if(ev.key==='r'||ev.key==='R')rand();
+  if(ev.key==='n'||ev.key==='N'){genData();render();}
+});
+document.getElementById('reachChk').addEventListener('change',ev=>{
+  reach=ev.target.checked;
+  document.getElementById('legReach').hidden=!reach;
+  render();
+});
+
+/* ---------- family & mode ---------- */
+const tabs={lin:document.getElementById('tab-lin'),bump:document.getElementById('tab-bump'),wave:document.getElementById('tab-wave')};
+const v3=document.getElementById('view-3d'), v2=document.getElementById('view-2d');
+function applyUI(){
+  const F=FAM[fam], kk=(mode==='3d')?F.k3:F.k2;
+  for(let i=0;i<3;i++) rows[i].hidden=!kk[i];
+  document.getElementById('famEq').textContent=(mode==='3d')?F.eq3:F.eq2;
+  document.getElementById('famNote').innerHTML=(mode==='3d')?F.note3:F.note2;
+  const p=kk.reduce((a,b)=>a+b,0);
+  document.getElementById('ptLab').textContent='θ — ONE POINT IN '+(p===3?'ℝ³':'ℝ²');
+  const is2=(mode==='2d');
+  document.getElementById('reachPanel').hidden=!is2;
+  if(!is2){reach=false;document.getElementById('reachChk').checked=false;document.getElementById('legReach').hidden=true;}
+  f3d.style.cursor=is2?'default':'grab';
+  document.getElementById('hintLine').innerHTML=is2
+    ? 'Turn the knobs until the curve threads the dots &middot; <kbd>R</kbd> random θ &middot; <kbd>N</kbd> new data'
+    : 'Drag to rotate &middot; turn the knobs until the surface hugs the dots &middot; <kbd>R</kbd> random θ &middot; <kbd>N</kbd> new data';
+}
+function setFam(m){
+  fam=m;
+  for(const t in tabs)tabs[t].setAttribute('aria-pressed',String(t===m));
+  genData(); applyUI(); render();
+}
+function setMode(v){
+  mode=v;
+  v3.setAttribute('aria-pressed',String(v==='3d'));
+  v2.setAttribute('aria-pressed',String(v==='2d'));
+  applyUI(); render();
+}
+tabs.lin.addEventListener('click',()=>setFam('lin'));
+tabs.bump.addEventListener('click',()=>setFam('bump'));
+tabs.wave.addEventListener('click',()=>setFam('wave'));
+v3.addEventListener('click',()=>setMode('3d'));
+v2.addEventListener('click',()=>setMode('2d'));
+
+/* ---------- render ---------- */
+function readout(){
+  const F=FAM[fam], kk=(mode==='3d')?F.k3:F.k2;
+  for(let i=0;i<3;i++) o[i].textContent=fmt(th[i]);
+  document.getElementById('live').textContent=(mode==='3d')?F.live3(th):F.live2(th);
+  const parts=[]; for(let i=0;i<3;i++) if(kk[i]) parts.push(fmt(th[i]));
+  document.getElementById('ptVal').textContent='('+parts.join(', ')+')';
+  document.getElementById('lossVal').textContent=fmt(lossNow());
+}
+function render(){ if(mode==='3d')draw3D(); else draw2D(); readout(); }
+
+refreshStops();
+genData(); applyUI(); syncKnobs(); render();
+</script>

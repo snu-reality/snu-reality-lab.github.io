@@ -56,6 +56,6 @@ window.TEAM_MEMBERS = [
 //  "Suyeon" is auto-linked to suyeon.choi@snu.ac.kr on render.
 // =================================================================
 window.TEAM_JOIN_COPY = [
-  "If you're already at SNU as an undergraduate, the best way to get involved is to take the <a href=\"../class/computational-imaging/\" target=\"_blank\" rel=\"noopener\">Computational Imaging course</a>! If you'd like to intern or join the lab, please email Suyeon with a short note on your research interests.",
-  "If you're outside SNU and interested in joining or collaborating, please reach out to Suyeon via email with a short note on your research interests."
+  "If you're already at SNU as an undergraduate, the best way to get involved is to take the <a href=\"../class/computational-imaging/\" target=\"_blank\" rel=\"noopener\">Computational Imaging course</a> and the <a href=\"../class/machine-learning/\" target=\"_blank\" rel=\"noopener\">Machine Learning course</a>! If you'd like to intern or join the lab, please email Suyeon with a short note on your research interests.",
+  "If you're outside SNU, we welcome prospective graduate students, visiting researchers, and collaborators. Please email Suyeon with a short note on your research interests and background (a CV or a link to your work)."
 ];
