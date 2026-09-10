@@ -1,0 +1,671 @@
+<!doctype html>
+<title>Feature Playground</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
+  --line:#dde2e9; --blue:#003380; --orange:#5c8a2e; --blue-t:rgba(0,51,128,.10);
+  --orange-t:rgba(92,138,46,.13); --accent:#003380; --chipbg:#eef1f5; --ok:#2e7d4f; --bad:#b3423a;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+    --line:#303845; --blue:#5b86cf; --orange:#8fbf5f; --blue-t:rgba(91,134,207,.18);
+    --orange-t:rgba(143,191,95,.16); --accent:#5b86cf; --chipbg:#262d37;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+  --line:#303845; --blue:#5b86cf; --orange:#8fbf5f; --blue-t:rgba(91,134,207,.18);
+  --orange-t:rgba(143,191,95,.16); --accent:#5b86cf; --chipbg:#262d37;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 10px}
+[hidden]{display:none!important}
+h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
+.sub{color:var(--ink2);font-size:14px;margin-top:2px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.wrap{display:grid;grid-template-columns:minmax(300px,1.15fr) minmax(268px,.62fr) minmax(268px,.62fr);grid-template-rows:auto auto minmax(0,1fr);gap:12px;align-items:stretch;min-height:calc(100vh - 92px)}
+.cvcard{grid-column:1;grid-row:1/4;display:flex;flex-direction:column}
+.cvcard .cv{margin:auto 0}
+.dcard{grid-column:2;grid-row:1}
+.mcard{grid-column:3;grid-row:1}
+.fcard{grid-column:2/4;grid-row:2;display:flex;align-items:center;min-height:52px}
+.tcard{grid-column:2;grid-row:3;align-self:start}
+.rcard{grid-column:3;grid-row:3;align-self:start}
+.dcard,.mcard{padding:10px}
+.dcard .lab,.mcard .lab{margin:8px 0 5px}
+.dcard .row{margin:4px 0}
+#feq{overflow-x:auto;overflow-y:hidden}
+#phiEq{overflow-y:hidden}
+@media(max-width:1120px){.wrap{grid-template-columns:1fr 1fr;grid-template-rows:none;min-height:0}
+ .cvcard,.fcard{grid-column:1/-1;grid-row:auto}
+ .dcard,.mcard,.tcard,.rcard{grid-column:auto;grid-row:auto}}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}.cvcard,.fcard{grid-column:1}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.cv{width:100%;display:block;border-radius:8px;cursor:crosshair;touch-action:none}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tab{border:1px solid var(--line);background:none;color:var(--ink2);border-radius:7px;padding:4px 12px;font:600 12.5px inherit;cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.lab{font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:12px 0 6px;font-weight:600}
+.lab:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--chipbg);color:var(--ink2);border-radius:14px;padding:3px 11px;font:600 13.5px inherit;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.row label{flex:0 0 96px;color:var(--ink2);font-size:14px}
+.row input[type=range]{flex:1;accent-color:var(--accent)}
+.row .val{flex:0 0 44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+button.b{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:5px 12px;font:600 14px inherit;cursor:pointer}
+button.b.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.b:active{transform:translateY(1px)}
+.stat{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;font-size:14.5px;padding:2px 0}
+.stat b{font-weight:600}
+.big{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.big small{display:block;font-size:12.5px;color:var(--mut);font-weight:600}
+.trio{display:flex;gap:20px}
+.mjx-container{font-size:115%!important}
+.pill{display:inline-block;border-radius:9px;padding:1px 8px;font-size:11.5px;font-weight:700}
+.pill.ok{background:var(--blue-t);color:var(--ok)}
+.pill.bad{background:var(--orange-t);color:var(--bad)}
+.keys{color:var(--mut);font-size:11.5px;margin-top:10px}
+.keys kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font:11px ui-monospace,monospace;background:var(--chipbg)}
+.theme{border:1px solid var(--line);background:var(--panel);color:var(--ink2);border-radius:7px;padding:4px 10px;font:600 12px inherit;cursor:pointer}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--ink2);margin-top:6px}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{width:13px;height:13px;display:inline-block;border-radius:3px}
+canvas.spark{width:100%;height:64px;display:block}
+.addtog{display:flex;gap:6px;flex-wrap:wrap}
+.colstack{display:grid;gap:12px;align-content:start}
+</style>
+<div class="top">
+  <div><h1>Feature Playground</h1>
+  <div class="sub">click to add points · right-click to delete</div></div>
+  <button class="theme" id="themeBtn">☀︎ / ☾</button>
+</div>
+<div class="wrap">
+  <div class="card cvcard">
+    <div class="tabs">
+      <button class="tab on" id="tab2d">Data &amp; boundary</button>
+      <button class="tab" id="tab3d">Lift view (3D)</button>
+      <button class="tab" id="shadeBtn" title="shade classified regions">▦ shade</button>
+      <select id="zSel" hidden style="border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:3px 8px;font:600 12px inherit"></select>
+      <button class="tab" id="lift" hidden>⤴ lift!</button>
+      <span style="flex:1"></span>
+      <span id="liftHint" class="sub" style="align-self:center"></span>
+    </div>
+    <canvas id="cv" class="cv" width="860" height="640"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--orange)"></span>class 1 (×)</span>
+      <span><span class="sw" style="background:var(--blue)"></span>class 0 (○)</span>
+      <span><span class="sw" style="background:var(--ink)"></span>decision boundary (½)</span>
+      <span id="mode3dLeg" hidden><span class="sw" style="background:var(--line)"></span>separating plane · drag to rotate</span>
+    </div>
+  </div>
+  <div class="card dcard">
+    <div class="lab">Dataset</div>
+    <div class="chips" id="dsChips"></div>
+    <div class="lab">Edit the dataset</div>
+    <div class="addtog">
+      <button class="chip on" id="addX">add ×</button><button class="chip" id="addO">add ○</button>
+      <button class="chip" id="regen">↻ regenerate</button><button class="chip" id="clear">clear</button>
+    </div>
+    <div class="lab">Basis φ</div>
+    <div class="chips" id="phiChips"></div>
+    <div class="row" id="rowK"><label>poly order k</label><input type="range" id="k" min="1" max="6" step="1" value="1"><span class="val" id="kv">1</span></div>
+    <div class="row" id="rowS" hidden><label>RBF width σ</label><input type="range" id="sig" min="0.15" max="1.6" step="0.05" value="0.5"><span class="val" id="sigv">0.50</span></div>
+    <div class="row" id="rowM" hidden><label>centers m</label><input type="range" id="m" min="4" max="60" step="1" value="48"><span class="val" id="mv">all</span></div>
+    <div class="row" id="rowF" hidden><label>freq scale</label><input type="range" id="frq" min="0.3" max="3.5" step="0.1" value="1.2"><span class="val" id="frqv">1.2</span></div>
+    <div class="row" id="rowD" hidden><label># features D</label><input type="range" id="D" min="8" max="96" step="4" value="48"><span class="val" id="Dv">48</span></div>
+  </div>
+  <div class="card mcard">
+    <div class="lab" style="margin-top:0">Model</div>
+    <div id="feq" style="min-height:24px"></div>
+    <div class="trio" style="margin-top:6px">
+      <div class="big" id="nBig">– <small>examples n</small></div>
+      <div class="big" id="pBig">3 <small>features p</small></div>
+      <div class="big" id="dBig">2 <small>input dim d</small></div>
+    </div>
+    <div id="thTxt" style="font:italic 13.5px 'Times New Roman',serif;margin-top:6px;font-variant-numeric:tabular-nums"></div>
+    <canvas id="thBars" width="480" height="84" style="width:100%;height:42px;display:block;margin-top:3px"></canvas>
+  </div>
+  <div class="card fcard">
+    <div id="fexp" style="overflow-x:auto;font-variant-numeric:tabular-nums;width:100%"></div>
+  </div>
+  <div class="card tcard">
+    <div class="lab">Training — batch GD on the L₂ loss (Lecture 2)</div>
+    <div class="row"><label>learning rate</label><input type="range" id="lr" min="-2" max="0.6" step="0.05" value="-0.3"><span class="val" id="lrv">0.50</span></div>
+    <div class="btns">
+      <button class="b primary" id="play">▶ train</button>
+      <button class="b" id="step">step</button>
+      <button class="b" id="reset">reset θ</button>
+    </div>
+    <div class="keys">keys: <kbd>space</kbd> step · <kbd>p</kbd> play · <kbd>r</kbd> reset θ · <kbd>n</kbd> regenerate</div>
+    <div class="lab">Fit</div>
+    <div class="stat"><span>iteration</span><b id="itStat">0</b></div>
+    <div class="stat"><span>L₂ loss</span><b id="lossStat">–</b></div>
+    <div class="stat"><span>misclassified</span><b id="misStat">–</b></div>
+    <div style="margin-top:6px"><canvas id="spark" class="spark" width="480" height="128"></canvas></div>
+    </div>
+  <div class="card rcard">
+    <div class="lab">Reading</div>
+    <div class="sub" id="reading" style="font-size:12.5px;line-height:1.5"></div>
+    </div>
+</div>
+<script>window.MathJax={tex:{packages:{'[+]':['boldsymbol']}},startup:{typeset:false},svg:{fontCache:'none'}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.min.js';s.onload=function(){if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)MathJax.startup.promise.then(function(){try{updateModel()}catch(e){}try{updateF()}catch(e){}})};document.head.appendChild(s)})()"></script>
+<script>
+"use strict";
+/* ---------- rng ---------- */
+let seed=12345; const srand=s=>{seed=s>>>0||1};
+const rnd=()=>{seed=(1664525*seed+1013904223)>>>0; return seed/4294967296};
+const nrm=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+/* ---------- state ---------- */
+const S={ds:'xor', phi:'linear', k:1, sig:.5, frq:1.2, m:0, D:48, shade:false, lr:.5, pts:[], th:null, mu:null, sd:null,
+  it:0, loss:[], playing:false, addClass:1, view:'2d', yaw:-.65, pitch:.42, liftT:1, zMode:'auto', built:null, seed3:7};
+const LIM=2.6;
+/* ---------- datasets ---------- */
+function gen(name){
+  const P=[]; srand({xor:11,rings:21,moons:31,spiral:41,blobs:51,oneD:61}[name]+S.seed3*97);
+  const add=(x,y,c)=>P.push({x,y,c});
+  if(name==='xor'){ for(const[cx,cy,c]of[[1,1,1],[-1,-1,1],[-1,1,0],[1,-1,0]]) for(let i=0;i<12;i++) add(cx+.38*nrm(),cy+.38*nrm(),c);}
+  else if(name==='rings'){ for(let i=0;i<28;i++){const r=Math.sqrt(rnd())*.62,t=rnd()*6.283;add(r*Math.cos(t),r*Math.sin(t),1);} for(let i=0;i<40;i++){const r=1.3+rnd()*.6,t=rnd()*6.283;add(r*Math.cos(t),r*Math.sin(t),0);}}
+  else if(name==='moons'){ for(let i=0;i<34;i++){const t=rnd()*Math.PI;add(Math.cos(t)-.5+.14*nrm(),Math.sin(t)-.25+.14*nrm(),1);} for(let i=0;i<34;i++){const t=rnd()*Math.PI;add(.5-Math.cos(t)+.14*nrm(),.28-Math.sin(t)+.14*nrm(),0);}}
+  else if(name==='spiral'){ for(let c=0;c<2;c++) for(let i=0;i<40;i++){const t=1.2+ i/40*7.6; const r=.18+t*.26; const a=t+c*Math.PI; add(r*Math.cos(a)+.07*nrm(), r*Math.sin(a)+.07*nrm(), c);} }
+  else if(name==='blobs'){ for(let i=0;i<24;i++)add(-1+.5*nrm(),-.6+.5*nrm(),0); for(let i=0;i<24;i++)add(1+.5*nrm(),.7+.5*nrm(),1);}
+  else if(name==='oneD'){ for(const[cx,c]of[[-1.6,1],[1.6,1],[-.55,0],[.55,0]]) for(let i=0;i<5;i++) add(cx+.14*nrm(),0,c);}
+  return P;
+}
+/* ---------- feature maps ---------- */
+function buildPhi(){
+  const pts=S.pts, kind=S.phi, oneD1=S.ds==='oneD';
+  let fn,p,label,meta=null;
+  if(kind==='linear'){
+    if(oneD1){ p=2; label='linear'; fn=(x,y)=>{const a=new Float64Array(2);a[0]=1;a[1]=x;return a}; }
+    else { p=3; label='linear'; fn=(x,y)=>{const a=new Float64Array(3);a[0]=1;a[1]=x;a[2]=y;return a}; } }
+  else if(kind==='poly'){
+    const k=S.k, exps=[];
+    if(oneD1){ for(let d=0;d<=k;d++) exps.push([d,0]); }
+    else { for(let d=0;d<=k;d++) for(let i=0;i<=d;i++) exps.push([d-i,i]); }
+    p=exps.length; label='poly order '+k; meta={exps};
+    fn=(x,y)=>{const a=new Float64Array(p);for(let j=0;j<p;j++)a[j]=Math.pow(x,exps[j][0])*Math.pow(y,exps[j][1]);return a};
+  }
+  else if(kind==='rbf'){
+    let C=pts.map(q=>[q.x,q.y]); const s2=2*S.sig*S.sig, nC0=C.length;
+    const mEff=(!S.m||S.m>=nC0)?nC0:S.m;
+    if(mEff<nC0){srand(4242+mEff*13);const idx=C.map((_,i)=>i);
+      for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t2=idx[i];idx[i]=idx[j];idx[j]=t2}
+      C=idx.slice(0,mEff).sort((a,b)=>a-b).map(i=>C[i]);}
+    try{const sl=$('m');sl.max=Math.max(4,nC0);if(document.activeElement!==sl)sl.value=mEff;
+      $('mv').textContent=mEff+(mEff===nC0?' (all)':' of '+nC0);}catch(_){}
+    p=C.length+1; label='RBF (σ='+S.sig.toFixed(2)+', m='+C.length+')'; meta={C,s2};
+    fn=(x,y)=>{const a=new Float64Array(p);a[0]=1;for(let j=0;j<C.length;j++){const dx=x-C[j][0],dy=y-C[j][1];a[j+1]=Math.exp(-(dx*dx+dy*dy)/s2)}return a};
+  }
+  else{ // fourier (random features)
+    const D=Math.max(4,S.D||48); srand(777); const W=[],B=[];
+    for(let j=0;j<D;j++){W.push([nrm()*S.frq,nrm()*S.frq]);B.push(rnd()*6.283)}
+    try{$('Dv').textContent=D}catch(_){}
+    p=D+1; label='Fourier (D='+D+', scale '+S.frq.toFixed(1)+')'; meta={W,B};
+    fn=(x,y)=>{const a=new Float64Array(p);a[0]=1;for(let j=0;j<D;j++)a[j+1]=Math.cos(W[j][0]*x+W[j][1]*y+B[j]);return a};
+  }
+  // standardization stats from data
+  const n=pts.length, F=pts.map(q=>fn(q.x,q.y));
+  const mu=new Float64Array(p), sd=new Float64Array(p).fill(1);
+  if(n>1){ for(const f of F)for(let j=1;j<p;j++)mu[j]+=f[j]/n;
+    for(const f of F)for(let j=1;j<p;j++)sd[j]+=(f[j]-mu[j])**2/n;
+    for(let j=1;j<p;j++){sd[j]=Math.sqrt(sd[j]); if(sd[j]<1e-8)sd[j]=1;} }
+  S.built={fn,p,label,mu,sd,meta,F:F.map(f=>{const g=new Float64Array(p);g[0]=1;for(let j=1;j<p;j++)g[j]=(f[j]-mu[j])/sd[j];return g})};
+  if(!S.th||S.th.length!==p){S.th=new Float64Array(p);S.it=0;S.loss=[]}
+  if(typeof updateModel==='function')try{updateModel()}catch(_){}
+}
+const phiStd=(x,y)=>{const b=S.built,f=b.fn(x,y),g=new Float64Array(b.p);g[0]=1;for(let j=1;j<b.p;j++)g[j]=(f[j]-b.mu[j])/b.sd[j];return g};
+const fval=(x,y)=>{const g=phiStd(x,y),t=S.th;let s=0;for(let j=0;j<g.length;j++)s+=t[j]*g[j];return s};
+/* ---------- training: LMS batch GD on MSE ---------- */
+function gdStep(){
+  const b=S.built,n=S.pts.length; if(!n)return;
+  const grad=new Float64Array(b.p); let L=0;
+  for(let i=0;i<n;i++){const f=b.F[i];let s=0;for(let j=0;j<b.p;j++)s+=S.th[j]*f[j];
+    const e=s-S.pts[i].c; L+=e*e/(2*n);
+    for(let j=0;j<b.p;j++)grad[j]+=e*f[j]/n;}
+  for(let j=0;j<b.p;j++)S.th[j]-=S.lr*grad[j];
+  S.it++; if(S.it%2)S.loss.push(L); if(S.loss.length>420)S.loss.shift();
+  return L;
+}
+/* ---------- 2d drawing ---------- */
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');
+const W=860,H=640;
+function fitCV(){const dpr=window.devicePixelRatio||1;const bw=Math.round(W*dpr),bh=Math.round(H*dpr);
+  if(cv.width!==bw){cv.width=bw;cv.height=bh}
+  cx.setTransform(cv.width/W,0,0,cv.height/H,0,0);}
+const sx=x=>(x+LIM)/(2*LIM)*W, sy=y=>H-(y+LIM)/(2*LIM)*H;
+const ix=px=>px/W*2*LIM-LIM, iy=py=>(H-py)/H*2*LIM-LIM;
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function drawPoint(q,r=6.5){
+  cx.lineWidth=2.2;
+  if(q.c===1){cx.strokeStyle=css('--orange');const a=sx(q.x),b=sy(q.y);cx.beginPath();cx.moveTo(a-r,b-r);cx.lineTo(a+r,b+r);cx.moveTo(a-r,b+r);cx.lineTo(a+r,b-r);cx.stroke();}
+  else{cx.strokeStyle=css('--blue');cx.beginPath();cx.arc(sx(q.x),sy(q.y),r,0,7);cx.stroke();}
+}
+function drawLift1D(){
+  fitCV(); cx.clearRect(0,0,W,H);
+  const a=S.lift1d||0;
+  const lx=v=>(v+LIM)/(2*LIM)*W;
+  const yb=(0.5+0.3056*a)*H; const ly=v=>yb-v*(H/3.6);
+  cx.strokeStyle=css('--ink2');cx.lineWidth=1.6;
+  cx.beginPath();cx.moveTo(lx(-LIM),ly(0));cx.lineTo(lx(LIM),ly(0));cx.stroke();
+  cx.fillStyle=css('--mut');cx.font='15px "Avenir Next",sans-serif';
+  if(!S.noText)cx.fillText('x',lx(LIM)-20,ly(0)+24);
+  if(a>0.01){
+    cx.save();cx.globalAlpha=a;
+    cx.strokeStyle=css('--ink2');cx.lineWidth=1.6;
+    cx.beginPath();cx.moveTo(lx(0),ly(-0.05));cx.lineTo(lx(0),ly(2.85));cx.stroke();
+    if(!S.noText){cx.fillStyle=css('--mut');cx.fillText('x₂ = x²',lx(0)+10,ly(2.85)+18);}
+    cx.setLineDash([4,5]);cx.strokeStyle=css('--mut');cx.lineWidth=1.2;
+    cx.beginPath();
+    let started=false;
+    for(let i=0;i<=140;i++){const xx=-LIM+i*2*LIM/140;const yy=xx*xx;
+      if(yy<=2.9){const X=lx(xx),Y=ly(yy);started?cx.lineTo(X,Y):cx.moveTo(X,Y);started=true}}
+    cx.stroke();cx.setLineDash([]);cx.restore();
+  }
+  // trained model along the line: f(u) = fval(u, 0)
+  const NG=220, us=[], fv=[];
+  for(let i=0;i<=NG;i++){const u=-LIM+i*2*LIM/NG; us.push(u); fv.push(fval(u,0));}
+  const trained=S.it>0;
+  if(trained){
+    if(S.shade){
+      const hb=(1-a)*(H/2-8)+8;
+      cx.save();cx.globalAlpha=Math.min(1,0.85*(1-a)+0.25);
+      for(let i=0;i<NG;i++){
+        cx.fillStyle=fv[i]>0.5?css('--orange-t'):css('--blue-t');
+        cx.fillRect(lx(us[i]),yb-hb,lx(us[i+1])-lx(us[i])+0.5,2*hb);
+      }
+      cx.restore();
+    }
+    // colour the parabola by prediction as it appears
+    if(a>0.01){
+      cx.save();cx.globalAlpha=a;cx.lineWidth=3;
+      for(let i=0;i<NG;i++){
+        if(us[i]*us[i]>2.9) continue;
+        cx.strokeStyle=fv[i]>0.5?css('--orange'):css('--blue');
+        cx.globalAlpha=a*0.30;
+        cx.beginPath();cx.moveTo(lx(us[i]),ly(us[i]*us[i]));cx.lineTo(lx(us[i+1]),ly(us[i+1]*us[i+1]));cx.stroke();
+      }
+      cx.restore();
+    }
+    // boundary: cut points where f crosses 1/2 (always), plus the trained line in (x, x²) for poly k>=2
+    for(let i=0;i<NG;i++){
+      if((fv[i]-0.5)*(fv[i+1]-0.5)<0){
+        const t=(0.5-fv[i])/(fv[i+1]-fv[i]), u=us[i]+t*(us[i+1]-us[i]);
+        cx.strokeStyle=css('--ink');cx.lineWidth=2.4;
+        cx.beginPath();cx.moveTo(lx(u),ly(0)-13);cx.lineTo(lx(u),ly(0)+13);cx.stroke();
+        if(a>0.01){cx.save();cx.globalAlpha=a;
+          cx.beginPath();cx.arc(lx(u),ly(u*u),5,0,7);cx.fillStyle=css('--ink');cx.fill();cx.restore();}
+      }
+    }
+    if(a>0.05&&S.phi==='poly'&&S.k>=2){
+      const f0=fval(0,0), c2=(fval(1,0)+fval(-1,0))/2-f0, c1=(fval(1,0)-fval(-1,0))/2;
+      if(Math.abs(c2)>1e-9){
+        cx.save();cx.globalAlpha=a;cx.strokeStyle=css('--ink');cx.lineWidth=2.4;cx.beginPath();
+        let started=false;
+        for(let i=0;i<=NG;i++){
+          const u=us[i], v=(0.5-f0-c1*u)/c2;
+          if(v>=-0.55&&v<=2.9){const X=lx(u),Y=ly(v);started?cx.lineTo(X,Y):cx.moveTo(X,Y);started=true}
+          else started=false;
+        }
+        cx.stroke();cx.restore();
+      }
+    }
+  }
+  for(const q of S.pts){
+    const yy=a*q.x*q.x, X=lx(q.x);
+    cx.strokeStyle=css('--line');cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(X,ly(0));cx.lineTo(X,ly(yy));cx.stroke();
+    const r=7;cx.lineWidth=2.4;
+    if(q.c===1){cx.strokeStyle=css('--orange');cx.beginPath();cx.moveTo(X-r,ly(yy)-r);cx.lineTo(X+r,ly(yy)+r);cx.moveTo(X-r,ly(yy)+r);cx.lineTo(X+r,ly(yy)-r);cx.stroke();}
+    else{cx.strokeStyle=css('--blue');cx.beginPath();cx.arc(X,ly(yy),r,0,7);cx.stroke();}
+  }
+}
+function draw2d(){
+  if(S.ds==='oneD'){drawLift1D();return}
+  fitCV(); cx.clearRect(0,0,W,H);
+  const G=96;
+  const vals=new Float64Array(G*G);
+  let img=null,bl,or_;
+  if(S.shade){img=cx.createImageData(G,G);bl=hex(css('--blue'));or_=hex(css('--orange'));}
+  for(let gy=0;gy<G;gy++)for(let gx=0;gx<G;gx++){
+    const x=-LIM+(gx+.5)/G*2*LIM, y=LIM-(gy+.5)/G*2*LIM;
+    const f=fval(x,y); vals[gy*G+gx]=f;
+    if(img){const c=f>.5?or_:bl, al=Math.min(.30,Math.abs(f-.5)*.55);
+      const o=(gy*G+gx)*4; img.data[o]=c[0];img.data[o+1]=c[1];img.data[o+2]=c[2];img.data[o+3]=al*255;}
+  }
+  if(img){const off=document.createElement('canvas');off.width=off.height=G;
+    off.getContext('2d').putImageData(img,0,0);
+    cx.imageSmoothingEnabled=true; cx.drawImage(off,0,0,W,H);}
+  // axes
+  cx.strokeStyle=css('--ink2');cx.lineWidth=1.25;
+  cx.beginPath();cx.moveTo(sx(-LIM),sy(0));cx.lineTo(sx(LIM),sy(0));cx.moveTo(sx(0),sy(-LIM));cx.lineTo(sx(0),sy(LIM));cx.stroke();
+  // contour f=0.5 marching squares
+  cx.strokeStyle=css('--ink');cx.lineWidth=2.4;cx.beginPath();
+  const g2x=i=>-LIM+(i+.5)/G*2*LIM, g2y=j=>LIM-(j+.5)/G*2*LIM;
+  for(let j=0;j<G-1;j++)for(let i=0;i<G-1;i++){
+    const a=vals[j*G+i]-.5,b=vals[j*G+i+1]-.5,c2=vals[(j+1)*G+i+1]-.5,d=vals[(j+1)*G+i]-.5;
+    const pts=[];
+    const lerp=(p1,p2,v1,v2)=>{const t=v1/(v1-v2);return[p1[0]+(p2[0]-p1[0])*t,p1[1]+(p2[1]-p1[1])*t]};
+    const A=[g2x(i),g2y(j)],B=[g2x(i+1),g2y(j)],C=[g2x(i+1),g2y(j+1)],D=[g2x(i),g2y(j+1)];
+    if(a*b<0)pts.push(lerp(A,B,a,b)); if(b*c2<0)pts.push(lerp(B,C,b,c2));
+    if(c2*d<0)pts.push(lerp(C,D,c2,d)); if(d*a<0)pts.push(lerp(D,A,d,a));
+    if(pts.length>=2){cx.moveTo(sx(pts[0][0]),sy(pts[0][1]));cx.lineTo(sx(pts[1][0]),sy(pts[1][1]));
+      if(pts.length===4){cx.moveTo(sx(pts[2][0]),sy(pts[2][1]));cx.lineTo(sx(pts[3][0]),sy(pts[3][1]))}}
+  }
+  cx.stroke();
+  for(const q of S.pts)drawPoint(q);
+}
+function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+/* ---------- 3d lift view ---------- */
+const zMode=()=>{
+  let m=S.zMode==='auto'?({xor:'x1x2',rings:'r2',oneD:'x1sq'}[S.ds]||'f'):S.zMode;
+  if(m!=='f' && !(S.phi==='poly'&&S.k>=2)) m='f';   // only lift along features the map actually has
+  return m;
+};
+function zChoices(){
+  const out=[['auto','z: auto (recommended)']];
+  if(S.phi==='poly'&&S.k>=2) out.push(['x1x2','z = x₁·x₂'],['x1sq','z = x₁²'],['x2sq','z = x₂²']);
+  out.push(['f','z = f(x) = θᵀφ(x) (output)']);
+  return out;
+}
+function rebuildZ(){
+  const sel=$('zSel'), opts=zChoices(); sel.innerHTML='';
+  for(const [v,l] of opts){const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o)}
+  if(!opts.some(o=>o[0]===S.zMode)) S.zMode='auto';
+  sel.value=S.zMode;
+}
+function zOf(q){
+  const m=zMode();
+  if(m==='x1x2')return q.x*q.y; if(m==='r2')return q.x*q.x+q.y*q.y;
+  if(m==='x1sq')return q.x*q.x; if(m==='x2sq')return q.y*q.y;
+  return Math.max(-1.5,Math.min(2.5,fval(q.x,q.y)));
+}
+function zLabel(){
+  return {x1x2:'z = x₁·x₂',r2:'z = x₁²+x₂²',x1sq:'z = x₁²',x2sq:'z = x₂²',f:'z = f(x) = θᵀφ(x), the trained model'}[zMode()];}
+function planeZ(){
+  const m=zMode();
+  if(m==='f')return .5;
+  if(!S.pts.length)return 0;
+  const z1=[],z0=[]; for(const q of S.pts)(q.c?z1:z0).push(zOf(q));
+  if(!z1.length||!z0.length)return 0;
+  const m1=z1.reduce((a,b)=>a+b,0)/z1.length, m0=z0.reduce((a,b)=>a+b,0)/z0.length;
+  return (m1+m0)/2;
+}
+function proj(x,y,z){
+  const cy=Math.cos(S.yaw),syw=Math.sin(S.yaw),cp=Math.cos(S.pitch),sp=Math.sin(S.pitch);
+  const X=x*cy - y*syw, Y=x*syw + y*cy;
+  const Z=z*S.liftT;
+  const u=X, v=-Z*cp + Y*sp;
+  const depth=Y*cp+Z*sp;
+  const sc=110*(S.zoom||1);
+  return [W/2+u*sc, H*0.56+v*sc, depth];
+}
+function draw3d(){
+  fitCV(); cx.clearRect(0,0,W,H);
+  const zp=planeZ();
+  // floor grid
+  cx.strokeStyle=css('--line');cx.lineWidth=1;
+  for(let i=-2;i<=2;i++){
+    let a=proj(i,-2.2,0),b=proj(i,2.2,0);cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();
+    a=proj(-2.2,i,0);b=proj(2.2,i,0);cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();
+  }
+  // origin-anchored axis triad
+  const O=proj(-2.2,-2.2,0);
+  cx.strokeStyle=css('--mut');cx.lineWidth=1.6;cx.fillStyle=css('--mut');cx.font='13px "Avenir Next",sans-serif';
+  let e=proj(2.2,-2.2,0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText('x₁',e[0]+4,e[1]);
+  e=proj(-2.2,2.2,0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText('x₂',e[0]+4,e[1]);
+  e=proj(-2.2,-2.2,2.0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText(zLabel(),e[0]+5,e[1]);
+  // separating plane at z=zp (only when lifted)
+  if(S.liftT>0.05){
+    const c=[proj(-2.1,-2.1,zp),proj(2.1,-2.1,zp),proj(2.1,2.1,zp),proj(-2.1,2.1,zp)];
+    cx.fillStyle=css('--blue-t');cx.strokeStyle=css('--mut');cx.lineWidth=1.1;
+    cx.beginPath();cx.moveTo(c[0][0],c[0][1]);for(let i=1;i<4;i++)cx.lineTo(c[i][0],c[i][1]);cx.closePath();cx.fill();cx.stroke();
+  }
+  // points with stems, painter-sorted
+  const ps=S.pts.map(q=>{const z=zOf(q);const P=proj(q.x,q.y,z);const B=proj(q.x,q.y,0);return{q,z,P,B}});
+  ps.sort((a,b)=>a.P[2]-b.P[2]);
+  for(const o of ps){
+    cx.strokeStyle=css('--line');cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(o.B[0],o.B[1]);cx.lineTo(o.P[0],o.P[1]);cx.stroke();
+    const r=6;cx.lineWidth=2.2;
+    if(o.q.c===1){cx.strokeStyle=css('--orange');cx.beginPath();cx.moveTo(o.P[0]-r,o.P[1]-r);cx.lineTo(o.P[0]+r,o.P[1]+r);cx.moveTo(o.P[0]-r,o.P[1]+r);cx.lineTo(o.P[0]+r,o.P[1]-r);cx.stroke();}
+    else{cx.strokeStyle=css('--blue');cx.beginPath();cx.arc(o.P[0],o.P[1],r,0,7);cx.stroke();}
+  }
+}
+/* ---------- spark ---------- */
+const sp=document.getElementById('spark'),sg=sp.getContext('2d');
+function drawSpark(){
+  sg.clearRect(0,0,sp.width,sp.height);
+  if(S.loss.length<2)return;
+  const lg=S.loss.map(L=>Math.log10(L+1e-9));
+  const mx=Math.max(...lg),mn=Math.min(...lg);
+  sg.strokeStyle=css('--accent');sg.lineWidth=2;sg.beginPath();
+  lg.forEach((L,i)=>{const x=i/(lg.length-1)*sp.width;
+    const y=sp.height-6-(sp.height-14)*((L-mn)/(mx-mn+1e-12));
+    i?sg.lineTo(x,y):sg.moveTo(x,y)});
+  sg.stroke();
+}
+/* ---------- stats & hints ---------- */
+const $=id=>document.getElementById(id);
+function misclass(){let m=0;for(const q of S.pts){const f=fval(q.x,q.y);if((q.c===0&&f>.5)||(q.c===1&&f<.5))m++}return m}
+function texPhi(){
+  const o1=S.ds==='oneD';
+  if(S.phi==='linear')return o1?'\\varphi(x) = (1,\\; x)^{\\top}':'\\varphi(\\mathbf{x}) = (1,\\; x_1,\\; x_2)^{\\top}';
+  if(S.phi==='poly'){
+    const t=[];
+    if(o1){for(let dg=0;dg<=S.k;dg++)t.push(dg===0?'1':('x'+(dg>1?'^{'+dg+'}':'')));}
+    else{for(let dg=0;dg<=S.k;dg++)for(let i=0;i<=dg;i++){const a=dg-i,b2=i;
+      t.push(a===0&&b2===0?'1':((a?('x_1'+(a>1?'^{'+a+'}':'')):'')+(b2?('x_2'+(b2>1?'^{'+b2+'}':'')):'')));}}
+    const s=t.length>10?t.slice(0,8).join(',\\;')+',\\;\\ldots,\\;'+t[t.length-1]:t.join(',\\;');
+    return '\\varphi(\\mathbf{x}) = ('+s+')^{\\top}';
+  }
+  if(S.phi==='rbf'){const M=(S.built&&S.built.meta&&S.built.meta.C)?S.built.meta.C.length:'m';
+    if(o1)return '\\varphi(x) = \\bigl(1,\\; e^{-(x-c_{1})^2/2\\sigma^2},\\; \\ldots,\\; e^{-(x-c_{'+M+'})^2/2\\sigma^2}\\bigr)^{\\top}';
+    return '\\varphi(\\mathbf{x}) = \\bigl(1,\\; e^{-\\lVert \\mathbf{x}-\\mathbf{c}_{1}\\rVert^2/2\\sigma^2},\\; \\ldots,\\; e^{-\\lVert \\mathbf{x}-\\mathbf{c}_{'+M+'}\\rVert^2/2\\sigma^2}\\bigr)^{\\top}';}
+  const Dv=(S.built&&S.built.meta&&S.built.meta.W)?S.built.meta.W.length:(S.D||48);
+  if(o1)return '\\varphi(x) = \\bigl(1,\\; \\cos(\\omega_1 x+b_1),\\; \\ldots,\\; \\cos(\\omega_{'+Dv+'} x+b_{'+Dv+'})\\bigr)^{\\top}';
+  return '\\varphi(\\mathbf{x}) = \\bigl(1,\\; \\cos(\\mathbf{\\omega}_1^{\\top}\\mathbf{x}+b_1),\\; \\ldots,\\; \\cos(\\mathbf{\\omega}_{'+Dv+'}^{\\top}\\mathbf{x}+b_{'+Dv+'})\\bigr)^{\\top}';
+}
+function updateModel(){
+  const put=(el,tex,fb)=>{el.innerHTML='';
+    try{ if(window.MathJax&&MathJax.tex2svg){el.appendChild(MathJax.tex2svg(tex));return} }catch(_){}
+    el.textContent=fb;};
+  const dd=(S.ds==='oneD'?1:2), pp=S.built?S.built.p:3;
+  const tex='\\begin{aligned} f(\\mathbf{x}) &= \\mathbf{\\theta}^{\\top}\\varphi(\\mathbf{x}),\\qquad \\mathbf{\\theta}\\in\\mathbb{R}^{'+pp+'} \\\\[3pt] '
+    +texPhi().replace('\\varphi(\\mathbf{x}) =','\\varphi(\\mathbf{x}) &=')+' \\;\\in\\; \\mathbb{R}^{'+pp+'} \\end{aligned}';
+  put($('feq'),tex,'f(x) = θᵀφ(x)  ·  '+phiFormula());
+  try{
+    const old=document.getElementById('MJX-SVG-styles'); if(old)old.remove();
+    if(window.MathJax&&MathJax.svgStylesheet)document.head.appendChild(MathJax.svgStylesheet());
+  }catch(_){}
+}
+/* ---------- trained f, written out ---------- */
+function fmtCo(v,first){const neg=v<-0.005;const s=(Math.abs(v)<0.005?0:Math.abs(v)).toFixed(2);
+  return (first?(neg?'-':''):(neg?'\\;-\\;':'\\;+\\;'))+s;}
+function rawA(){const b=S.built,t=S.th;if(!b||!t||t.length!==b.p)return null;
+  const a=new Float64Array(b.p);a[0]=t[0];
+  for(let j=1;j<b.p;j++){a[j]=t[j]/b.sd[j];a[0]-=t[j]*b.mu[j]/b.sd[j];}
+  return a;}
+function updateF(){
+  const el=$('fexp');if(!el)return;
+  const a=rawA(),b=S.built;
+  if(!a){el.textContent='–';return}
+  const oneD=S.ds==='oneD';
+  const terms=[];let tail='';
+  if(S.phi==='linear'||S.phi==='poly'){
+    const exps=S.phi==='linear'?[[0,0],[1,0],[0,1]]:((b.meta&&b.meta.exps)||[]);
+    for(let j=0;j<b.p;j++){const e=exps[j]||[0,0];
+      if(oneD&&e[1])continue;
+      const m1=e[0]?((oneD?'x':'x_1')+(e[0]>1?'^{'+e[0]+'}':'')):'';
+      const m2=e[1]?('x_2'+(e[1]>1?'^{'+e[1]+'}':'')):'';
+      terms.push({c:a[j],t:(m1&&m2)?m1+'\\,'+m2:(m1||m2)});}
+  } else if(S.phi==='rbf'&&b.meta){
+    terms.push({c:a[0],t:''});
+    const C=b.meta.C;
+    for(let j=0;j<Math.min(4,C.length);j++)
+      terms.push({c:a[j+1],t:oneD?('e^{-(x-'+C[j][0].toFixed(1)+')^2/2\\sigma^2}'):('e^{-\\lVert\\mathbf{x}-('+C[j][0].toFixed(1)+','+C[j][1].toFixed(1)+')\\rVert^2/2\\sigma^2}')});
+    if(C.length>4)tail='\\;+\\;\\cdots\\quad('+C.length+'\\;\\mathrm{bumps},\\;\\sigma='+S.sig.toFixed(2)+')';
+  } else if(b.meta){
+    terms.push({c:a[0],t:''});
+    const Wv=b.meta.W,Bv=b.meta.B;
+    for(let j=0;j<Math.min(4,Wv.length);j++){
+      const w2s=Wv[j][1]<0?Wv[j][1].toFixed(1):'+'+Wv[j][1].toFixed(1);
+      terms.push({c:a[j+1],t:oneD?('\\cos('+Wv[j][0].toFixed(1)+'x+'+Bv[j].toFixed(1)+')'):('\\cos('+Wv[j][0].toFixed(1)+'x_1'+w2s+'x_2+'+Bv[j].toFixed(1)+')')});}
+    if(Wv.length>4)tail='\\;+\\;\\cdots\\quad('+Wv.length+'\\;\\mathrm{cosines})';
+  }
+  const shown=terms;
+  const plain=t=>t.replace(/\\lVert|\\rVert/g,'‖').replace(/\\sigma/g,'σ').replace(/\\cos/g,'cos').replace(/\\[a-zA-Z]+/g,'').replace(/[{}^_\\]/g,'');
+  const parts=[];let cur='',curLen=0,fb='f(x) = ';
+  shown.forEach((q,i)=>{const piece=fmtCo(q.c,i===0)+(q.t?'\\,'+q.t:'');
+    const pl=plain(piece).length;
+    if(curLen>0&&curLen+pl>62){parts.push(cur);cur='';curLen=0;}
+    cur+=piece;curLen+=pl;
+    fb+=(i?(q.c<-0.005?' − ':' + '):(q.c<-0.005?'−':''))+(Math.abs(q.c)<0.005?0:Math.abs(q.c)).toFixed(2)+(q.t?'·'+plain(q.t):'');});
+  if(cur)parts.push(cur);
+  if(tail){if(parts.length)parts[parts.length-1]+=tail;else parts.push(tail);}
+  let tex;
+  const fpre=(S.ds==='oneD')?'f(x)':'f(\\mathbf{x})';
+  if(parts.length>1){tex='\\begin{aligned}'+fpre+' \;=\;\\, & '+parts[0];
+    for(let i2=1;i2<parts.length;i2++)tex+='\\\\\\\\[2pt] & '+parts[i2];
+    tex+='\\end{aligned}';}
+  else tex=fpre+' \;=\; '+(parts[0]||'0');
+  el.innerHTML='';
+  try{if(window.MathJax&&MathJax.tex2svg){el.appendChild(MathJax.tex2svg(tex));
+    const old=document.getElementById('MJX-SVG-styles');if(old)old.remove();
+    if(MathJax.svgStylesheet)document.head.appendChild(MathJax.svgStylesheet());return}}catch(_){}
+  el.textContent=fb+(tail?' + …':'');
+}
+let fSig='',fT=0;
+function maybeF(){
+  const sig=S.it+'|'+S.phi+'|'+(S.built?S.built.p:0)+'|'+S.pts.length+'|'+S.k+'|'+S.sig+'|'+S.frq+'|'+(S.m||0)+'|'+(S.D||48)+'|'+S.ds;
+  if(sig===fSig)return;
+  const now=performance.now();
+  if(S.playing&&now-fT<400)return;
+  fSig=sig;fT=now;try{updateF()}catch(_){}}
+const READS={
+ xor:'XOR: linear fails (try it). Order 2 gives x₁x₂ — one feature is all it takes. Lift view: the classes split along z = x₁x₂ and a plane separates them.',
+ rings:'Rings: order 2 gives x₁²+x₂². Lift view: the paraboloid lift — inner points stay low, ring rises. RBF works too: "similar = close".',
+ moons:'Moons: order 3–4 bends enough. Crank to 6 and watch the boundary start carving — overfitting in real time.',
+ spiral:'Spiral: polynomial struggles even at order 6; RBF with small σ nails it. Similarity beats monomials here.',
+ blobs:'Sanity check: separable blobs — linear is enough. Everything else today is about when it is not.',
+ oneD:'The lecture example: + − − + on a line. Train with order ≥ 2 — the boundary appears as two cut points. Then ⤴ lift!: the points rise to (x, x²) and the same trained model shows up as a straight line.'};
+const SUP={2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶'};
+function phiFormula(){
+  const o1=S.ds==='oneD';
+  if(S.phi==='linear')return o1?'φ(x) = (1, x)':'φ(x) = (1, x₁, x₂)';
+  if(S.phi==='poly'){
+    const terms=[];
+    if(o1){for(let d=0;d<=S.k;d++)terms.push(d===0?'1':('x'+(d>1?SUP[d]:'')));}
+    else{for(let d=0;d<=S.k;d++)for(let i=0;i<=d;i++){const a=d-i,b2=i;
+      terms.push(a===0&&b2===0?'1':((a?('x₁'+(a>1?SUP[a]:'')):'')+(b2?('x₂'+(b2>1?SUP[b2]:'')):'')));}}
+    const s=terms.length>10?terms.slice(0,9).join(', ')+', …, '+terms[terms.length-1]:terms.join(', ');
+    return 'φ(x) = ('+s+')ᵀ';
+  }
+  if(S.phi==='rbf')return o1?'φ(x) = (1, e^(−(x−c₁)²/2σ²), …, e^(−(x−cₘ)²/2σ²))ᵀ — one bump per center':'φ(x) = (1, e^(−‖x−c₁‖²/2σ²), …, e^(−‖x−cₘ‖²/2σ²))ᵀ — one bump per center (default: every training point)';
+  return o1?'φ(x) = (1, cos(ω₁x+b₁), …, cos(ω_Dx+b_D))ᵀ':'φ(x) = (1, cos(ω₁ᵀx+b₁), …, cos(ω_Dᵀx+b_D))ᵀ,  ωⱼ ~ 𝒩(0, s²I)';
+}
+const tbc=document.getElementById('thBars'),tg=tbc.getContext('2d');
+function drawTh(){
+  const t=S.th; tg.clearRect(0,0,tbc.width,tbc.height);
+  if(!t||!t.length)return;
+  const mx=Math.max(1e-6,...Array.from(t).map(Math.abs));
+  const w=tbc.width/t.length, mid=tbc.height/2;
+  tg.strokeStyle=css('--line');tg.beginPath();tg.moveTo(0,mid);tg.lineTo(tbc.width,mid);tg.stroke();
+  for(let j=0;j<t.length;j++){
+    const h=(t[j]/mx)*(mid-4);
+    tg.fillStyle=t[j]>=0?css('--blue'):css('--orange');
+    tg.fillRect(j*w+.5, h>=0?mid-h:mid, Math.max(1,w-1), Math.abs(h));
+  }
+}
+function refresh(){
+  const b=S.built;
+  $('nBig').innerHTML=S.pts.length+' <small>examples n</small>';
+  $('pBig').innerHTML=b.p+' <small>features p</small>';
+  $('dBig').innerHTML=(S.ds==='oneD'?1:2)+' <small>input dim d</small>';
+  const sh=Math.min(4,S.th.length);
+  $('thTxt').innerHTML='θ = ('+Array.from(S.th.slice(0,sh)).map(v=>v.toFixed(2)).join(', ')+(S.th.length>sh?', …':'')+')ᵀ ∈ ℝ<sup>'+b.p+'</sup>';
+  drawTh();
+  $('itStat').textContent=S.it;
+  $('lossStat').textContent=S.loss.length?S.loss[S.loss.length-1].toFixed(4):'–';
+  const m=misclass();
+  $('misStat').innerHTML=`<span class="pill ${m? 'bad':'ok'}">${m} / ${S.pts.length}</span>`;
+  $('reading').textContent=READS[S.ds];
+  $('liftHint').textContent=S.view==='3d'?zLabel()+' · plane at z = '+planeZ().toFixed(2):'';
+  maybeF();
+}
+function render(){ (S.view==='2d'?draw2d:draw3d)(); drawSpark(); refresh(); }
+/* ---------- interaction ---------- */
+function setDS(name){S.ds=name;S.pts=gen(name);S.th=null;buildPhi();
+  document.querySelectorAll('#dsChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===name));
+  $('lift').hidden=name!=='oneD';
+  if(name==='oneD'){S.view='2d';S.lift1d=0;S.liftT=0;S.zMode='auto'} else {S.liftT=1;S.lift1d=1}
+  tabSync(); render();}
+function setPhi(kind){S.phi=kind;S.th=null;buildPhi();
+  document.querySelectorAll('#phiChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===kind));
+  $('rowK').hidden=kind!=='poly';$('rowS').hidden=kind!=='rbf';$('rowF').hidden=kind!=='fourier';$('rowM').hidden=kind!=='rbf';$('rowD').hidden=kind!=='fourier';
+  render();}
+const DS=[['xor','XOR'],['rings','rings'],['moons','moons'],['spiral','spiral'],['oneD','1D ±'],['blobs','blobs (sep.)']];
+DS.forEach(([v,l])=>{const b=document.createElement('button');b.className='chip';b.dataset.v=v;b.textContent=l;
+  b.onclick=()=>setDS(v);$('dsChips').appendChild(b)});
+[['linear','linear'],['poly','polynomial'],['rbf','RBF'],['fourier','Fourier']].forEach(([v,l])=>{
+  const b=document.createElement('button');b.className='chip';b.dataset.v=v;b.textContent=l;
+  b.onclick=()=>setPhi(v);$('phiChips').appendChild(b)});
+$('k').oninput=e=>{S.k=+e.target.value;$('kv').textContent=S.k;S.th=null;buildPhi();render()};
+$('sig').oninput=e=>{S.sig=+e.target.value;$('sigv').textContent=S.sig.toFixed(2);S.th=null;buildPhi();render()};
+$('frq').oninput=e=>{S.frq=+e.target.value;$('frqv').textContent=S.frq.toFixed(1);S.th=null;buildPhi();render()};
+$('m').oninput=e=>{S.m=+e.target.value;S.th=null;buildPhi();render()};
+$('D').oninput=e=>{S.D=+e.target.value;S.th=null;buildPhi();render()};
+$('lr').oninput=e=>{S.lr=Math.pow(10,+e.target.value);$('lrv').textContent=S.lr.toFixed(2)};
+S.lr=Math.pow(10,-0.3);
+$('play').onclick=()=>{S.playing=!S.playing;$('play').textContent=S.playing?'❚❚ pause':'▶ train';render()};
+$('step').onclick=()=>{for(let i=0;i<4;i++)gdStep();render()};
+$('reset').onclick=()=>{S.th=new Float64Array(S.built.p);S.it=0;S.loss=[];render()};
+$('regen').onclick=()=>{S.seed3=(S.seed3*17+3)%1000;setDS(S.ds)};
+$('clear').onclick=()=>{S.pts=[];S.th=null;buildPhi();render()};
+$('addX').onclick=()=>{S.addClass=1;$('addX').classList.add('on');$('addO').classList.remove('on')};
+$('addO').onclick=()=>{S.addClass=0;$('addO').classList.add('on');$('addX').classList.remove('on')};
+$('lift').onclick=()=>{const up=(S.lift1d||0)<0.5;const t0=performance.now(),dur=1500;
+  const anim=()=>{const t=Math.min(1,(performance.now()-t0)/dur);const e=t*t*(3-2*t);
+    S.lift1d=up?e:1-e; S.liftT=S.lift1d; render(); if(t<1)requestAnimationFrame(anim)};
+  anim()};
+function tabSync(){$('tab2d').classList.toggle('on',S.view==='2d');$('tab3d').classList.toggle('on',S.view==='3d');$('tab3d').hidden=(S.ds==='oneD');$('mode3dLeg').hidden=S.view!=='3d';$('zSel').hidden=S.view!=='3d';rebuildZ()}
+$('tab2d').onclick=()=>{S.view='2d';tabSync();render()};
+$('tab3d').onclick=()=>{S.view='3d';tabSync();render()};
+$('shadeBtn').onclick=()=>{S.shade=!S.shade;$('shadeBtn').classList.toggle('on',S.shade);render()};
+rebuildZ();
+$('zSel').onchange=e=>{S.zMode=e.target.value;render()};
+let drag=null;
+cv.addEventListener('pointerdown',e=>{
+  const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,py=(e.clientY-r.top)*H/r.height;
+  if(S.view==='3d'){drag={px:e.clientX,py:e.clientY,yaw:S.yaw,pitch:S.pitch};cv.setPointerCapture(e.pointerId);return}
+  if(e.button===2)return;
+  const x=ix(px),y=S.ds==='oneD'?0:iy(py);
+  S.pts.push({x,y,c:S.addClass});S.th=null;buildPhi();render();
+});
+cv.addEventListener('pointermove',e=>{if(drag){S.yaw=drag.yaw+(e.clientX-drag.px)*.01;S.pitch=Math.max(.08,Math.min(1.2,drag.pitch+(e.clientY-drag.py)*.008));render()}});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('contextmenu',e=>{e.preventDefault();
+  const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,py=(e.clientY-r.top)*H/r.height;
+  const x=ix(px),y=iy(py);let bi=-1,bd=1e9;
+  S.pts.forEach((q,i)=>{const d=(q.x-x)**2+(q.y-y)**2;if(d<bd){bd=d;bi=i}});
+  if(bi>=0&&bd<.09){S.pts.splice(bi,1);S.th=null;buildPhi();render()}});
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){e.preventDefault();$('step').click()}
+  else if(e.key==='p')$('play').click();
+  else if(e.key==='r')$('reset').click();
+  else if(e.key==='n')$('regen').click();});
+/* theme */
+const root=document.documentElement;
+try{const t=localStorage.getItem('fp-theme');if(t)root.dataset.theme=t}catch(_){}
+$('themeBtn').onclick=()=>{const cur=root.dataset.theme==='dark'?'light':'dark';root.dataset.theme=cur;
+  try{localStorage.setItem('fp-theme',cur)}catch(_){ } render()};
+/* loop */
+function tick(){ if(S.playing){const steps=S.built.p>60?5:10;for(let i=0;i<steps;i++)gdStep();render()} requestAnimationFrame(tick)}
+setDS('xor');setPhi('linear');tabSync();render();requestAnimationFrame(tick);
+if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)MathJax.startup.promise.then(()=>{try{updateModel()}catch(_){} fSig='';try{updateF()}catch(_){}});
+</script>
