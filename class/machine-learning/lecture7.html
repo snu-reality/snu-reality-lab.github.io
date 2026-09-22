@@ -1,0 +1,1705 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evaluation Playground</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
+  --line:#dde2e9; --blue:#003380; --green:#5c8a2e; --gold:#a87b2f; --red:#b3423a;
+  --blue-t:rgba(0,51,128,.10); --green-t:rgba(92,138,46,.13); --gold-t:rgba(168,123,47,.16);
+  --red-t:rgba(179,66,58,.13); --accent:#003380; --chipbg:#eef1f5; --grid:#e8ebf0;
+  --ok:#2e7d4f; --bad:#b3423a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+    --line:#303845; --blue:#5b86cf; --green:#8fbf5f; --gold:#d3a75a; --red:#e0776d;
+    --blue-t:rgba(91,134,207,.20); --green-t:rgba(143,191,95,.18); --gold-t:rgba(211,167,90,.20);
+    --red-t:rgba(224,119,109,.18); --accent:#5b86cf; --chipbg:#262d37; --grid:#262d37;
+    --ok:#7fc79b; --bad:#e0776d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+  --line:#303845; --blue:#5b86cf; --green:#8fbf5f; --gold:#d3a75a; --red:#e0776d;
+  --blue-t:rgba(91,134,207,.20); --green-t:rgba(143,191,95,.18); --gold-t:rgba(211,167,90,.20);
+  --red-t:rgba(224,119,109,.18); --accent:#5b86cf; --chipbg:#262d37; --grid:#262d37;
+  --ok:#7fc79b; --bad:#e0776d;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
+[hidden]{display:none!important}
+h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
+.sub{color:var(--ink2);font-size:13.5px;margin-top:2px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:11px;flex-wrap:wrap}
+.modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.theme{border:1px solid var(--line);background:var(--panel);color:var(--ink2);border-radius:7px;padding:5px 10px;font:600 12px inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:minmax(0,292px) minmax(0,1fr);gap:12px;align-items:start}
+.rail{display:grid;gap:12px;align-content:start;position:sticky;top:14px;min-width:0}
+.stage{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.card.wide{grid-column:1/-1}
+.tab{border:1px solid var(--line);background:none;color:var(--ink2);border-radius:7px;padding:5px 13px;font:600 12.5px inherit;cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:13px 0 6px;font-weight:700}
+.lab:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--chipbg);color:var(--ink2);border-radius:14px;padding:3px 11px;font:600 13px inherit;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:grid;grid-template-columns:minmax(0,102px) minmax(0,1fr) minmax(0,50px);align-items:center;gap:8px;margin:6px 0}
+.row label{color:var(--ink2);font-size:13.5px}
+.row input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}
+.row .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:13.5px;white-space:nowrap}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+button.b{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:6px 12px;font:600 13.5px inherit;cursor:pointer}
+button.b.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.b:active{transform:translateY(1px)}
+button.b[disabled]{opacity:.45;cursor:default}
+.cv{width:100%;display:block;border-radius:8px;touch-action:none}
+.hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.hd h2{font-size:14.5px;margin:0;font-weight:600;flex:1 1 auto;min-width:0}
+.hd .seg{flex:0 0 auto}
+.hd .note{flex:0 1 auto}
+.hd .note{font-size:12px;color:var(--mut)}
+.legend{display:flex;gap:13px;font-size:11.5px;color:var(--ink2);margin-top:6px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{width:12px;height:12px;display:inline-block;border-radius:3px}
+.sw.ln{height:3px;border-radius:2px;width:15px}
+.stat{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;font-size:13.5px;padding:2.5px 0;border-bottom:1px solid var(--grid)}
+.stat:last-child{border-bottom:none}
+.stat b{font-weight:600}
+.bigrow{display:flex;gap:18px;flex-wrap:wrap}
+.big{font-size:25px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.12}
+.big small{display:block;font-size:11.5px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.pill{display:inline-block;border-radius:9px;padding:1px 8px;font-size:11.5px;font-weight:700}
+.pill.ok{background:var(--green-t);color:var(--ok)}
+.pill.bad{background:var(--red-t);color:var(--bad)}
+.pill.mid{background:var(--gold-t);color:var(--gold)}
+.read{font-size:12.8px;line-height:1.55;color:var(--ink2)}
+.read b{color:var(--ink)}
+.keys{color:var(--mut);font-size:11.5px;margin-top:10px}
+.keys kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font:11px ui-monospace,monospace;background:var(--chipbg)}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:3px;font-size:13px;margin-top:4px}
+.cm div{padding:7px 4px;text-align:center;border-radius:5px;font-variant-numeric:tabular-nums}
+.cm .h{background:var(--chipbg);color:var(--ink2);font-weight:700;font-size:11.5px}
+.cm .rh{background:var(--chipbg);color:var(--ink2);font-weight:700;font-size:11.5px;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.cm .tp,.cm .tn{background:var(--green-t);font-weight:700}
+.cm .fp,.cm .fn{background:var(--red-t);font-weight:700}
+.cm .corner{background:none}
+.prog{height:4px;background:var(--grid);border-radius:3px;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .12s linear}
+.eqbox{overflow-x:auto;overflow-y:hidden;margin:2px 0 0;font-size:13px}
+.mjx-container{font-size:100%!important;vertical-align:-.12em}
+.legend .mjx-container, .stat .mjx-container{font-size:98%!important}
+.tiny{font-size:11.5px;color:var(--mut)}
+.seg{display:flex;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{flex:1;border:none;background:var(--panel);color:var(--ink2);padding:5px 6px;font:600 12px inherit;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--accent);color:#fff}
+@media(max-width:1180px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:820px){
+  .stage{grid-template-columns:1fr}
+  .rail{grid-template-columns:1fr}
+  body{padding:12px 12px 16px}
+}
+</style>
+
+<div class="top">
+  <div>
+    <h1>Evaluation Playground</h1>
+    <div class="sub">4190.428 Lecture 7</div>
+  </div>
+  <div class="modes">
+    <button class="tab on" data-mode="A">① Bias &amp; Variance</button>
+    <button class="tab" data-mode="B">② Choosing the Model</button>
+    <button class="tab" data-mode="C">③ Classification &amp; Metrics</button>
+    <button class="theme" id="themeBtn">☀︎ / ☾</button>
+  </div>
+</div>
+
+<div class="app">
+<!-- ============================== RAIL ============================== -->
+<div class="rail">
+
+  <!-- regression data (modes A,B) -->
+  <div class="card" id="railData">
+    <div class="lab">True function <span class="tiny" id="degStar"></span></div>
+    <div class="chips" id="fnChips"></div>
+    <div class="row"><label>noise <span data-tex="\sigma"></span></label><input type="range" id="sig" min="0" max="1" step="0.025" value="0.35"><span class="val" id="sigv">0.35</span></div>
+    <div class="row"><label>sample size <span data-tex="n"></span></label><input type="range" id="n" min="8" max="200" step="1" value="20"><span class="val" id="nv">20</span></div>
+    <div class="row"><label># datasets <span data-tex="K"></span></label><input type="range" id="K" min="2" max="60" step="1" value="20"><span class="val" id="Kv">20</span></div>
+    <div class="row" id="drawRow"><label>curves drawn</label><input type="range" id="draw" min="1" max="60" step="1" value="20"><span class="val" id="drawv">20</span></div>
+    <div class="btns">
+      <button class="b primary" id="regen">↻ new datasets</button>
+      <button class="b" id="anim">▶ redraw ×20</button>
+    </div>
+    <div class="keys">keys <kbd>n</kbd> new data · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> mode · <kbd>←</kbd><kbd>→</kbd> complexity</div>
+  </div>
+
+  <!-- model (modes A,B) -->
+  <div class="card" id="railModel">
+    <div class="lab">Model class</div>
+    <div class="seg" id="modelSeg">
+      <button data-m="poly" class="on">Poly</button><button data-m="nn">Neural net</button><button data-m="rf">Random features</button>
+    </div>
+    <div id="polyCtl">
+      <div class="row"><label>degree <span data-tex="d"></span></label><input type="range" id="deg" min="0" max="24" step="1" value="3"><span class="val" id="degv">3</span></div>
+      <div class="row"><label>ridge <span data-tex="\log_{10}\lambda"></span></label><input type="range" id="lam" min="-8" max="1" step="0.25" value="-8"><span class="val" id="lamv">off</span></div>
+    </div>
+    <div id="nnCtl" hidden>
+      <div class="row"><label>hidden layers</label><input type="range" id="L" min="1" max="4" step="1" value="2"><span class="val" id="Lv">2</span></div>
+      <div class="row"><label>width</label><input type="range" id="wid" min="2" max="64" step="1" value="16"><span class="val" id="widv">16</span></div>
+      <div class="lab">activation</div>
+      <div class="chips" id="actChips"></div>
+      <div class="row"><label>epochs</label><input type="range" id="steps" min="100" max="4000" step="100" value="1200"><span class="val" id="stepsv">1200</span></div>
+      <div class="row"><label>weight decay</label><input type="range" id="wd" min="-7" max="-1" step="0.25" value="-7"><span class="val" id="wdv">off</span></div>
+    </div>
+    <div id="rfCtl" hidden>
+      <div class="row"><label># features <span data-tex="D"></span></label><input type="range" id="D" min="2" max="400" step="1" value="16"><span class="val" id="Dv">16</span></div>
+      <div class="lab">feature nonlinearity</div>
+      <div class="chips" id="rfactChips"></div>
+      <div class="row"><label>feature scale</label><input type="range" id="rfs" min="1" max="60" step="1" value="24"><span class="val" id="rfsv">24</span></div>
+      <div class="row"><label>ridge <span data-tex="\log_{10}\lambda"></span></label><input type="range" id="rflam" min="-8" max="0" step="0.25" value="-8"><span class="val" id="rflamv">off</span></div>
+      <div class="tiny" style="margin-top:4px">Frozen random first layer, min-norm read-out. Only the read-out is fitted, so
+      <b><span data-tex="p = D+1"></span></b> exactly and the interpolation threshold sits at <b><span data-tex="D = n-1"></span></b>. Feature scale needs to be ≈ n to
+      resolve n points — it tracks n for you until you move it.</div>
+    </div>
+    <div class="lab">Capacity</div>
+    <div class="bigrow">
+      <div class="big" id="pBig">4 <small>params <span data-tex="p"></span></small></div>
+      <div class="big" id="ratioBig">0.20 <small><span data-tex="p/n"></span></small></div>
+      <div class="big" id="normBig">– <small><span data-tex="\lVert\theta\rVert/\sqrt{p}"></span></small></div>
+    </div>
+    <div class="btns"><button class="b" id="ddPreset">⚡ double-descent preset</button></div>
+  </div>
+
+  <!-- split (mode B) -->
+  <div class="card" id="railSplit" hidden>
+    <div class="lab">Split &amp; validation</div>
+    <div class="row"><label>held-out %</label><input type="range" id="tf" min="10" max="70" step="5" value="30"><span class="val" id="tfv">30%</span></div>
+    <div class="row"><label>CV folds <span data-tex="k"></span></label><input type="range" id="folds" min="2" max="10" step="1" value="5"><span class="val" id="foldsv">5</span></div>
+    <div class="row"><label>repeats</label><input type="range" id="reps" min="5" max="120" step="5" value="40"><span class="val" id="repsv">40</span></div>
+    <div class="btns"><button class="b primary" id="runB">▶ run sweep</button></div>
+    <div class="prog"><i id="progB"></i></div>
+    <div class="tiny" id="statusB" style="margin-top:6px">press <b>run sweep</b></div>
+  </div>
+
+  <!-- classification (mode C) -->
+  <div class="card" id="railC1" hidden>
+    <div class="lab">Dataset</div>
+    <div class="chips" id="cdsChips"></div>
+    <div class="row"><label>points <span data-tex="n"></span></label><input type="range" id="cn" min="40" max="800" step="20" value="320"><span class="val" id="cnv">320</span></div>
+    <div class="row"><label>spread</label><input type="range" id="cnoise" min="0.02" max="0.60" step="0.01" value="0.22"><span class="val" id="cnoisev">0.22</span></div>
+    <div class="row"><label>label flips</label><input type="range" id="cflip" min="0" max="0.3" step="0.01" value="0.04"><span class="val" id="cflipv">4%</span></div>
+    <div class="row"><label>% positive</label><input type="range" id="pos" min="5" max="50" step="5" value="20"><span class="val" id="posv">20%</span></div>
+    <div class="row"><label>held-out %</label><input type="range" id="ctf" min="10" max="60" step="5" value="30"><span class="val" id="ctfv">30%</span></div>
+    <div class="btns"><button class="b primary" id="cregen">↻ new dataset</button></div>
+  </div>
+  <div class="card" id="railC2" hidden>
+    <div class="lab">Model</div>
+    <div class="row"><label>poly features</label><input type="range" id="cdeg" min="1" max="8" step="1" value="1"><span class="val" id="cdegv">1</span></div>
+    <div class="row"><label>hidden layers</label><input type="range" id="cL" min="0" max="3" step="1" value="0"><span class="val" id="cLv">0</span></div>
+    <div class="row"><label>width</label><input type="range" id="cwid" min="2" max="48" step="1" value="12"><span class="val" id="cwidv">12</span></div>
+    <div class="chips" id="cactChips"></div>
+    <div class="row"><label>epochs</label><input type="range" id="csteps" min="100" max="4000" step="100" value="900"><span class="val" id="cstepsv">900</span></div>
+    <div class="row"><label>ridge <span data-tex="\log_{10}\lambda"></span></label><input type="range" id="clam" min="-6" max="0" step="0.25" value="-6"><span class="val" id="clamv">off</span></div>
+    <div class="lab">Decision</div>
+    <div class="row"><label>threshold <span data-tex="\tau"></span></label><input type="range" id="tau" min="0.01" max="0.99" step="0.01" value="0.5"><span class="val" id="tauv">0.50</span></div>
+    <div class="row"><label>miss cost ×</label><input type="range" id="cost" min="1" max="30" step="1" value="12"><span class="val" id="costv">12</span></div>
+    <div class="btns">
+      <button class="b" id="tauAcc">τ for accuracy</button>
+      <button class="b" id="tauCost">τ for cost</button>
+    </div>
+    <div class="prog"><i id="progC"></i></div>
+  </div>
+
+</div>
+
+<!-- ============================== STAGE A ============================== -->
+<div class="stage" id="stageA">
+  <div class="card wide">
+    <div class="hd">
+      <h2 id="aTitle">All K fits, and their average</h2>
+      <div class="seg" style="max-width:360px" id="viewSeg">
+        <button data-v="fan" class="on">Multiple fits</button><button data-v="three">Three samples</button>
+      </div>
+    </div>
+    <canvas id="cvA" class="cv" width="900" height="420"></canvas>
+    <div class="legend" id="legA"></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Bias–variance decomposition</h2><div class="note">averaged over the input range</div></div>
+    <div class="eqbox" id="eqDecomp"></div>
+    <canvas id="cvBar" class="cv" width="620" height="92" style="margin-top:6px"></canvas>
+    <div style="margin-top:8px">
+      <div class="stat"><span><span class="sw" style="background:var(--mut)"></span> noise <span data-tex="\sigma^2"></span> <span class="tiny">irreducible</span></span><b id="sNoise">–</b></div>
+      <div class="stat"><span><span class="sw" style="background:var(--blue)"></span> <span data-tex="\mathrm{bias}^2"></span></span><b id="sBias">–</b></div>
+      <div class="stat"><span><span class="sw" style="background:var(--red)"></span> variance</span><b id="sVar">–</b></div>
+      <div class="stat"><span><b>= expected test MSE</b></span><b id="sTest">–</b></div>
+      <div class="stat"><span>training MSE <span class="tiny">what we minimize</span></span><b id="sTrain">–</b></div>
+      <div class="stat"><span>generalization gap</span><b id="sGap">–</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Sweep the complexity</h2><div class="note" id="sweepNote">degree 0 → 14</div></div>
+    <canvas id="cvSweep" class="cv" width="620" height="330"></canvas>
+    <div class="legend">
+      <span data-s="bias2"><span class="sw ln" style="background:var(--blue)"></span><span data-tex="\mathrm{bias}^2"></span></span>
+      <span data-s="vari"><span class="sw ln" style="background:var(--red)"></span>variance</span>
+      <span data-s="test"><span class="sw ln" style="background:var(--ink)"></span>test MSE</span>
+      <span data-s="train"><span class="sw ln" style="background:var(--green)"></span>training MSE</span>
+      <span data-s="pn"><span class="sw ln" style="background:var(--red)"></span><span data-tex="p=n"></span> marker</span>
+      <span><span class="sw" style="background:var(--gold)"></span>best complexity</span>
+    </div>
+    <div class="btns"><button class="b" id="runSweepA">▶ recompute sweep</button><span class="tiny" id="sweepStat" style="align-self:center"></span></div>
+    <div class="tiny" style="margin-top:6px">click any legend entry to hide that curve</div>
+    <div class="prog"><i id="progA"></i></div>
+  </div>
+</div>
+
+<!-- ============================== STAGE B ============================== -->
+<div class="stage" id="stageB" hidden>
+  <div class="card wide">
+    <div class="hd"><h2>Training error, validation error, and the truth</h2>
+      <div class="note">one dataset of n points, split once · CV re-uses all of it · "true test" uses a huge fresh sample</div></div>
+    <canvas id="cvSel" class="cv" width="900" height="360"></canvas>
+    <div class="legend">
+      <span><span class="sw ln" style="background:var(--green)"></span>training error</span>
+      <span><span class="sw ln" style="background:var(--gold)"></span>validation error (one split)</span>
+      <span><span class="sw ln" style="background:var(--blue)"></span><span id="cvLegLab">5-fold CV</span></span>
+      <span><span class="sw ln" style="background:var(--ink)"></span>true test error</span>
+      <span data-s="pn"><span class="sw ln" style="background:var(--red)"></span><span data-tex="p=n"></span> marker</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>How noisy is a held-out estimate?</h2><div class="note">same model, many random splits</div></div>
+    <canvas id="cvSplit" class="cv" width="620" height="300"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--gold)"></span>held-out estimates</span>
+      <span><span class="sw ln" style="background:var(--ink)"></span>true test error</span>
+    </div>
+    <div class="stat" style="margin-top:6px"><span>held-out mean ± sd</span><b id="sHo">–</b></div>
+    <div class="stat"><span>true test error</span><b id="sTrue">–</b></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2 id="curveTitle">Learning curve</h2>
+      <div class="seg" style="max-width:250px" id="curveSeg">
+        <button data-c="n" class="on">vs. data size</button><button data-c="ep">vs. epochs</button>
+      </div></div>
+    <canvas id="cvCurve" class="cv" width="620" height="300"></canvas>
+    <div class="legend" id="legCurve"></div>
+  </div>
+</div>
+
+<!-- ============================== STAGE C ============================== -->
+<div class="stage" id="stageC" hidden>
+  <div class="card">
+    <div class="hd"><h2>Decision boundary</h2><div class="note">filled = training · hollow = held-out</div></div>
+    <canvas id="cvCls" class="cv" width="560" height="560"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--red)"></span>positive <span data-tex="(y=1)"></span></span>
+      <span><span class="sw" style="background:var(--blue)"></span>negative <span data-tex="(y=0)"></span></span>
+      <span><span class="sw ln" style="background:var(--ink)"></span>boundary at <span data-tex="\tau"></span></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Confusion matrix</h2><div class="note" id="cmNote">held-out set</div></div>
+    <div class="cm">
+      <div class="corner"></div><div class="h">predicted +</div><div class="h">predicted −</div>
+      <div class="rh">actual +</div><div class="tp" id="cTP">–</div><div class="fn" id="cFN">–</div>
+      <div class="rh">actual −</div><div class="fp" id="cFP">–</div><div class="tn" id="cTN">–</div>
+    </div>
+    <div class="bigrow" style="margin-top:12px">
+      <div class="big" id="bAcc">– <small>accuracy</small></div>
+      <div class="big" id="bF1">– <small><span data-tex="F_1"></span></small></div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="stat"><span>always-negative baseline</span><b id="sBase">–</b></div>
+      <div class="stat"><span>precision</span><b id="sPrec">–</b></div>
+      <div class="stat"><span>recall</span><b id="sRec">–</b></div>
+      <div class="stat"><span>expected cost <span class="tiny" id="costLab"></span></span><b id="sCost">–</b></div>
+      <div class="stat"><span>training accuracy</span><b id="sTrAcc">–</b></div>
+      <div class="stat"><span>train − test accuracy</span><b id="sAccGap">–</b></div>
+    </div>
+    <div class="read" style="margin-top:12px;padding-top:11px;border-top:1px solid var(--grid)">
+      <b>How to read this.</b> Accuracy answers a question nobody asked: <i>how often am I right, treating
+      every mistake as equally bad?</i> Drop <i>% positive</i> to <span data-tex="5\%"></span> and the always-negative baseline climbs to <span data-tex="95\%"></span> —
+      a useless classifier now beats almost anything you can train, so the number stops carrying information.
+      <br><br>Precision and recall split the two ways of being wrong: precision is about the flags you raised,
+      recall about the cases that mattered. <span data-tex="F_1"></span> is their harmonic mean, so it is low unless both are decent.
+      <br><br>The threshold <span data-tex="\tau"></span> is <b>part of your model</b>, not a detail — and it is the only part you can
+      still change after training. The panel below shows what it costs you.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Everything moves with <span data-tex="\tau"></span></h2><div class="note" id="tauNote">held-out set</div></div>
+    <canvas id="cvTau" class="cv" width="620" height="300"></canvas>
+    <div class="legend">
+      <span><span class="sw ln" style="background:var(--blue)"></span>precision</span>
+      <span><span class="sw ln" style="background:var(--green)"></span>recall</span>
+      <span><span class="sw ln" style="background:var(--gold)"></span><span data-tex="F_1"></span></span>
+      <span><span class="sw ln" style="background:var(--ink)"></span>accuracy</span>
+      <span><span class="sw ln" style="background:var(--red)"></span>expected cost</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Score distributions</h2><div class="note">the overlap is the whole problem</div></div>
+    <canvas id="cvScore" class="cv" width="620" height="300"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--red)"></span>positives</span>
+      <span><span class="sw" style="background:var(--blue)"></span>negatives</span>
+      <span><span class="sw ln" style="background:var(--ink)"></span><span data-tex="\tau"></span></span>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>window.MathJax={tex:{},startup:{typeset:false},svg:{fontCache:'none'}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"
+ onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.min.js';s.onload=function(){try{window.__mjReady&&window.__mjReady()}catch(e){}};document.head.appendChild(s)})()"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const fmt=(v,k=3)=>!isFinite(v)?'–':(Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=1?v.toFixed(2):v.toFixed(k));
+
+/* ══════════════════════════ rng ══════════════════════════ */
+function RNG(seed){
+  let s=(seed>>>0)||1;
+  const u=()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296};
+  const n=()=>{let a=0,b=0;while(a<=0)a=u();while(b<=0)b=u();return Math.sqrt(-2*Math.log(a))*Math.cos(6.283185307*b)};
+  return {u,n};
+}
+
+/* ══════════════════════════ state ══════════════════════════ */
+const S={
+  mode:'A',
+  fn:'quad', sig:.35, n:20, K:20, draw:20, seed:1,
+  model:'poly', deg:3, lam:-8, L:2, wid:16, act:'relu', steps:1200, wd:-7,
+  D:16, rfact:'fourier', rfs:24, rflam:-8, rfseed:1, rfsTouched:false,
+  viewA:'fan',
+  tf:.30, folds:5, reps:40, curve:'n',
+  cds:'blobs', cn:320, cnoise:.22, cflip:.04, pos:.2, ctf:.30, cseed:1,
+  cdeg:1, cL:0, cwid:12, cact:'relu', csteps:900, clam:-6, tau:.5, cost:12
+};
+
+/* ══════════════════════════ true functions ══════════════════════════ */
+const FNS={
+  quad:{name:'quadratic', dstar:2, f:x=>7.2*(x-.45)*(x-.45)-.9},
+  cubic:{name:'cubic', dstar:3, f:x=>14*(x-.18)*(x-.52)*(x-.86)},
+  sine:{name:'sine', dstar:'∞', f:x=>Math.sin(6.283185307*x)*.9},
+  step:{name:'smooth step', dstar:'∞', f:x=>Math.tanh(14*(x-.5))*.9}
+};
+const hstar=x=>FNS[S.fn].f(x);
+const XLO=0.02, XHI=0.98;
+const GRIDN=120;
+const XG=Array.from({length:GRIDN},(_,i)=>XLO+(XHI-XLO)*i/(GRIDN-1));
+
+function drawData(seed,n){
+  const r=RNG(seed*2654435761>>>0), X=new Float64Array(n), Y=new Float64Array(n);
+  for(let i=0;i<n;i++){const x=XLO+(XHI-XLO)*((i+r.u())/n); X[i]=clamp(x,XLO,XHI); Y[i]=hstar(X[i])+S.sig*r.n();}
+  return {X,Y};
+}
+
+/* ══════════════════════════ linear algebra ══════════════════════════ */
+function cholFactor(A,p,jit,tol){
+  const Lm=new Float64Array(p*p);
+  for(let i=0;i<p;i++)for(let j=0;j<=i;j++){
+    let s=A[i*p+j]+(i===j?jit:0);
+    for(let k=0;k<j;k++)s-=Lm[i*p+k]*Lm[j*p+k];
+    if(i===j){ if(!(s>tol))return null; Lm[i*p+i]=Math.sqrt(s); }
+    else Lm[i*p+j]=s/Lm[j*p+j];
+  }
+  return Lm;
+}
+function cholSolve(A,b,p){        // symmetric PSD solve; jitter grows until the factorization is clean
+  let sc=0; for(let i=0;i<p;i++)sc+=A[i*p+i];
+  sc=Math.max(sc/Math.max(1,p),1e-300);
+  const tol=1e-300;
+  let Lm=cholFactor(A,p,0,tol), jit=1e-14*sc;
+  for(let k=0;k<10&&!Lm;k++){ Lm=cholFactor(A,p,jit,tol); jit*=100; }
+  if(!Lm)Lm=cholFactor(A,p,sc,0)||new Float64Array(p*p).fill(1e-8);
+  const y=new Float64Array(p);
+  for(let i=0;i<p;i++){let s=b[i];for(let k=0;k<i;k++)s-=Lm[i*p+k]*y[k];y[i]=s/Lm[i*p+i];}
+  const x=new Float64Array(p);
+  for(let i=p-1;i>=0;i--){let s=y[i];for(let k=i+1;k<p;k++)s-=Lm[k*p+i]*x[k];x[i]=s/Lm[i*p+i];}
+  return x;
+}
+
+/* ── least squares with the MIN-NORM solution when p > n (this is what makes
+      double descent appear: past the interpolation threshold there are many
+      exact fits and we take the smallest-norm one, exactly like gradient
+      descent from zero does) ── */
+function linSolve(F,Y,n,p,lam){
+  if(p<=n){
+    const A=new Float64Array(p*p), b=new Float64Array(p);
+    for(let i=0;i<n;i++)for(let j=0;j<p;j++){
+      b[j]+=F[i*p+j]*Y[i];
+      for(let k=j;k<p;k++)A[j*p+k]+=F[i*p+j]*F[i*p+k];
+    }
+    let tr=0;for(let j=0;j<p;j++)tr+=A[j*p+j];
+    const eps=Math.max(lam*n, 1e-11*tr/Math.max(1,p)+1e-13);
+    for(let j=0;j<p;j++){for(let k=0;k<j;k++)A[j*p+k]=A[k*p+j]; A[j*p+j]+=eps;}
+    return cholSolve(A,b,p);
+  }
+  // dual: theta = Fᵀ (F Fᵀ + eps I)⁻¹ y  → the minimum-norm interpolant
+  const G=new Float64Array(n*n);
+  for(let i=0;i<n;i++)for(let j=i;j<n;j++){
+    let v=0;for(let k=0;k<p;k++)v+=F[i*p+k]*F[j*p+k];
+    G[i*n+j]=v; G[j*n+i]=v;
+  }
+  let tr=0;for(let i=0;i<n;i++)tr+=G[i*n+i];
+  const eps=Math.max(lam*n, 1e-11*tr/Math.max(1,n)+1e-13);
+  for(let i=0;i<n;i++)G[i*n+i]+=eps;
+  const al=cholSolve(G,Array.from(Y),n);
+  const th=new Float64Array(p);
+  for(let k=0;k<p;k++){let v=0;for(let i=0;i<n;i++)v+=F[i*p+k]*al[i];th[k]=v}
+  return th;
+}
+const l2=th=>{let s=0;for(let i=1;i<th.length;i++)s+=th[i]*th[i];return Math.sqrt(s)};
+
+/* ══════════════════════════ polynomial model ══════════════════════════ */
+function polyFit(X,Y,deg,lamLog){
+  const n=X.length, p=deg+1, lam=lamLog<=-8?1e-9:Math.pow(10,lamLog);
+  const F=new Float64Array(n*p);
+  for(let i=0;i<n;i++){const t=2*X[i]-1; let v=1; for(let j=0;j<p;j++){F[i*p+j]=v; v*=t;}}
+  const mu=new Float64Array(p), sd=new Float64Array(p).fill(1);
+  for(let j=1;j<p;j++){let m=0;for(let i=0;i<n;i++)m+=F[i*p+j];m/=n;mu[j]=m;
+    let s=0;for(let i=0;i<n;i++){const d=F[i*p+j]-m;s+=d*d;}s=Math.sqrt(s/n); sd[j]=s<1e-9?1:s;}
+  for(let i=0;i<n;i++)for(let j=1;j<p;j++)F[i*p+j]=(F[i*p+j]-mu[j])/sd[j];
+  const th=linSolve(F,Y,n,p,lam<=-8?0:lam);
+  const predict=x=>{const t=2*x-1;let v=1,s=0;
+    for(let j=0;j<p;j++){s+=th[j]*(j===0?v:(v-mu[j])/sd[j]); v*=t;} return s;};
+  return {predict,p,norm:l2(th)};
+}
+
+/* ══════════════════════════ random-feature model ══════════════════════════
+   φ_j(t) = g( a_j (t − u_j) ) with a_j, u_j drawn once and FROZEN; only the
+   linear read-out is fitted, by min-norm least squares. p = D + 1, so the
+   interpolation threshold sits exactly at D = n − 1. This is Belkin et al.'s
+   double-descent model and the one in Park's slide.                        */
+function rfBasis(D,act,scale,seed){
+  const r=RNG(seed>>>0||1), a=new Float64Array(D), b=new Float64Array(D);
+  for(let j=0;j<D;j++){
+    if(act==='fourier'){ a[j]=scale*r.n(); b[j]=6.283185307*r.u(); }
+    else { const s2=scale*(0.6+1.4*r.u())*(r.u()<.5?-1:1); a[j]=s2; b[j]=-s2*(2*r.u()-1); }
+  }
+  const inv=Math.SQRT2/Math.sqrt(D);
+  const feat=(t,out)=>{ out[0]=1;
+    if(act==='fourier'){for(let j=0;j<D;j++)out[j+1]=inv*Math.cos(a[j]*t+b[j]);}
+    else{for(let j=0;j<D;j++)out[j+1]=inv*gAct(a[j]*t+b[j],act);}
+    return out; };
+  return {feat,p:D+1};
+}
+function rfFit(X,Y,D,act,scale,lamLog,bseed){
+  const n=X.length, B=rfBasis(D,act,scale,bseed), p=B.p;
+  const F=new Float64Array(n*p), row=new Float64Array(p);
+  for(let i=0;i<n;i++){B.feat(2*X[i]-1,row);for(let j=0;j<p;j++)F[i*p+j]=row[j]}
+  const th=linSolve(F,Y,n,p,lamLog<=-8?0:Math.pow(10,lamLog));
+  const buf=new Float64Array(p);
+  return {predict:x=>{B.feat(2*x-1,buf);let s=0;for(let j=0;j<p;j++)s+=th[j]*buf[j];return s},
+          p,norm:l2(th)/Math.sqrt(Math.max(1,p-1))};
+}
+
+/* ══════════════════════════ MLP ══════════════════════════ */
+function mkNet(din,L,w,act,seed){
+  const r=RNG(seed), sh=[din]; for(let i=0;i<L;i++)sh.push(w); sh.push(1);
+  const W=[],B=[];
+  for(let l=0;l<sh.length-1;l++){
+    const fi=sh[l], fo=sh[l+1];
+    let g=act==='relu'?Math.sqrt(2/fi):act==='sin'?(l===0?6:Math.sqrt(6/fi)):Math.sqrt(1/fi);
+    if(l===sh.length-2)g=Math.sqrt(1/fi);
+    const Wl=new Float64Array(fi*fo);
+    for(let i=0;i<Wl.length;i++)Wl[i]=(act==='sin'&&l===0?(2*r.u()-1)*g:r.n()*g);
+    W.push(Wl); B.push(new Float64Array(fo));
+  }
+  const nP=W.reduce((a,x)=>a+x.length,0)+B.reduce((a,x)=>a+x.length,0);
+  return {sh,W,B,act,nP,
+    mW:W.map(x=>new Float64Array(x.length)), vW:W.map(x=>new Float64Array(x.length)),
+    mB:B.map(x=>new Float64Array(x.length)), vB:B.map(x=>new Float64Array(x.length)), t:0};
+}
+const gAct=(z,a)=>a==='relu'?(z>0?z:0):a==='tanh'?Math.tanh(z):Math.sin(z);
+const gDer=(z,y,a)=>a==='relu'?(z>0?1:0):a==='tanh'?(1-y*y):Math.cos(z);
+
+function netForward(N,x){                       // x: Float64Array(din) -> {a:[layers], z:[], out}
+  const nl=N.sh.length-1, a=[x], z=[];
+  let cur=x;
+  for(let l=0;l<nl;l++){
+    const fi=N.sh[l], fo=N.sh[l+1], zl=new Float64Array(fo), Wl=N.W[l], Bl=N.B[l];
+    for(let o=0;o<fo;o++){let s=Bl[o];for(let i=0;i<fi;i++)s+=Wl[i*fo+o]*cur[i];zl[o]=s;}
+    z.push(zl);
+    if(l<nl-1){const al=new Float64Array(fo);for(let o=0;o<fo;o++)al[o]=gAct(zl[o],N.act);a.push(al);cur=al;}
+    else{a.push(zl);cur=zl;}
+  }
+  return {a,z,out:cur[0]};
+}
+function netPredict(N,x){return netForward(N,x).out}
+
+function netTrain(N,X,Y,opt){
+  // X: array of Float64Array, Y: Float64Array. opt:{steps,lr,wd,task,onEval,evalEvery}
+  const n=X.length, nl=N.sh.length-1, lr=opt.lr||.02, wd=opt.wd||0, task=opt.task||'reg';
+  const gW=N.W.map(x=>new Float64Array(x.length)), gB=N.B.map(x=>new Float64Array(x.length));
+  const b1=.9,b2=.999,eps=1e-8;
+  for(let s=0;s<opt.steps;s++){
+    for(let l=0;l<nl;l++){gW[l].fill(0);gB[l].fill(0);}
+    for(let i=0;i<n;i++){
+      const F=netForward(N,X[i]);
+      let d0;
+      if(task==='reg') d0=(F.out-Y[i])/n;
+      else{const pr=1/(1+Math.exp(-clamp(F.out,-40,40))); d0=(pr-Y[i])/n;}
+      let delta=new Float64Array([d0]);
+      for(let l=nl-1;l>=0;l--){
+        const fi=N.sh[l], fo=N.sh[l+1], Wl=N.W[l], av=F.a[l];
+        for(let o=0;o<fo;o++){gB[l][o]+=delta[o];const d=delta[o];for(let k=0;k<fi;k++)gW[l][k*fo+o]+=d*av[k];}
+        if(l>0){
+          const nd=new Float64Array(fi), zp=F.z[l-1], ap=F.a[l];
+          for(let k=0;k<fi;k++){let s2=0;for(let o=0;o<fo;o++)s2+=Wl[k*fo+o]*delta[o];
+            nd[k]=s2*gDer(zp[k],ap[k],N.act);}
+          delta=nd;
+        }
+      }
+    }
+    N.t++;
+    const bc1=1-Math.pow(b1,N.t), bc2=1-Math.pow(b2,N.t);
+    for(let l=0;l<nl;l++){
+      const Wl=N.W[l],Bl=N.B[l];
+      for(let i=0;i<Wl.length;i++){
+        const g=gW[l][i]+wd*Wl[i];
+        N.mW[l][i]=b1*N.mW[l][i]+(1-b1)*g; N.vW[l][i]=b2*N.vW[l][i]+(1-b2)*g*g;
+        Wl[i]-=lr*(N.mW[l][i]/bc1)/(Math.sqrt(N.vW[l][i]/bc2)+eps);
+      }
+      for(let o=0;o<Bl.length;o++){
+        const g=gB[l][o];
+        N.mB[l][o]=b1*N.mB[l][o]+(1-b1)*g; N.vB[l][o]=b2*N.vB[l][o]+(1-b2)*g*g;
+        Bl[o]-=lr*(N.mB[l][o]/bc1)/(Math.sqrt(N.vB[l][o]/bc2)+eps);
+      }
+    }
+    if(opt.onEval&&opt.evalEvery&&(s%opt.evalEvery===0||s===opt.steps-1))opt.onEval(N,s);
+  }
+  return N;
+}
+
+/* ══════════════════════════ unified regression fit ══════════════════════════ */
+function fitReg(X,Y,seed){
+  if(S.model==='poly')return polyFit(X,Y,S.deg,S.lam);
+  if(S.model==='rf')  return rfFit(X,Y,S.D,S.rfact,S.rfs,S.rflam,S.rfseed*2654435761>>>0);
+  const xs=Array.from(X,x=>new Float64Array([2*x-1]));
+  const N=mkNet(1,S.L,S.wid,S.act,(seed*1013904223+7)>>>0);
+  netTrain(N,xs,Y,{steps:S.steps,lr:.02,wd:S.wd<=-7?0:Math.pow(10,S.wd),task:'reg'});
+  const buf=new Float64Array(1);
+  let nrm=0; for(const Wl of N.W) for(let i=0;i<Wl.length;i++) nrm+=Wl[i]*Wl[i];
+  return {predict:x=>{buf[0]=2*x-1;return netPredict(N,buf)},p:N.nP,net:N,norm:Math.sqrt(nrm)};
+}
+const RFVALS=[2,3,4,6,8,10,13,16,20,25,32,40,52,68,90,120,160,220,300,400];
+function complexityList(){
+  if(S.model==='poly')return {vals:Array.from({length:25},(_,i)=>i),lab:'polynomial degree $d$',cur:S.deg,logx:false,
+    xticks:[0,2,4,6,8,12,16,20,24]};
+  /* (poly interpolates at d = n-1, so n <= 25 shows its own spike) */
+  if(S.model==='rf'){
+    const t=S.n-1, extra=[t-3,t-2,t-1,t,t+1,t+2,t+4].filter(v=>v>=2&&v<=400);
+    const vals=Array.from(new Set(RFVALS.concat(extra))).sort((a,b)=>a-b);
+    return {vals,lab:'number of random features $D$',cur:S.D,logx:true,
+      xticks:[2,5,10,20,50,100,200,400]};
+  }
+  return {vals:[2,3,4,6,8,12,16,24,32,48,64],lab:'hidden width $m$',cur:S.wid,logx:true,
+    xticks:[2,4,8,16,32,64]};
+}
+function withComplexity(v,f){
+  const key=S.model==='poly'?'deg':S.model==='rf'?'D':'wid';
+  const o=S[key]; S[key]=v; const r=f(); S[key]=o; return r;
+}
+/* where does the model have as many parameters as the sample has points? */
+function interpThreshold(){
+  if(S.model==='poly')return S.n-1;
+  if(S.model==='rf')  return S.n-1;
+  return null;
+}
+
+/* ══════════════════════════ bias–variance Monte Carlo ══════════════════════════ */
+function mcRun(K,n){
+  n=n||S.n;
+  const fits=[], m=XG.length, havg=new Float64Array(m);
+  let trainSum=0, pOut=0, nrmSum=0;
+  for(let k=0;k<K;k++){
+    const D=drawData(S.seed*9176+k*7919+1,n);
+    const M=fitReg(D.X,D.Y,S.seed*31+k*101+1); pOut=M.p; nrmSum+=(M.norm||0)/K;
+    const g=new Float64Array(m);
+    for(let j=0;j<m;j++)g[j]=M.predict(XG[j]);
+    fits.push({g,D});
+    let tr=0;for(let i=0;i<n;i++){const e=M.predict(D.X[i])-D.Y[i];tr+=e*e;}
+    trainSum+=tr/n;
+    for(let j=0;j<m;j++)havg[j]+=g[j]/K;
+  }
+  const b2=new Float64Array(m), vr=new Float64Array(m);
+  for(let j=0;j<m;j++){
+    const d=hstar(XG[j])-havg[j]; b2[j]=d*d;
+    let s=0;for(let k=0;k<K;k++){const e=fits[k].g[j]-havg[j];s+=e*e;}
+    vr[j]=s/K;
+  }
+  const mean=a=>{let s=0;for(let i=0;i<a.length;i++)s+=a[i];return s/a.length};
+  const bias2=mean(b2), vari=mean(vr), noise=S.sig*S.sig;
+  return {fits,havg,b2,vr,bias2,vari,noise,test:noise+bias2+vari,train:trainSum/K,p:pOut,norm:nrmSum};
+}
+
+/* ══════════════════════════ plotting toolkit ══════════════════════════ */
+function hex2rgb(h){
+  h=(h||'#000000').trim().replace('#','');
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0];
+}
+function P(id,W,H){
+  const cv=$(id), g=cv.getContext('2d');
+  const fit=()=>{const d=window.devicePixelRatio||1,bw=Math.round(W*d),bh=Math.round(H*d);
+    if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh}
+    g.setTransform(cv.width/W,0,0,cv.height/H,0,0);g.clearRect(0,0,W,H);};
+  return {cv,g,W,H,fit};
+}
+const AVN='"Avenir Next","Helvetica Neue",system-ui,sans-serif';
+const TNRF='"Times New Roman",Times,serif';
+/* ── every symbol on this page is real LaTeX ──────────────────────────────
+   Labels are written as prose with $…$ islands; the islands are typeset by
+   MathJax, cached as SVG images keyed by (tex, colour), and blitted onto the
+   canvas on the text baseline. Prose stays in Avenir Next.                */
+const MIMG={}; let mjWait=0;
+const EXR=0.482;                       /* px per ex, tuned to sit level with Avenir */
+function mathImg(tex,color){
+  const key=tex+'|'+color;
+  let r=MIMG[key]; if(r)return r;
+  r=MIMG[key]={ready:false,dead:false,img:null,w:1,h:1,d:0};
+  if(!(window.MathJax&&MathJax.tex2svg)){r.dead=true;return r}
+  try{
+    const svg=MathJax.tex2svg(tex,{display:false}).querySelector('svg');
+    if(!svg)throw 0;
+    r.w=parseFloat(svg.getAttribute('width'))||0;
+    r.h=parseFloat(svg.getAttribute('height'))||0;
+    r.d=-(parseFloat(svg.style.verticalAlign)||0);
+    if(!(r.w>0&&r.h>0)){r.dead=true;return r}
+    svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    const src=new XMLSerializer().serializeToString(svg).replace(/currentColor/g,color);
+    const img=new Image(); mjWait++;
+    const done=ok=>{ if(ok)r.ready=true; else r.dead=true;
+      if(--mjWait<=0){mjWait=0; try{render()}catch(_){}} };
+    img.onload=()=>done(true); img.onerror=()=>done(false);
+    img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(src)));
+    r.img=img;
+  }catch(_){r.dead=true}
+  return r;
+}
+const GK={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',
+  sigma:'σ',tau:'τ',phi:'φ',varphi:'φ',omega:'ω',Sigma:'Σ',ell:'ℓ',cdot:'·',times:'×',
+  ast:'*',mid:'|',hat:'',mathcal:'',mathrm:'',mathbf:'',rm:'',left:'',right:'',sqrt:'√'};
+function texFallback(t){            /* only used when MathJax never loads */
+  return t.replace(/\\([a-zA-Z]+)/g,(m,w)=>GK[w]!==undefined?GK[w]:w)
+          .replace(/[{}]/g,'').replace(/\^/g,'').replace(/_/g,'');
+}
+function lex(str){
+  const out=[]; String(str).split('$').forEach((seg,i)=>{ if(seg==='')return;
+    out.push(i%2?{tex:seg}:{t:seg}); }); return out;
+}
+function runW(g,str,size,color){
+  let w=0;
+  for(const r of lex(str)){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; w+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; w+=g.measureText(texFallback(r.tex)).width}
+    else w+=m.w*size*EXR;
+  }
+  return w;
+}
+function runText(g,x,ybase,str,size,align,color){
+  color=color||'#000000';
+  const runs=lex(str), ex=size*EXR;
+  let w=0;
+  for(const r of runs){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; w+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; w+=g.measureText(texFallback(r.tex)).width}
+    else w+=m.w*ex;
+  }
+  let cx=align==='center'?x-w/2:align==='right'?x-w:x;
+  const ta=g.textAlign, tb=g.textBaseline;
+  g.textAlign='left'; g.textBaseline='alphabetic'; g.fillStyle=color;
+  for(const r of runs){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; g.fillText(r.t,cx,ybase); cx+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; const f=texFallback(r.tex);
+      g.fillText(f,cx,ybase); cx+=g.measureText(f).width; continue}
+    if(m.ready&&m.img){ const iw=m.w*ex, ih=m.h*ex;
+      g.drawImage(m.img,cx,ybase-(m.h-m.d)*ex,iw,ih); cx+=iw; }
+    else cx+=m.w*ex;                 /* still loading: leave the gap */
+  }
+  g.textAlign=ta; g.textBaseline=tb;
+  return w;
+}
+/* a single centred LaTeX snippet, sized by its cap height */
+function mathDraw(g,tex,cx,ybase,size,color){ return runText(g,cx,ybase,'$'+tex+'$',size,'center',color) }
+/* typeset every <span data-tex="…"> in the document (legends, stat rows, headings) */
+function typesetTex(root){
+  const list=(root||document).querySelectorAll('[data-tex]');
+  if(!list.length)return;
+  if(!(window.MathJax&&MathJax.tex2svg)){
+    list.forEach(el=>{if(!el.dataset.done){el.textContent=texFallback(el.dataset.tex);
+      el.style.fontFamily=TNRF;el.style.fontStyle='italic';}});
+    return;
+  }
+  if(MathJax.svgStylesheet&&!document.getElementById('MJX-SVG-styles')){
+    const st=MathJax.svgStylesheet(); st.id='MJX-SVG-styles'; document.head.appendChild(st);
+  }
+  list.forEach(el=>{ if(el.dataset.done)return;
+    try{ el.textContent=''; el.appendChild(MathJax.tex2svg(el.dataset.tex,{display:false})); el.dataset.done='1'; }catch(_){}
+  });
+}
+const T=tex=>'<span data-tex="'+tex.replace(/"/g,'&quot;')+'"></span>';
+function texify(html){                 /* $…$ islands → real LaTeX spans */
+  return String(html).split('$').map((seg,i)=>i%2?T(seg):seg).join('');
+}
+function setHTML(el,html){ el.innerHTML=texify(html); typesetTex(el); }
+function niceTicks(a,b,cnt){
+  const span=b-a; if(!(span>0))return [a];
+  const raw=span/cnt, mag=Math.pow(10,Math.floor(Math.log10(raw))), norm=raw/mag;
+  const st=(norm<1.5?1:norm<3?2:norm<7?5:10)*mag;
+  const out=[]; for(let v=Math.ceil(a/st)*st; v<=b+st*1e-9; v+=st) out.push(Math.abs(v)<st*1e-9?0:v);
+  return out;
+}
+function axes(pl,box,xd,yd,o){
+  o=o||{}; const g=pl.g, [L,T,W,H]=box;
+  const logy=!!o.logy, logx=!!o.logx;
+  const ty=v=>logy?Math.log10(Math.max(v,1e-12)):v;
+  const tx=v=>logx?Math.log10(Math.max(v,1e-12)):v;
+  const y0=ty(yd[0]), y1=ty(yd[1]), x0=tx(xd[0]), x1=tx(xd[1]);
+  const sx=x=>L+(tx(x)-x0)/(x1-x0)*W;
+  const sy=y=>T+H-(ty(y)-y0)/(y1-y0)*H;
+  g.save();
+  g.fillStyle=css('--panel'); g.fillRect(L,T,W,H);
+  g.strokeStyle=css('--grid'); g.lineWidth=1;
+  let xt=o.xticks;
+  if(!xt){
+    if(logx){ xt=[];
+      for(let e=-2;e<=4;e++)for(const m of [1,2,5]){const v=m*Math.pow(10,e);
+        if(v>=xd[0]&&v<=xd[1])xt.push(v);}
+      if(xt.length<2)xt=[xd[0],xd[1]];
+    } else xt=niceTicks(xd[0],xd[1],o.nxt||6);
+  }
+  let yt, numlab=false;
+  if(logy){
+    yt=[]; for(let e=Math.ceil(y0);e<=Math.floor(y1);e++)yt.push(Math.pow(10,e));
+    if(yt.length<3){
+      yt=[]; numlab=true;
+      for(let e=Math.floor(y0)-1;e<=Math.ceil(y1)+1;e++)for(const m of [1,2,5]){
+        const v=m*Math.pow(10,e); if(ty(v)>=y0-1e-9&&ty(v)<=y1+1e-9)yt.push(v);}
+    }
+    if(yt.length<2)yt=[yd[0],yd[1]];
+  }
+  else yt=o.yticks||niceTicks(yd[0],yd[1],o.nyt||5);
+  g.beginPath();
+  for(const x of xt){const px=Math.round(sx(x))+.5;g.moveTo(px,T);g.lineTo(px,T+H);}
+  for(const y of yt){const py=Math.round(sy(y))+.5;g.moveTo(L,py);g.lineTo(L+W,py);}
+  g.stroke();
+  g.strokeStyle=css('--line'); g.lineWidth=1.2; g.strokeRect(L+.5,T+.5,W-1,H-1);
+  const TS=11.5, mut=css('--mut'), ink2=css('--ink2');
+  for(const x of xt) runText(g,sx(x),T+H+5+TS*0.80,'$'+(o.xfmt?o.xfmt(x):numTex(x))+'$',TS,'center',mut);
+  if(!o.noyt)for(const y of yt){
+    const lab=o.yfmt?o.yfmt(y):(logy?(numlab?numTex(y):powTex(y)):numTex(y));
+    runText(g,L-7,sy(y)+TS*0.34,'$'+lab+'$',TS,'right',mut);
+  }
+  if(o.xlab)runText(g,L+W/2,T+H+34,o.xlab,11.5,'center',ink2);
+  if(o.ylab){g.save();g.translate(L-36,T+H/2);g.rotate(-Math.PI/2);
+    runText(g,0,0,o.ylab,11.5,'center',ink2);g.restore();}
+  g.restore();
+  return {sx,sy,box,clip:()=>{g.save();g.beginPath();g.rect(L,T,W,H);g.clip()},unclip:()=>g.restore()};
+}
+function numTex(v){
+  const a=Math.abs(v); if(a===0)return '0';
+  if(a>=1e4||a<1e-3){const e=Math.floor(Math.log10(a)), m=v/Math.pow(10,e);
+    return (Math.abs(m-1)<1e-9?'':(+m.toPrecision(2))+'\\!\\times\\!')+'10^{'+e+'}'}
+  return String(+v.toPrecision(3));
+}
+function powTex(v){ return '10^{'+Math.round(Math.log10(v))+'}' }
+function line(pl,A,pts,color,lw,dash){
+  const g=pl.g; g.save(); g.strokeStyle=color; g.lineWidth=lw||2;
+  if(dash)g.setLineDash(dash); g.lineJoin='round'; g.beginPath();
+  let started=false;
+  for(const q of pts){ if(!isFinite(q[1])){started=false;continue;}
+    const x=A.sx(q[0]),y=A.sy(q[1]);
+    if(!started){g.moveTo(x,y);started=true}else g.lineTo(x,y); }
+  g.stroke(); g.restore();
+}
+function band(pl,A,pts,lo,color){
+  const g=pl.g; g.save(); g.fillStyle=color; g.beginPath();
+  pts.forEach((q,i)=>{const x=A.sx(q[0]),y=A.sy(q[1]);i?g.lineTo(x,y):g.moveTo(x,y)});
+  for(let i=lo.length-1;i>=0;i--)g.lineTo(A.sx(lo[i][0]),A.sy(lo[i][1]));
+  g.closePath(); g.fill(); g.restore();
+}
+function dot(pl,A,x,y,r,fill,stroke){
+  const g=pl.g;g.beginPath();g.arc(A.sx(x),A.sy(y),r,0,6.284);
+  if(fill){g.fillStyle=fill;g.fill()} if(stroke){g.strokeStyle=stroke;g.lineWidth=1.6;g.stroke()}
+}
+function mark(pl,A,x,label,color,row){
+  const g=pl.g, L=A.box[0],T=A.box[1],W=A.box[2],H=A.box[3];
+  g.save();
+  g.strokeStyle=color; g.lineWidth=1.5; g.setLineDash([3,3]);
+  g.beginPath(); g.moveTo(A.sx(x),T); g.lineTo(A.sx(x),T+H); g.stroke();
+  g.setLineDash([]);
+  const w=runW(g,label,10.5)+12, px=clamp(A.sx(x)-w/2,L+3,L+W-w-3), py=T+4+(row||0)*17.5;
+  g.globalAlpha=.92; g.fillStyle=css('--panel');
+  g.beginPath(); if(g.roundRect)g.roundRect(px,py,w,16,4); else g.rect(px,py,w,16); g.fill();
+  g.globalAlpha=1; g.strokeStyle=color; g.lineWidth=1; g.stroke();
+  g.textBaseline='alphabetic';
+  runText(g,px+w/2,py+11.5,label,10.5,'center',color); g.restore();
+}
+function mtxt(pl,x,y,str,color,size,align){
+  const g=pl.g; g.save(); g.textBaseline='alphabetic';
+  runText(g,x,y,str,size||11,align||'left',color||css('--ink2')); g.restore();
+}
+function txt(pl,x,y,s,color,font,align,base){
+  const g=pl.g;g.save();g.fillStyle=color||css('--ink2');
+  g.font=font||'600 11px "Avenir Next",system-ui,sans-serif';
+  g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);g.restore();
+}
+
+/* ══════════════════════════ MODE A ══════════════════════════ */
+const plA=P('cvA',900,420), plBar=P('cvBar',620,92), plSw=P('cvSweep',620,330);
+let MC=null, SWEEP=null;
+
+function yDomain(){
+  let lo=1e9,hi=-1e9;
+  for(const x of XG){const v=hstar(x);if(v<lo)lo=v;if(v>hi)hi=v;}
+  const pad=Math.max(1.1*S.sig, .35*(hi-lo), .5);
+  return [lo-pad,hi+pad];
+}
+function drawA(){
+  plA.fit();
+  const yd=yDomain();
+  { const dr=$('drawRow'); if(dr) dr.hidden = (S.viewA==='three'); }
+  if(S.viewA==='three'){ drawThree(yd); return; }
+  if(S.viewA==='decomp'){ drawDecompCurve(); return; }
+  const A=axes(plA,[54,14,830,364],[XLO,XHI],yd,{xlab:'$x$',ylab:'$y$',nxt:7});
+  A.clip();
+  const K=MC.fits.length, nd=clamp(S.draw,1,K);
+  if(shown('fits'))for(let k=0;k<nd;k++){
+    const g=MC.fits[k].g;
+    line(plA,A,XG.map((x,j)=>[x,g[j]]),css('--red'),nd<=3?2.2:nd<=8?1.5:1,null);
+  }
+  plA.g.globalAlpha=1;
+  if(shown('truth'))line(plA,A,XG.map(x=>[x,hstar(x)]),css('--ink'),2.6);
+  if(shown('havg')) line(plA,A,XG.map((x,j)=>[x,MC.havg[j]]),css('--blue'),2.8,[7,4]);
+  const D=MC.fits[0].D;
+  if(shown('pts'))for(let i=0;i<D.X.length;i++)dot(plA,A,D.X[i],D.Y[i],3.2,css('--green'));
+  A.unclip();
+  $('legA').innerHTML=
+    '<span data-s="truth"><span class="sw ln" style="background:var(--ink)"></span>true '+T('h^{\\ast}(x)')+'</span>'+
+    '<span data-s="havg"><span class="sw ln" style="background:var(--blue)"></span>'+T('h_{\\mathrm{avg}}')+' — average of all '+T(String(K))+' fits</span>'+
+    '<span data-s="fits"><span class="sw ln" style="background:var(--red)"></span>'+
+      (nd<K?('the first '+T(String(nd))+' of '+T(String(K))+' fits'):('the '+T(String(K))+' individual fits'))+'</span>'+
+    '<span data-s="pts"><span class="sw" style="background:var(--green)"></span>one sample '+T('\\mathcal{D}^{(1)}')+'</span>';
+  typesetTex($('legA')); wireLegends();
+  $('aTitle').textContent=!shown('fits')?('The average of '+K+' fits')
+    :(nd<K?(nd+' of '+K+' fits, and the average of all '+K)
+          :('All '+K+' fits, and their average'));
+}
+function drawThree(yd){
+  const W=(830-2*14)/3;
+  for(let s=0;s<3;s++){
+    const x0=54+s*(W+14);
+    /* the panel is pushed down and shortened so the S-labels above it are never clipped */
+    const A=axes(plA,[x0,34,W,336],[XLO,XHI],yd,
+      {xlab:'$x$',ylab:s===0?'$y$':null,noyt:s!==0,nxt:4});
+    A.clip();
+    if(shown('truth'))line(plA,A,XG.map(x=>[x,hstar(x)]),css('--mut'),1.8);
+    const F=MC.fits[s%MC.fits.length];
+    if(shown('pts'))for(let i=0;i<F.D.X.length;i++)dot(plA,A,F.D.X[i],F.D.Y[i],3.2,css('--green'));
+    if(shown('fits'))line(plA,A,XG.map((x,j)=>[x,F.g[j]]),css('--red'),2.6);
+    A.unclip();
+    mathDraw(plA.g,'\\mathcal{D}^{('+(s+1)+')}',x0+W/2,26,15,css('--ink'));
+  }
+  $('legA').innerHTML='<span data-s="truth"><span class="sw ln" style="background:var(--mut)"></span>true '+T('h^{\\ast}(x)')+'</span>'+
+    '<span data-s="fits"><span class="sw ln" style="background:var(--red)"></span>the fit on that sample</span>'+
+    '<span data-s="pts"><span class="sw" style="background:var(--green)"></span>that sample\'s '+T('n = '+S.n)+' points</span>';
+  typesetTex($('legA')); wireLegends();
+  $('aTitle').textContent='Same model class, three independent draws';
+}
+function drawDecompCurve(){
+  let hi=0; for(let j=0;j<XG.length;j++)hi=Math.max(hi,MC.noise+MC.b2[j]+MC.vr[j]);
+  hi=Math.max(hi,MC.noise*1.6,1e-4);
+  const A=axes(plA,[62,14,822,364],[XLO,XHI],[0,hi],
+    {xlab:'$x$',ylab:'expected squared error at $x$',nxt:7,nyt:5});
+  A.clip();
+  const zero=XG.map(x=>[x,0]);
+  const l1=XG.map(()=>MC.noise), l2=XG.map((_,j)=>MC.noise+MC.b2[j]), l3=XG.map((_,j)=>MC.noise+MC.b2[j]+MC.vr[j]);
+  band(plA,A,XG.map((x,j)=>[x,l1[j]]),zero,css('--chipbg'));
+  band(plA,A,XG.map((x,j)=>[x,l2[j]]),XG.map((x,j)=>[x,l1[j]]),css('--blue-t'));
+  band(plA,A,XG.map((x,j)=>[x,l3[j]]),XG.map((x,j)=>[x,l2[j]]),css('--red-t'));
+  line(plA,A,XG.map((x,j)=>[x,l1[j]]),css('--mut'),1.6,[4,3]);
+  line(plA,A,XG.map((x,j)=>[x,l2[j]]),css('--blue'),2);
+  line(plA,A,XG.map((x,j)=>[x,l3[j]]),css('--ink'),2.4);
+  A.unclip();
+  $('legA').innerHTML='<span><span class="sw" style="background:var(--chipbg)"></span>noise '+T('\\sigma^2')+' (flat)</span>'+
+    '<span><span class="sw" style="background:var(--blue-t)"></span>'+T('+\\;\\mathrm{bias}^2(x)')+'</span>'+
+    '<span><span class="sw" style="background:var(--red-t)"></span>'+T('+\\;\\mathrm{Var}(x)')+'</span>'+
+    '<span><span class="sw ln" style="background:var(--ink)"></span>total '+T('\\mathrm{MSE}(x)')+'</span>';
+  typesetTex($('legA')); wireLegends();
+  $('aTitle').textContent='The decomposition, point by point in x';
+}
+function drawBar(){
+  plBar.fit();
+  const g=plBar.g, W=620,H=92, L=6,T=26,BW=W-12,BH=34;
+  const tot=Math.max(MC.test,1e-12);
+  const parts=[[MC.noise,css('--mut'),'noise'],[MC.bias2,css('--blue'),'bias²'],[MC.vari,css('--red'),'variance']];
+  let x=L;
+  for(const [v,c,lab] of parts){
+    const w=BW*v/tot;
+    g.fillStyle=c; g.fillRect(x,T,Math.max(0,w),BH);
+    if(w>46){ g.fillStyle='#fff'; g.font='700 11.5px "Avenir Next",system-ui';g.textAlign='center';g.textBaseline='middle';
+      g.fillText(Math.round(100*v/tot)+'%',x+w/2,T+BH/2); }
+    x+=w;
+  }
+  g.strokeStyle=css('--line');g.lineWidth=1;g.strokeRect(L+.5,T+.5,BW-1,BH-1);
+  txt(plBar,L,20,'expected test MSE = '+fmt(MC.test),css('--ink'),'700 12px "Avenir Next",system-ui');
+  const tr=BW*Math.min(1,MC.train/tot);
+  g.fillStyle=css('--green-t');g.fillRect(L,T+BH+8,tr,10);
+  g.fillStyle=css('--green');g.fillRect(L,T+BH+8,Math.max(2,tr),10);
+  txt(plBar,L+Math.max(2,tr)+7,T+BH+17,'training MSE '+fmt(MC.train),css('--green'),'700 11px "Avenir Next",system-ui');
+}
+function drawSweep(){
+  plSw.fit();
+  if(!SWEEP){ mtxt(plSw,310,165,'press “recompute sweep”',css('--mut'),12,'center'); return; }
+  const {vals,lab}=SWEEP;
+  let hi=0,lo=1e9;
+  for(let i=0;i<vals.length;i++)for(const v of [SWEEP.test[i],SWEEP.train[i],SWEEP.bias2[i],SWEEP.vari[i]]){
+    if(v>hi)hi=v; if(v>0&&v<lo)lo=v; }
+  const best=Math.min.apply(null,SWEEP.test.filter(v=>v>0));
+  hi=Math.min(hi,best*400)*1.8;            /* the blow-up runs off the top instead of flattening everything */
+  lo=Math.max(lo*.5,hi*2e-4);
+  const fl=v=>Math.max(v,lo*1.03);
+  const A=axes(plSw,[56,12,548,266],[vals[0],vals[vals.length-1]],[lo,hi],
+    {logy:true,logx:SWEEP.logx,xlab:lab,ylab:'error, log scale',
+     xticks:(SWEEP.xticks||vals).filter(v=>v>=vals[0]&&v<=vals[vals.length-1])});
+  A.clip();
+  if(shown('bias2'))line(plSw,A,vals.map((v,i)=>[v,fl(SWEEP.bias2[i])]),css('--blue'),2);
+  if(shown('vari')) line(plSw,A,vals.map((v,i)=>[v,fl(SWEEP.vari[i])]),css('--red'),2);
+  if(shown('train'))line(plSw,A,vals.map((v,i)=>[v,fl(SWEEP.train[i])]),css('--green'),2,[6,4]);
+  if(shown('test')) line(plSw,A,vals.map((v,i)=>[v,fl(SWEEP.test[i])]),css('--ink'),2.8);
+  let bi=0;for(let i=1;i<vals.length;i++)if(SWEEP.test[i]<SWEEP.test[bi])bi=i;
+  const ci=vals.indexOf(SWEEP.cur);
+  if(ci>=0) dot(plSw,A,vals[ci],fl(SWEEP.test[ci]),4.5,css('--panel'),css('--ink'));
+  dot(plSw,A,vals[bi],fl(SWEEP.test[bi]),5,css('--gold'),css('--panel'));
+  A.unclip();
+  const nm=S.model==='poly'?'d':S.model==='rf'?'D':'m';
+  mark(plSw,A,vals[bi],'best $'+nm+' = '+vals[bi]+'$',css('--gold'),0);
+  let rowN=1;
+  const it=SWEEP.thr;
+  if(shown('pn')&&it!=null&&it>=vals[0]&&it<=vals[vals.length-1]){ mark(plSw,A,it,'$p = n$  interpolation',css('--red'),rowN++); }
+  if(ci>=0&&ci!==bi) mark(plSw,A,vals[ci],'you are here',css('--ink'),rowN);
+  setHTML($('sweepNote'),lab+' · $'+vals[0]+'$ → $'+vals[vals.length-1]+'$');
+}
+
+/* ══════════════════════════ MODE B ══════════════════════════ */
+const plSel=P('cvSel',900,360), plSplit=P('cvSplit',620,300), plCurve=P('cvCurve',620,300);
+let SEL=null, SPLIT=null, CURVE=null;
+
+function splitIdx(n,tf,seed){
+  const r=RNG(seed), idx=Array.from({length:n},(_,i)=>i);
+  for(let i=n-1;i>0;i--){const j=Math.floor(r.u()*(i+1));const t=idx[i];idx[i]=idx[j];idx[j]=t}
+  const nt=Math.max(2,Math.round(n*tf));
+  return {val:idx.slice(0,nt), tr:idx.slice(nt)};
+}
+const sub=(D,ix)=>({X:Float64Array.from(ix,i=>D.X[i]),Y:Float64Array.from(ix,i=>D.Y[i])});
+function mse(M,D){let s=0;for(let i=0;i<D.X.length;i++){const e=M.predict(D.X[i])-D.Y[i];s+=e*e}return s/Math.max(1,D.X.length)}
+function trueTest(M){                     // σ² + mean (h*−f)² over the grid
+  let s=0;for(const x of XG){const e=hstar(x)-M.predict(x);s+=e*e}
+  return S.sig*S.sig+s/XG.length;
+}
+
+function computeB(done){
+  const {vals,lab}=complexityList();
+  const D=drawData(S.seed*9176+1,S.n);
+  const sp=splitIdx(S.n,S.tf,S.seed*77+5);
+  const Dtr=sub(D,sp.tr), Dva=sub(D,sp.val);
+  const CLb=complexityList();
+  const out={vals,lab,logx:CLb.logx,xticks:CLb.xticks,thr:interpThreshold(),train:[],val:[],cv:[],test:[]};
+  // fold assignment
+  const r=RNG(S.seed*13+3), ord=Array.from({length:S.n},(_,i)=>i);
+  for(let i=S.n-1;i>0;i--){const j=Math.floor(r.u()*(i+1));const t=ord[i];ord[i]=ord[j];ord[j]=t}
+  let i0=0;
+  const stepOne=()=>{
+    const v=vals[i0];
+    withComplexity(v,()=>{
+      const M=fitReg(Dtr.X,Dtr.Y,S.seed*5+i0);
+      out.train.push(mse(M,Dtr)); out.val.push(mse(M,Dva)); out.test.push(trueTest(M));
+      let acc=0;
+      for(let f=0;f<S.folds;f++){
+        const va=ord.filter((_,q)=>q%S.folds===f), tr=ord.filter((_,q)=>q%S.folds!==f);
+        if(!tr.length||!va.length)continue;
+        const Mf=fitReg(sub(D,tr).X,sub(D,tr).Y,S.seed*3+f*19+i0);
+        acc+=mse(Mf,sub(D,va));
+      }
+      out.cv.push(acc/S.folds);
+    });
+    i0++;
+    $('progB').style.width=Math.round(100*i0/vals.length)+'%';
+    $('statusB').innerHTML='sweeping <b>'+lab+'</b> — '+i0+' / '+vals.length;
+    if(i0<vals.length) requestAnimationFrame(stepOne);
+    else{ SEL=out; computeSplit(); computeCurve(()=>{ $('progB').style.width='0%';
+        $('statusB').innerHTML='done · '+(S.model==='poly'?'poly':'net')+' · n='+S.n; drawB(); done&&done(); }); }
+  };
+  requestAnimationFrame(stepOne);
+}
+function computeSplit(){
+  const est=[], R=S.reps;
+  const D=drawData(S.seed*9176+1,S.n);
+  let truth=0;
+  for(let r=0;r<R;r++){
+    const sp=splitIdx(S.n,S.tf,S.seed*991+r*37+1);
+    const M=fitReg(sub(D,sp.tr).X,sub(D,sp.tr).Y,S.seed*7+r*13);
+    est.push(mse(M,sub(D,sp.val)));
+    if(r===0)truth=trueTest(M);
+  }
+  const m=est.reduce((a,b)=>a+b,0)/R;
+  const sd=Math.sqrt(est.reduce((a,b)=>a+(b-m)*(b-m),0)/R);
+  SPLIT={est,m,sd,truth};
+}
+function computeCurve(done){
+  if(S.curve==='n'){
+    const sizes=[8,12,16,24,32,48,64,96,140,200].filter(v=>v<=Math.max(200,S.n));
+    const tr=[],te=[];
+    for(const nn of sizes){
+      const R=4; let a=0,b=0;
+      for(let r=0;r<R;r++){
+        const D=drawData(S.seed*4421+r*131+nn,nn);
+        const M=fitReg(D.X,D.Y,S.seed*17+r*7+nn);
+        a+=mse(M,D)/R; b+=trueTest(M)/R;
+      }
+      tr.push(a);te.push(b);
+    }
+    CURVE={kind:'n',x:sizes,tr,te}; done&&done(); return;
+  }
+  // epoch curve — only meaningful for the net; poly has no epochs
+  if(S.model!=='nn'){ CURVE={kind:'ep',unavailable:true}; done&&done(); return; }
+  const D=drawData(S.seed*9176+1,S.n), sp=splitIdx(S.n,S.tf,S.seed*77+5);
+  const Dtr=sub(D,sp.tr), Dva=sub(D,sp.val);
+  const xs=Array.from(Dtr.X,x=>new Float64Array([2*x-1]));
+  const N=mkNet(1,S.L,S.wid,S.act,(S.seed*1013904223+7)>>>0);
+  const ep=[],trL=[],vaL=[], buf=new Float64Array(1);
+  const every=Math.max(5,Math.round(S.steps/70));
+  netTrain(N,xs,Dtr.Y,{steps:S.steps,lr:.02,wd:S.wd<=-7?0:Math.pow(10,S.wd),task:'reg',evalEvery:every,
+    onEval:(NN,s)=>{
+      const pr=x=>{buf[0]=2*x-1;return netPredict(NN,buf)};
+      let a=0;for(let i=0;i<Dtr.X.length;i++){const e=pr(Dtr.X[i])-Dtr.Y[i];a+=e*e}
+      let b=0;for(let i=0;i<Dva.X.length;i++){const e=pr(Dva.X[i])-Dva.Y[i];b+=e*e}
+      ep.push(s+1);trL.push(a/Dtr.X.length);vaL.push(b/Math.max(1,Dva.X.length));
+    }});
+  CURVE={kind:'ep',x:ep,tr:trL,va:vaL}; done&&done();
+}
+function drawB(){
+  drawSel(); drawSplit(); drawCurve();
+}
+function drawSel(){
+  plSel.fit();
+  if(!SEL){ mtxt(plSel,450,180,'press “run sweep”',css('--mut'),13,'center'); return; }
+  const {vals,lab}=SEL;
+  let hi=0,lo=1e9;
+  for(const arr of [SEL.val,SEL.cv,SEL.test]) for(const v of arr){ if(v>hi)hi=v; if(v>0&&v<lo)lo=v; }
+  void 0;
+  const bestT=Math.min.apply(null,SEL.test.filter(v=>v>0));
+  hi=Math.min(hi,bestT*400)*2.2;
+  lo=Math.max(lo*.5,hi*3e-5);
+  const fl=v=>Math.max(v,lo*1.03);
+  const A=axes(plSel,[60,14,822,290],[vals[0],vals[vals.length-1]],[lo,hi],
+    {logy:true,logx:SEL.logx,xlab:lab,ylab:'MSE, log scale',
+     xticks:(SEL.xticks||vals).filter(v=>v>=vals[0]&&v<=vals[vals.length-1])});
+  A.clip();
+  line(plSel,A,vals.map((v,i)=>[v,fl(SEL.train[i])]),css('--green'),2.2,[6,4]);
+  line(plSel,A,vals.map((v,i)=>[v,fl(SEL.val[i])]),css('--gold'),2.2);
+  line(plSel,A,vals.map((v,i)=>[v,fl(SEL.cv[i])]),css('--blue'),2.2);
+  line(plSel,A,vals.map((v,i)=>[v,fl(SEL.test[i])]),css('--ink'),2.8);
+  A.unclip();
+  const amin=a=>{let b=0;for(let i=1;i<a.length;i++)if(a[i]<a[b])b=i;return b};
+  const iv=amin(SEL.val), ic=amin(SEL.cv), it=amin(SEL.test);
+  const seen={};
+  [[iv,css('--gold'),'validation picks $'+vals[iv]+'$'],[ic,css('--blue'),'$'+S.folds+'$-fold CV picks $'+vals[ic]+'$'],
+   [it,css('--ink'),'the truth picks $'+vals[it]+'$']].forEach(([i,c,nm])=>{
+    const row=seen[i]=(seen[i]===undefined?0:seen[i]+1);
+    mark(plSel,A,vals[i],nm,c,row+ (i===iv?0:i===ic?1:2));
+  });
+  if(SEL.thr!=null&&SEL.thr>=vals[0]&&SEL.thr<=vals[vals.length-1])
+    if(shown('pn'))mark(plSel,A,SEL.thr,'$p = n$',css('--red'),3);
+  if(SEL.train[SEL.train.length-1]<lo)
+    mtxt(plSel,878,A.sy(lo*1.03)-19,'training error $\\to 0$',css('--green'),10.5,'right');
+  $('cvLegLab').textContent=S.folds+'-fold CV';
+}
+function drawSplit(){
+  plSplit.fit();
+  if(!SPLIT){ mtxt(plSplit,310,150,'—',css('--mut'),13,'center'); return; }
+  const est=SPLIT.est.slice().sort((a,b)=>a-b);
+  const lo=Math.min(est[0],SPLIT.truth)*.85, hi=Math.max(est[est.length-1],SPLIT.truth)*1.12;
+  const nb=22, bins=new Array(nb).fill(0);
+  for(const v of SPLIT.est) bins[clamp(Math.floor((v-lo)/(hi-lo)*nb),0,nb-1)]++;
+  const bmax=Math.max(...bins,1);
+  const A=axes(plSplit,[52,12,548,232],[lo,hi],[0,bmax*1.15],
+    {xlab:'held-out MSE estimate',ylab:'count',nxt:5,nyt:4,yfmt:v=>String(Math.round(v))});
+  A.clip();
+  const g=plSplit.g, bw=(A.sx(hi)-A.sx(lo))/nb;
+  for(let i=0;i<nb;i++){ if(!bins[i])continue;
+    const x=A.sx(lo+(hi-lo)*i/nb), y=A.sy(bins[i]);
+    g.fillStyle=css('--gold-t'); g.fillRect(x,y,bw-1,A.sy(0)-y);
+    g.strokeStyle=css('--gold'); g.lineWidth=1; g.strokeRect(x+.5,y+.5,bw-2,A.sy(0)-y-1);
+  }
+  A.unclip();
+  mark(plSplit,A,SPLIT.truth,'true error $'+fmt(SPLIT.truth)+'$',css('--ink'),0);
+  mark(plSplit,A,SPLIT.m,'mean of estimates',css('--gold'),1);
+  $('sHo').textContent=fmt(SPLIT.m)+' ± '+fmt(SPLIT.sd);
+  $('sTrue').textContent=fmt(SPLIT.truth);
+}
+function drawCurve(){
+  plCurve.fit();
+  if(!CURVE){ mtxt(plCurve,310,150,'—',css('--mut'),13,'center'); return; }
+  if(CURVE.unavailable){
+    $('curveTitle').textContent='Learning curve vs. epochs';
+    mtxt(plCurve,310,142,'epochs only exist for the neural net',css('--mut'),13,'center');
+    mtxt(plCurve,310,162,'switch the model class to “Neural net”',css('--mut'),12,'center');
+    $('legCurve').innerHTML=''; return;
+  }
+  if(CURVE.kind==='n'){
+    $('curveTitle').textContent='Learning curve vs. data size';
+    let hi=0,lo=1e9; for(const a of [CURVE.tr,CURVE.te])for(const v of a){if(v>hi)hi=v;if(v>0&&v<lo)lo=v}
+    lo=Math.max(Math.min(lo,S.sig*S.sig*.8),hi*1e-4); hi*=1.5;
+    const A=axes(plCurve,[56,12,544,232],[CURVE.x[0],CURVE.x[CURVE.x.length-1]],[lo*.6,hi],
+      {logy:true,xlab:'training set size $n$',ylab:'MSE, log scale',nxt:5});
+    A.clip();
+    line(plCurve,A,CURVE.x.map((v,i)=>[v,CURVE.tr[i]]),css('--green'),2.4);
+    line(plCurve,A,CURVE.x.map((v,i)=>[v,CURVE.te[i]]),css('--ink'),2.4);
+    line(plCurve,A,[[CURVE.x[0],S.sig*S.sig],[CURVE.x[CURVE.x.length-1],S.sig*S.sig]],css('--mut'),1.6,[5,4]);
+    A.unclip();
+    mtxt(plCurve,A.sx(CURVE.x[CURVE.x.length-1])-4,A.sy(S.sig*S.sig)-6,'noise floor $\\sigma^2$',css('--mut'),10.5,'right');
+    $('legCurve').innerHTML='<span><span class="sw ln" style="background:var(--green)"></span>training MSE</span>'+
+      '<span><span class="sw ln" style="background:var(--ink)"></span>test MSE</span>'+
+      '<span><span class="sw ln" style="background:var(--mut)"></span>'+T('\\sigma^2')+' — nothing can go below</span>';
+    typesetTex($('legCurve'));
+  } else {
+    $('curveTitle').textContent='Learning curve vs. epochs';
+    let hi=0,lo=1e9; for(const a of [CURVE.tr,CURVE.va])for(const v of a){if(v>hi)hi=v;if(v>0&&v<lo)lo=v}
+    lo=Math.max(lo,hi*1e-4); hi*=1.5;
+    const A=axes(plCurve,[56,12,544,232],[CURVE.x[0],CURVE.x[CURVE.x.length-1]],[lo*.7,hi],
+      {logy:true,xlab:'epoch',ylab:'MSE, log scale',nxt:5});
+    A.clip();
+    line(plCurve,A,CURVE.x.map((v,i)=>[v,CURVE.tr[i]]),css('--green'),2.4);
+    line(plCurve,A,CURVE.x.map((v,i)=>[v,CURVE.va[i]]),css('--red'),2.4);
+    let bi=0;for(let i=1;i<CURVE.va.length;i++)if(CURVE.va[i]<CURVE.va[bi])bi=i;
+    dot(plCurve,A,CURVE.x[bi],CURVE.va[bi],5,css('--gold'),css('--panel'));
+    A.unclip();
+    mark(plCurve,A,CURVE.x[bi],'early stop @ epoch $'+CURVE.x[bi]+'$',css('--gold'),0);
+    $('legCurve').innerHTML='<span><span class="sw ln" style="background:var(--green)"></span>training loss</span>'+
+      '<span><span class="sw ln" style="background:var(--red)"></span>validation loss</span>'+
+      '<span><span class="sw" style="background:var(--gold)"></span>lowest validation</span>';
+    typesetTex($('legCurve'));
+  }
+}
+
+/* ══════════════════════════ MODE C ══════════════════════════ */
+const plCls=P('cvCls',560,560), plTau=P('cvTau',620,300), plScore=P('cvScore',620,300);
+const CLIM=2.6;
+let CD=null, CM=null, CGRID=null;
+
+function genCls(){
+  const r=RNG((S.cseed*2246822519)>>>0), P2=[];
+  const nPos=Math.max(4,Math.round(S.cn*S.pos)), nNeg=S.cn-nPos, sp=S.cnoise*3.2;
+  const add=(x,y,c)=>P2.push({x,y,c});
+  if(S.cds==='blobs'){
+    for(let i=0;i<nPos;i++)add(.95+sp*r.n(), .75+sp*r.n(),1);
+    for(let i=0;i<nNeg;i++)add(-.95+sp*r.n(),-.55+sp*r.n(),0);
+  } else if(S.cds==='moons'){
+    for(let i=0;i<nPos;i++){const t=r.u()*Math.PI;add(1.35*Math.cos(t)-.6+sp*r.n(),1.0*Math.sin(t)-.35+sp*r.n(),1)}
+    for(let i=0;i<nNeg;i++){const t=r.u()*Math.PI;add(.6-1.35*Math.cos(t)+sp*r.n(),.35-1.0*Math.sin(t)+sp*r.n(),0)}
+  } else if(S.cds==='circles'){
+    for(let i=0;i<nPos;i++){const rr=Math.sqrt(r.u())*.8,t=r.u()*6.283;add(rr*Math.cos(t)+sp*r.n(),rr*Math.sin(t)+sp*r.n(),1)}
+    for(let i=0;i<nNeg;i++){const rr=1.5+r.u()*.6,t=r.u()*6.283;add(rr*Math.cos(t)+sp*r.n(),rr*Math.sin(t)+sp*r.n(),0)}
+  } else if(S.cds==='xor'){
+    const q=[[1.1,1.1,1],[-1.1,-1.1,1],[-1.1,1.1,0],[1.1,-1.1,0]];
+    let np=0,nn=0;
+    for(let i=0;i<S.cn*3&&(np<nPos||nn<nNeg);i++){
+      const Q=q[i%4];
+      if(Q[2]===1&&np<nPos){add(Q[0]+sp*r.n(),Q[1]+sp*r.n(),1);np++}
+      else if(Q[2]===0&&nn<nNeg){add(Q[0]+sp*r.n(),Q[1]+sp*r.n(),0);nn++}
+    }
+  } else { // spiral
+    for(let c=0;c<2;c++){
+      const want=c===1?nPos:nNeg;
+      for(let i=0;i<want;i++){const t=1.1+(i/Math.max(1,want))*7.4, rr=.15+t*.25, a=t+c*Math.PI;
+        add(rr*Math.cos(a)+sp*r.n(),rr*Math.sin(a)+sp*r.n(),c)}
+    }
+  }
+  for(const q of P2) if(r.u()<S.cflip) q.c=1-q.c;
+  const idx=P2.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(r.u()*(i+1));const t=idx[i];idx[i]=idx[j];idx[j]=t}
+  const nte=Math.max(4,Math.round(P2.length*S.ctf));
+  const te=new Set(idx.slice(0,nte));
+  P2.forEach((q,i)=>q.te=te.has(i));
+  return P2;
+}
+function cFeat(x,y){
+  const out=[];
+  for(let d=1;d<=S.cdeg;d++)for(let i=0;i<=d;i++)out.push(Math.pow(x,d-i)*Math.pow(y,i));
+  return out;
+}
+function fitCls(){
+  const pts=CD, tr=pts.filter(q=>!q.te);
+  const raw=tr.map(q=>cFeat(q.x,q.y)), p=raw[0].length;
+  const mu=new Float64Array(p), sd=new Float64Array(p).fill(1);
+  for(const f of raw)for(let j=0;j<p;j++)mu[j]+=f[j]/raw.length;
+  for(const f of raw)for(let j=0;j<p;j++)sd[j]+=(f[j]-mu[j])**2/raw.length;
+  for(let j=0;j<p;j++){sd[j]=Math.sqrt(sd[j]);if(sd[j]<1e-9)sd[j]=1}
+  const z=f=>{const a=new Float64Array(p);for(let j=0;j<p;j++)a[j]=(f[j]-mu[j])/sd[j];return a};
+  const Xs=raw.map(z), Ys=Float64Array.from(tr,q=>q.c);
+  const N=mkNet(p,S.cL,S.cwid,S.cact,(S.cseed*69069+13)>>>0);
+  netTrain(N,Xs,Ys,{steps:S.csteps,lr:.035,wd:S.clam<=-6?0:Math.pow(10,S.clam),task:'cls'});
+  const score=(x,y)=>1/(1+Math.exp(-clamp(netPredict(N,z(cFeat(x,y))),-40,40)));
+  return {score,p:N.nP};
+}
+function metricsAt(scores,labels,tau,cFN){
+  let TP=0,FP=0,FN=0,TN=0;
+  for(let i=0;i<scores.length;i++){
+    const yh=scores[i]>=tau?1:0, y=labels[i];
+    if(y===1){ yh?TP++:FN++; } else { yh?FP++:TN++; }
+  }
+  const acc=(TP+TN)/Math.max(1,scores.length);
+  const prec=TP+FP?TP/(TP+FP):0, rec=TP+FN?TP/(TP+FN):0;
+  const f1=prec+rec?2*prec*rec/(prec+rec):0;
+  const cost=(cFN*FN+FP)/Math.max(1,scores.length);
+  return {TP,FP,FN,TN,acc,prec,rec,f1,cost};
+}
+function computeC(){
+  CD=CD||genCls();
+  const M=fitCls();
+  const te=CD.filter(q=>q.te), tr=CD.filter(q=>!q.te);
+  const sTe=te.map(q=>M.score(q.x,q.y)), yTe=te.map(q=>q.c);
+  const sTr=tr.map(q=>M.score(q.x,q.y)), yTr=tr.map(q=>q.c);
+  const taus=Array.from({length:99},(_,i)=>(i+1)/100);
+  const rows=taus.map(t=>metricsAt(sTe,yTe,t,S.cost));
+  let ia=0,ic=0;
+  rows.forEach((r,i)=>{if(r.acc>rows[ia].acc)ia=i; if(r.cost<rows[ic].cost)ic=i});
+  // boundary grid
+  const G=96, gr=new Float32Array(G*G);
+  for(let j=0;j<G;j++)for(let i=0;i<G;i++){
+    const x=-CLIM+2*CLIM*(i+.5)/G, y=CLIM-2*CLIM*(j+.5)/G;
+    gr[j*G+i]=M.score(x,y);
+  }
+  CM={M,te,tr,sTe,yTe,sTr,yTr,taus,rows,ia,ic,p:M.p};
+  CGRID={G,gr};
+}
+function drawCls(){
+  plCls.fit();
+  const g=plCls.g, W=560,H=560, sx=x=>(x+CLIM)/(2*CLIM)*W, sy=y=>H-(y+CLIM)/(2*CLIM)*H;
+  g.fillStyle=css('--panel');g.fillRect(0,0,W,H);
+  if(CGRID){
+    const {G,gr}=CGRID, cw=W/G, ch=H/G;
+    const CR=hex2rgb(css('--red')), CB=hex2rgb(css('--blue'));
+    if(!plCls.off){plCls.off=document.createElement('canvas');plCls.offg=plCls.off.getContext('2d')}
+    if(plCls.off.width!==G){plCls.off.width=G;plCls.off.height=G;plCls.img=plCls.offg.createImageData(G,G)}
+    const px=plCls.img.data;
+    for(let j=0;j<G;j++)for(let i=0;i<G;i++){
+      const d=gr[j*G+i]-S.tau, a=Math.min(.52,Math.abs(d)*.95+.06), c=d>=0?CR:CB, o=(j*G+i)*4;
+      px[o]=c[0];px[o+1]=c[1];px[o+2]=c[2];px[o+3]=Math.round(a*255);
+    }
+    plCls.offg.putImageData(plCls.img,0,0);
+    g.save(); g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+    g.drawImage(plCls.off,0,0,G,G,0,0,W,H); g.restore();
+    // contour at tau via marching squares on cell corners
+    g.strokeStyle=css('--ink'); g.lineWidth=2.2; g.beginPath();
+    for(let j=0;j<G-1;j++)for(let i=0;i<G-1;i++){
+      const v=[gr[j*G+i]-S.tau,gr[j*G+i+1]-S.tau,gr[(j+1)*G+i+1]-S.tau,gr[(j+1)*G+i]-S.tau];
+      const px=[(i+.5)*cw,(i+1.5)*cw,(i+1.5)*cw,(i+.5)*cw], py=[(j+.5)*ch,(j+.5)*ch,(j+1.5)*ch,(j+1.5)*ch];
+      const segs=[];
+      for(let e=0;e<4;e++){const a=e,b=(e+1)%4;
+        if((v[a]<0)!==(v[b]<0)){const t=v[a]/(v[a]-v[b]);segs.push([px[a]+t*(px[b]-px[a]),py[a]+t*(py[b]-py[a])])}}
+      if(segs.length>=2){g.moveTo(segs[0][0],segs[0][1]);g.lineTo(segs[1][0],segs[1][1]);
+        if(segs.length===4){g.moveTo(segs[2][0],segs[2][1]);g.lineTo(segs[3][0],segs[3][1])}}
+    }
+    g.stroke();
+  }
+  if(CD)for(const q of CD){
+    const c=q.c===1?css('--red'):css('--blue');
+    g.beginPath();g.arc(sx(q.x),sy(q.y),q.te?4.6:3.6,0,6.284);
+    if(q.te){g.strokeStyle=c;g.lineWidth=1.9;g.stroke();
+      g.fillStyle=css('--panel');g.globalAlpha=.55;g.fill();g.globalAlpha=1}
+    else{g.fillStyle=c;g.fill()}
+  }
+  g.strokeStyle=css('--line');g.lineWidth=1.2;g.strokeRect(.5,.5,W-1,H-1);
+}
+function drawTau(){
+  plTau.fit();
+  if(!CM){return}
+  const A=axes(plTau,[52,12,512,232],[0,1],[0,1.05],{xlab:'threshold $\\tau$',ylab:'metric',nxt:6,nyt:5});
+  A.clip();
+  const T=CM.taus;
+  line(plTau,A,T.map((t,i)=>[t,CM.rows[i].prec]),css('--blue'),2);
+  line(plTau,A,T.map((t,i)=>[t,CM.rows[i].rec]),css('--green'),2);
+  line(plTau,A,T.map((t,i)=>[t,CM.rows[i].f1]),css('--gold'),2);
+  line(plTau,A,T.map((t,i)=>[t,CM.rows[i].acc]),css('--ink'),2.6);
+  const cmax=Math.max(...CM.rows.map(r=>r.cost))||1;
+  line(plTau,A,T.map((t,i)=>[t,CM.rows[i].cost/cmax]),css('--red'),2,[6,4]);
+  const g=plTau.g;
+  g.save();g.strokeStyle=css('--mut');g.lineWidth=2;
+  g.beginPath();g.moveTo(A.sx(S.tau),A.box[1]);g.lineTo(A.sx(S.tau),A.box[1]+A.box[3]);g.stroke();g.restore();
+  A.unclip();
+  const sameOpt=CM.ia===CM.ic;
+  $('tauNote').textContent=sameOpt?'held-out set · both optima coincide here':'held-out set · two different optima';
+  mark(plTau,A,CM.taus[CM.ia],'best accuracy $\\tau = '+CM.taus[CM.ia].toFixed(2)+'$',css('--ink'),0);
+  if(!sameOpt) mark(plTau,A,CM.taus[CM.ic],'lowest cost $\\tau = '+CM.taus[CM.ic].toFixed(2)+'$',css('--red'),1);
+  mtxt(plTau,568,A.sy(CM.rows[50].cost/cmax)+3,'cost',css('--red'),10.5,'left');
+}
+function drawScore(){
+  plScore.fit();
+  if(!CM){return}
+  const nb=26, bp=new Array(nb).fill(0), bn=new Array(nb).fill(0);
+  CM.sTe.forEach((s,i)=>{const b=clamp(Math.floor(s*nb),0,nb-1); CM.yTe[i]===1?bp[b]++:bn[b]++});
+  const mx=Math.max(...bp,...bn,1);
+  const A=axes(plScore,[52,12,512,232],[0,1],[0,mx*1.12],
+    {xlab:'predicted probability $\\hat p(y\\!=\\!1\\mid x)$',ylab:'count',nxt:6,nyt:4,
+     yfmt:v=>String(Math.round(v))});
+  A.clip();
+  const g=plScore.g, bw=512/nb;
+  for(let i=0;i<nb;i++){
+    const x=A.sx(i/nb);
+    if(bn[i]){g.fillStyle=css('--blue-t');g.fillRect(x,A.sy(bn[i]),bw-1,A.sy(0)-A.sy(bn[i]));
+      g.strokeStyle=css('--blue');g.lineWidth=1;g.strokeRect(x+.5,A.sy(bn[i])+.5,bw-2,A.sy(0)-A.sy(bn[i])-1)}
+    if(bp[i]){g.fillStyle=css('--red-t');g.fillRect(x,A.sy(bp[i]),bw-1,A.sy(0)-A.sy(bp[i]));
+      g.strokeStyle=css('--red');g.lineWidth=1;g.strokeRect(x+.5,A.sy(bp[i])+.5,bw-2,A.sy(0)-A.sy(bp[i])-1)}
+  }
+  A.unclip();
+  mark(plScore,A,S.tau,'$\\tau = '+S.tau.toFixed(2)+'$  →  flag everything right of here',css('--ink'),0);
+}
+function statsC(){
+  if(!CM)return;
+  const m=metricsAt(CM.sTe,CM.yTe,S.tau,S.cost);
+  const mt=metricsAt(CM.sTr,CM.yTr,S.tau,S.cost);
+  $('cTP').textContent=m.TP; $('cFN').textContent=m.FN; $('cFP').textContent=m.FP; $('cTN').textContent=m.TN;
+  $('bAcc').innerHTML=(100*m.acc).toFixed(1)+'%<small>accuracy</small>';
+  $('bF1').innerHTML=m.f1.toFixed(3)+'<small>F₁</small>';
+  const nNeg=CM.yTe.filter(y=>y===0).length, base=nNeg/Math.max(1,CM.yTe.length);
+  $('sBase').innerHTML=(100*base).toFixed(1)+'% <span class="pill '+(m.acc<=base+.005?'bad':'ok')+'">'+
+    (m.acc<=base+.005?'we are no better':'we beat it')+'</span>';
+  $('sPrec').textContent=m.prec.toFixed(3);
+  $('sRec').textContent=m.rec.toFixed(3);
+  $('sCost').textContent=fmt(m.cost);
+  $('costLab').textContent='(miss costs '+S.cost+'× a false alarm)';
+  $('sTrAcc').textContent=(100*mt.acc).toFixed(1)+'%';
+  const gap=mt.acc-m.acc, nte=CM.yTe.length;
+  const se=Math.sqrt(Math.max(m.acc*(1-m.acc),.01)/Math.max(1,nte));
+  const big=Math.max(.08,3*se), some=Math.max(.03,1.5*se);
+  CM.gapBig=gap>big;
+  $('sAccGap').innerHTML=(100*gap).toFixed(1)+' pt <span class="tiny">± '+(100*se).toFixed(1)+' s.e.</span> '+
+    '<span class="pill '+(gap>big?'bad':gap>some?'mid':'ok')+'">'+
+    (gap>big?'overfitting':gap>some?'small gap':'healthy')+'</span>';
+  const nP=CM.yTe.filter(y=>y===1).length;
+  setHTML($('cmNote'),'held-out: $'+CM.te.length+'$ points ($'+nP+'$ positive) · $'+CM.p+'$ params');
+}
+
+/* ══════════════════════════ series show / hide ══════════════════════════
+   Every legend entry that carries data-s is a switch: click it and that series
+   disappears from the plot. Useful in class — drop the 20 individual fits and
+   only h_avg is left, or drop the variance curve and the U-curve stands alone. */
+const HIDE={};
+function wireLegends(){
+  document.querySelectorAll('[data-s]').forEach(el=>{
+    el.style.opacity=HIDE[el.dataset.s]?0.34:1;
+    el.style.textDecoration=HIDE[el.dataset.s]?'line-through':'none';
+    if(el.dataset.wired)return;
+    el.dataset.wired='1'; el.style.cursor='pointer'; el.title='click to hide / show';
+    el.addEventListener('click',()=>{HIDE[el.dataset.s]=!HIDE[el.dataset.s];render()});
+  });
+}
+const shown=k=>!HIDE[k];
+
+/* ══════════════════════════ reading ══════════════════════════ */
+function reading(){
+  if(!$('reading'))return;                 /* the Reading card is optional */
+  const el={_h:'',set innerHTML(v){this._h=v},get innerHTML(){return this._h}};
+  const flush=()=>setHTML($('reading'),el._h);
+  if(S.mode==='A'&&MC){
+    const b=MC.bias2, v=MC.vari, nz=MC.noise;
+    const verdict = (b>2*v && b>.15*nz)
+      ? '<b>bias-dominated — underfitting.</b> The average of all $'+MC.fits.length+
+        '$ fits is itself wrong, so more data will not help at all. You need a richer model class.'
+      : (v>.5*nz)
+      ? '<b>variance-dominated — overfitting.</b> $h_{\\mathrm{avg}}$ is roughly right but no single fit is: the model is chasing the noise in its own sample. More data, or regularization, is the cure.'
+      : (b+v<.3*nz)
+      ? '<b>near the sweet spot.</b> $\\mathrm{bias}^2$ and variance together are small next to $\\sigma^2$, so almost all of the test error is noise you can never remove. Nothing here is worth fixing.'
+      : '<b>fairly balanced.</b> Neither term dominates — close to the best this model class can do at this noise level and $n$.';
+    el.innerHTML=verdict+'<br><br>Training MSE is <b>$'+fmt(MC.train)+'$</b> but expected test MSE is <b>$'+fmt(MC.test)+
+      '$</b> — a gap of $'+fmt(MC.test-MC.train)+'$. Nothing can push test error below $\\sigma^2 = '+fmt(MC.noise)+
+      '$, and the training error can and will go below it. That is why you cannot choose complexity from the training error.'+
+      (S.model==='poly'&&S.deg>=S.n-1?'<br><br>With $d \\ge n-1$ the polynomial <b>interpolates</b> every point: training MSE hits $0$ and the fit explodes between points.':'')+
+      (S.model==='nn'?'<br><br>The net has <b>$'+MC.p+'$</b> parameters for $n = '+S.n+'$ points. Watch what raising <i>epochs</i> does to variance — training longer is a capacity knob too.':'')+
+      (S.model==='rf'?'<br><br>$p = '+MC.p+'$ and $n = '+S.n+'$'+
+        (MC.p>S.n?'. You are <b>past the interpolation threshold</b>: infinitely many exact fits exist and the min-norm one is picked. $\\lVert\\theta\\rVert/\\sqrt{p} = '+fmt(MC.norm,2)+
+                  '$ — watch it <i>fall</i> as you add more features, which is why the test error falls too.'
+                 :'. Sweep $D$ through $'+(S.n-1)+'$ and watch the test error spike exactly there, then fall again.'):'');
+  } else if(S.mode==='B'){
+    if(!SEL){ el.innerHTML='Press <b>run sweep</b>. This panel fits the whole complexity ladder on <i>one</i> dataset of n points, and compares four numbers: the training error, the error on a single held-out split, '+S.folds+'-fold cross-validation, and the true test error you would only know if you had the generating function.'; }
+    else{
+      const amin=a=>{let b=0;for(let i=1;i<a.length;i++)if(a[i]<a[b])b=i;return b};
+      const v=SEL.vals[amin(SEL.val)], c=SEL.vals[amin(SEL.cv)], t=SEL.vals[amin(SEL.test)];
+      el.innerHTML='Training error picks the <b>most complex</b> model available, always. The held-out split picks <b>$'+v+
+        '$</b>, cross-validation picks <b>$'+c+'$</b>, and the truth is <b>$'+t+'$</b>.<br><br>'+
+        (SPLIT?'A single held-out estimate is itself noisy: over $'+S.reps+'$ random splits it ranges over <b>$\\pm'+fmt(SPLIT.sd)+
+         '$</b> around $'+fmt(SPLIT.m)+'$. Shrink the held-out fraction and that spread grows — which is exactly why cross-validation exists.':'')+
+        '<br><br>Because you tuned on the validation set, its error is <i>optimistic</i> for the model you chose. The test set has to stay sealed.';
+    }
+  } else if(S.mode==='C'&&CM){
+    const m=metricsAt(CM.sTe,CM.yTe,S.tau,S.cost);
+    const nNeg=CM.yTe.filter(y=>y===0).length, base=nNeg/Math.max(1,CM.yTe.length);
+    const mt=metricsAt(CM.sTr,CM.yTr,S.tau,S.cost);
+    let s='';
+    if(base>.75) s+='<b>$'+(100*base).toFixed(0)+'\\%$ of the held-out set is negative</b>, so "always negative" already scores $'+
+      (100*base).toFixed(1)+'\\%$ accuracy. Accuracy is close to meaningless here — read precision, recall and the confusion matrix instead.<br><br>';
+    s+='At $\\tau = '+S.tau.toFixed(2)+'$ you catch $'+(100*m.rec).toFixed(0)+'\\%$ of the positives ($'+m.FN+'$ missed) and $'+
+      (100*m.prec).toFixed(0)+'\\%$ of your flags are right ($'+m.FP+'$ false alarms).<br><br>';
+    if(CM.ia===CM.ic)
+      s+='Here the accuracy-optimal and cost-optimal thresholds happen to <b>coincide</b> at $\\tau = '+CM.taus[CM.ia].toFixed(2)+
+         '$. Raise <i>spread</i> or drop <i>% positive</i> to make the classes overlap — then they separate, and the choice starts to matter.';
+    else
+      s+='Accuracy peaks at $\\tau = '+CM.taus[CM.ia].toFixed(2)+'$, but with a miss costing $'+S.cost+
+      '\\times$ a false alarm the cost-optimal threshold is $\\tau = '+CM.taus[CM.ic].toFixed(2)+
+      '$. At the cost-optimal threshold accuracy drops to $'+(100*CM.rows[CM.ic].acc).toFixed(1)+
+      '\\%$ — and that is the <i>correct</i> answer. Reporting accuracy here would pick the wrong threshold.';
+    if(CM.gapBig) s+='<br><br>Training accuracy is $'+(100*(mt.acc-m.acc)).toFixed(0)+
+      '$ points above held-out — more than sampling noise explains. The boundary is memorizing: fewer poly features, fewer layers, or more data.';
+    el.innerHTML=s;
+  }
+  flush();
+}
+
+/* ══════════════════════════ equations ══════════════════════════ */
+function mj(el,tex){
+  el.textContent='';
+  try{ if(window.MathJax&&MathJax.tex2svg){ el.appendChild(MathJax.tex2svg(tex));
+    if(MathJax.svgStylesheet&&!document.getElementById('MJX-SVG-styles')){
+      const st=MathJax.svgStylesheet(); st.id='MJX-SVG-styles'; document.head.appendChild(st);} return; } }catch(_){}
+  el.textContent=tex.replace(/\\[a-zA-Z]+|[{}$]/g,'');
+}
+function eqs(){
+  mj($('eqDecomp'),'\\displaystyle \\mathrm{MSE}(x)=\\underbrace{\\sigma^2}_{\\text{noise}}+\\underbrace{\\big(h^\\*(x)-h_{\\rm avg}(x)\\big)^2}_{\\text{bias}^2}+\\underbrace{\\operatorname{Var}\\big(h_S(x)\\big)}_{\\text{variance}}');
+}
+window.__mjReady=()=>{ try{eqs()}catch(_){} try{typesetTex()}catch(_){} try{render()}catch(_){} };
+
+/* ══════════════════════════ recompute / render ══════════════════════════ */
+let sweepBusy=false;
+function runSweepA(){
+  if(sweepBusy)return; sweepBusy=true;
+  const {vals,lab,cur}=complexityList();
+  const Ks=S.model==='nn'?Math.max(5,Math.min(S.K,10)):Math.max(8,Math.min(S.K,30));
+  const CL=complexityList();
+  const out={vals,lab,cur,logx:CL.logx,xticks:CL.xticks,thr:interpThreshold(),
+             bias2:[],vari:[],test:[],train:[],norm:[]};
+  let i=0;
+  $('runSweepA').disabled=true;
+  const step=()=>{
+    const v=vals[i];
+    withComplexity(v,()=>{
+      const r=mcRun(Ks);
+      out.bias2.push(r.bias2);out.vari.push(r.vari);out.test.push(r.test);out.train.push(Math.max(r.train,1e-12));
+      out.norm.push(r.norm);
+    });
+    i++; $('progA').style.width=Math.round(100*i/vals.length)+'%';
+    $('sweepStat').textContent=i+' / '+vals.length+' · K='+Ks;
+    if(i<vals.length)requestAnimationFrame(step);
+    else{SWEEP=out;sweepBusy=false;$('runSweepA').disabled=false;$('progA').style.width='0%';drawSweep();}
+  };
+  requestAnimationFrame(step);
+}
+function recomputeA(){
+  MC=mcRun(Math.max(2,S.K));
+  setHTML($('pBig'),MC.p+' <small>params $p$</small>');
+  setHTML($('ratioBig'),(MC.p/S.n).toFixed(2)+' <small>$p/n$</small>');
+  setHTML($('normBig'),fmt(MC.norm,2)+' <small>$\\lVert\\theta\\rVert/\\sqrt{p}$</small>');
+  $('sNoise').textContent=fmt(MC.noise); $('sBias').textContent=fmt(MC.bias2);
+  $('sVar').textContent=fmt(MC.vari); $('sTest').textContent=fmt(MC.test);
+  $('sTrain').textContent=fmt(MC.train); $('sGap').textContent=fmt(MC.test-MC.train);
+  drawA(); drawBar();
+  if(SWEEP){SWEEP.cur=complexityList().cur; drawSweep();} else drawSweep();
+  reading();
+}
+function recomputeC(){
+  $('progC').style.width='55%';
+  requestAnimationFrame(()=>{
+    computeC(); drawCls(); drawTau(); drawScore(); statsC(); reading();
+    $('progC').style.width='0%';
+  });
+}
+function render(){
+  wireLegends();
+  if(S.mode==='A')recomputeA();
+  else if(S.mode==='B'){drawB();reading()}
+  else {drawCls();drawTau();drawScore();statsC();reading()}
+}
+
+/* ══════════════════════════ wiring ══════════════════════════ */
+function chips(host,items,get,set){
+  const el=$(host); el.innerHTML='';
+  items.forEach(([v,lab])=>{
+    const b=document.createElement('button'); b.className='chip'+(get()===v?' on':''); b.textContent=lab;
+    b.onclick=()=>{set(v); chips(host,items,get,set);};
+    el.appendChild(b);
+  });
+}
+function slider(id,key,fmtF,after){
+  const s=$(id), v=$(id+'v');
+  const upd=()=>{ S[key]=parseFloat(s.value); v.textContent=fmtF(S[key]); };
+  s.oninput=()=>{upd(); (after||render)();};
+  upd();
+}
+
+chips('fnChips',[['quad','quadratic'],['cubic','cubic'],['sine','sine'],['step','step']],()=>S.fn,
+  v=>{S.fn=v;setHTML($('degStar'),'· true degree $d^{\\ast}$ = $'+FNS[v].dstar+'$');SWEEP=null;SEL=null;render()});
+setHTML($('degStar'),'· true degree $d^{\\ast}$ = $'+FNS[S.fn].dstar+'$');
+chips('actChips',[['relu','ReLU'],['tanh','tanh'],['sin','sin']],()=>S.act,v=>{S.act=v;SWEEP=null;SEL=null;render()});
+chips('rfactChips',[['fourier','Fourier'],['relu','ReLU'],['tanh','tanh']],()=>S.rfact,v=>{S.rfact=v;SWEEP=null;SEL=null;render()});
+chips('cactChips',[['relu','ReLU'],['tanh','tanh']],()=>S.cact,v=>{S.cact=v;recomputeC()});
+chips('cdsChips',[['blobs','two blobs'],['moons','moons'],['circles','circles'],['xor','XOR'],['spiral','spiral']],
+  ()=>S.cds,v=>{S.cds=v;CD=genCls();recomputeC()});
+
+slider('sig','sig',v=>v.toFixed(3).replace(/0$/,''),()=>{SWEEP=null;SEL=null;render()});
+slider('n','n',v=>String(v),()=>{syncRfs();SWEEP=null;SEL=null;render()});
+slider('K','K',v=>String(v),()=>{
+  $('draw').max=S.K;
+  if(S.draw>S.K||S.drawAtMax!==false){S.draw=S.K;$('draw').value=S.K;$('drawv').textContent=S.K}
+  render();
+});
+slider('draw','draw',v=>String(v),()=>{S.drawAtMax=(S.draw>=S.K);render()});
+slider('deg','deg',v=>String(v),()=>{if(SWEEP)SWEEP.cur=S.deg;render()});
+slider('lam','lam',v=>v<=-8?'off':'1e'+v.toFixed(2).replace(/\.00$/,''),()=>{SWEEP=null;render()});
+slider('L','L',v=>String(v),()=>{SWEEP=null;SEL=null;render()});
+slider('wid','wid',v=>String(v),()=>{if(SWEEP)SWEEP.cur=S.wid;render()});
+slider('steps','steps',v=>String(v),()=>{SWEEP=null;SEL=null;render()});
+slider('wd','wd',v=>v<=-7?'off':'1e'+v.toFixed(2).replace(/\.00$/,''),()=>{SWEEP=null;render()});
+slider('D','D',v=>String(v),()=>{if(SWEEP)SWEEP.cur=S.D;render()});
+slider('rfs','rfs',v=>String(v),()=>{S.rfsTouched=true;SWEEP=null;SEL=null;render()});
+function syncRfs(){                      // the RFF kernel must be narrow enough to resolve n points
+  if(S.rfsTouched)return;
+  S.rfs=clamp(S.n,1,60); $('rfs').value=S.rfs; $('rfsv').textContent=S.rfs;
+}
+slider('rflam','rflam',v=>v<=-8?'off':'1e'+v.toFixed(2).replace(/\.00$/,''),()=>{SWEEP=null;render()});
+slider('tf','tf',v=>Math.round(v)+'%',()=>{S.tf=parseFloat($('tf').value)/100;$('tfv').textContent=Math.round(S.tf*100)+'%';});
+slider('folds','folds',v=>String(v));
+slider('reps','reps',v=>String(v));
+S.tf=parseFloat($('tf').value)/100; $('tfv').textContent=Math.round(S.tf*100)+'%';
+$('tf').oninput=()=>{S.tf=parseFloat($('tf').value)/100;$('tfv').textContent=Math.round(S.tf*100)+'%';};
+$('folds').oninput=()=>{S.folds=parseInt($('folds').value);$('foldsv').textContent=S.folds;$('cvLegLab').textContent=S.folds+'-fold CV'};
+$('reps').oninput=()=>{S.reps=parseInt($('reps').value);$('repsv').textContent=S.reps};
+
+slider('cn','cn',v=>String(v),()=>{CD=genCls();recomputeC()});
+slider('cnoise','cnoise',v=>v.toFixed(2),()=>{CD=genCls();recomputeC()});
+slider('cflip','cflip',v=>Math.round(v*100)+'%',()=>{CD=genCls();recomputeC()});
+slider('cdeg','cdeg',v=>String(v),recomputeC);
+slider('cL','cL',v=>v===0?'0 (logistic)':String(v),recomputeC);
+slider('cwid','cwid',v=>String(v),recomputeC);
+slider('csteps','csteps',v=>String(v),recomputeC);
+slider('clam','clam',v=>v<=-6?'off':'1e'+v.toFixed(2).replace(/\.00$/,''),recomputeC);
+slider('cost','cost',v=>v+'×',()=>{computeCostRows();drawTau();statsC();reading()});
+$('pos').oninput=()=>{S.pos=parseInt($('pos').value)/100;$('posv').textContent=Math.round(S.pos*100)+'%';CD=genCls();recomputeC()};
+$('ctf').oninput=()=>{S.ctf=parseInt($('ctf').value)/100;$('ctfv').textContent=Math.round(S.ctf*100)+'%';CD=genCls();recomputeC()};
+$('tau').oninput=()=>{S.tau=parseFloat($('tau').value);$('tauv').textContent=S.tau.toFixed(2);drawCls();drawTau();drawScore();statsC();reading()};
+function computeCostRows(){ if(!CM)return;
+  CM.rows=CM.taus.map(t=>metricsAt(CM.sTe,CM.yTe,t,S.cost));
+  CM.ia=0;CM.ic=0; CM.rows.forEach((r,i)=>{if(r.acc>CM.rows[CM.ia].acc)CM.ia=i; if(r.cost<CM.rows[CM.ic].cost)CM.ic=i});
+}
+$('tauAcc').onclick=()=>{if(!CM)return;S.tau=CM.taus[CM.ia];$('tau').value=S.tau;$('tauv').textContent=S.tau.toFixed(2);
+  drawCls();drawTau();drawScore();statsC();reading()};
+$('tauCost').onclick=()=>{if(!CM)return;S.tau=CM.taus[CM.ic];$('tau').value=S.tau;$('tauv').textContent=S.tau.toFixed(2);
+  drawCls();drawTau();drawScore();statsC();reading()};
+
+document.querySelectorAll('#modelSeg button').forEach(b=>b.onclick=()=>{
+  S.model=b.dataset.m;
+  document.querySelectorAll('#modelSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  $('polyCtl').hidden=S.model!=='poly'; $('nnCtl').hidden=S.model!=='nn'; $('rfCtl').hidden=S.model!=='rf';
+  SWEEP=null;SEL=null;CURVE=null;
+  setHTML($('sweepNote'),complexityList().lab+' — press recompute');
+  render();
+});
+document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>{
+  S.viewA=b.dataset.v;
+  document.querySelectorAll('#viewSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  drawA();
+});
+document.querySelectorAll('#curveSeg button').forEach(b=>b.onclick=()=>{
+  S.curve=b.dataset.c;
+  document.querySelectorAll('#curveSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  computeCurve(()=>drawCurve());
+});
+$('regen').onclick=()=>{S.seed=(S.seed*1103515245+12345)>>>0||1;SEL=null;SPLIT=null;CURVE=null;render()};
+$('cregen').onclick=()=>{S.cseed=(S.cseed*1103515245+12345)>>>0||1;CD=genCls();recomputeC()};
+$('runSweepA').onclick=runSweepA;
+$('ddPreset').onclick=()=>{
+  S.model='rf'; S.fn='quad'; S.sig=.22; S.n=24; S.K=30; S.D=16; S.rfact='fourier'; S.rfs=24; S.rflam=-8; S.rfsTouched=false;
+  document.querySelectorAll('#modelSeg button').forEach(x=>x.classList.toggle('on',x.dataset.m==='rf'));
+  $('polyCtl').hidden=true; $('nnCtl').hidden=true; $('rfCtl').hidden=false;
+  $('sig').value=S.sig; $('sigv').textContent=S.sig.toFixed(2);
+  $('n').value=S.n; $('nv').textContent=S.n;
+  $('K').value=S.K; $('Kv').textContent=S.K;
+  $('D').value=S.D; $('Dv').textContent=S.D;
+  $('rfs').value=S.rfs; $('rfsv').textContent=S.rfs; $('Dv').textContent=S.D;
+  $('rflam').value=S.rflam; $('rflamv').textContent='off';
+  SWEEP=null;SEL=null;CURVE=null; setMode('A'); runSweepA();
+};
+$('runB').onclick=()=>{$('runB').disabled=true;computeB(()=>{$('runB').disabled=false})};
+let animT=null;
+$('anim').onclick=()=>{
+  if(animT){clearInterval(animT);animT=null;$('anim').textContent='▶ redraw ×20';return}
+  let k=0; $('anim').textContent='■ stop';
+  animT=setInterval(()=>{ S.seed=(S.seed*1103515245+12345)>>>0||1; recomputeA();
+    if(++k>=20){clearInterval(animT);animT=null;$('anim').textContent='▶ redraw ×20'} },260);
+};
+
+function setMode(m){
+  S.mode=m;
+  document.querySelectorAll('.modes .tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  $('stageA').hidden=m!=='A'; $('stageB').hidden=m!=='B'; $('stageC').hidden=m!=='C';
+  $('railData').hidden=m==='C'; $('railModel').hidden=m==='C';
+  $('railSplit').hidden=m!=='B'; $('railC1').hidden=m!=='C'; $('railC2').hidden=m!=='C';
+  if(m==='C'&&!CM){CD=genCls();recomputeC()} else render();
+}
+document.querySelectorAll('.modes .tab').forEach(b=>{ if(b.dataset.mode) b.onclick=()=>setMode(b.dataset.mode); });
+
+const root=document.documentElement;
+try{const t=localStorage.getItem('l7-theme'); if(t)root.dataset.theme=t;}catch(_){}
+$('themeBtn').onclick=()=>{const cur=root.dataset.theme==='dark'?'light':'dark';root.dataset.theme=cur;
+  try{localStorage.setItem('l7-theme',cur)}catch(_){ }
+  for(const k in MIMG)delete MIMG[k];          /* colours are baked into the SVGs */
+  render()};
+
+addEventListener('keydown',e=>{
+  if(/input|select|textarea/i.test(e.target.tagName))return;
+  if(e.key==='n'){ (S.mode==='C'?$('cregen'):$('regen')).click(); }
+  if(e.key==='1')setMode('A'); if(e.key==='2')setMode('B'); if(e.key==='3')setMode('C');
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    const d=e.key==='ArrowRight'?1:-1;
+    if(S.mode==='C'){const s=$('cdeg');s.value=clamp(+s.value+d,1,8);s.oninput()}
+    else if(S.model==='poly'){const s=$('deg');s.value=clamp(+s.value+d,0,14);s.oninput()}
+    else if(S.model==='rf'){const s=$('D');s.value=clamp(+s.value+d,2,400);s.oninput()}
+    else{const s=$('wid');s.value=clamp(+s.value+d*2,2,64);s.oninput()}
+    e.preventDefault();
+  }
+});
+addEventListener('resize',()=>{ if(S.mode==='A'){drawA();drawBar();drawSweep()} else if(S.mode==='B')drawB();
+  else{drawCls();drawTau();drawScore()} });
+
+eqs(); typesetTex();
+setMode('A');
+runSweepA();
+if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)
+  MathJax.startup.promise.then(()=>{try{window.__mjReady()}catch(_){}});
+else setTimeout(()=>{try{window.__mjReady()}catch(_){}},1400);
+/* the SVG labels inherit their colour at rasterise time, so a theme flip needs fresh ones */
+const _mjClear=()=>{for(const k in MIMG)delete MIMG[k]};
+</script>

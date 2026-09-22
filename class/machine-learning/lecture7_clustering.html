@@ -1,0 +1,1321 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clustering Playground</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
+  --line:#dde2e9; --blue:#003380; --green:#5c8a2e; --gold:#a87b2f; --red:#b3423a;
+  --blue-t:rgba(0,51,128,.10); --green-t:rgba(92,138,46,.13); --gold-t:rgba(168,123,47,.16);
+  --red-t:rgba(179,66,58,.13); --accent:#003380; --chipbg:#eef1f5; --grid:#e8ebf0;
+  --ok:#2e7d4f; --bad:#b3423a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+    --line:#303845; --blue:#5b86cf; --green:#8fbf5f; --gold:#d3a75a; --red:#e0776d;
+    --blue-t:rgba(91,134,207,.20); --green-t:rgba(143,191,95,.18); --gold-t:rgba(211,167,90,.20);
+    --red-t:rgba(224,119,109,.18); --accent:#5b86cf; --chipbg:#262d37; --grid:#262d37;
+    --ok:#7fc79b; --bad:#e0776d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151a; --panel:#1b2028; --ink:#e7eaef; --ink2:#b4bcc7; --mut:#78828e;
+  --line:#303845; --blue:#5b86cf; --green:#8fbf5f; --gold:#d3a75a; --red:#e0776d;
+  --blue-t:rgba(91,134,207,.20); --green-t:rgba(143,191,95,.18); --gold-t:rgba(211,167,90,.20);
+  --red-t:rgba(224,119,109,.18); --accent:#5b86cf; --chipbg:#262d37; --grid:#262d37;
+  --ok:#7fc79b; --bad:#e0776d;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
+[hidden]{display:none!important}
+h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
+.sub{color:var(--ink2);font-size:13.5px;margin-top:2px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:11px;flex-wrap:wrap}
+.modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.theme{border:1px solid var(--line);background:var(--panel);color:var(--ink2);border-radius:7px;padding:5px 10px;font:600 12px inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:minmax(0,292px) minmax(0,1fr);gap:12px;align-items:start}
+.rail{display:grid;gap:12px;align-content:start;position:sticky;top:14px;min-width:0}
+.stage{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.card.wide{grid-column:1/-1}
+.tab{border:1px solid var(--line);background:none;color:var(--ink2);border-radius:7px;padding:5px 13px;font:600 12.5px inherit;cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:13px 0 6px;font-weight:700}
+.lab:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--chipbg);color:var(--ink2);border-radius:14px;padding:3px 11px;font:600 13px inherit;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:grid;grid-template-columns:minmax(0,102px) minmax(0,1fr) minmax(0,50px);align-items:center;gap:8px;margin:6px 0}
+.row label{color:var(--ink2);font-size:13.5px}
+.row input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}
+.row .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:13.5px;white-space:nowrap}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+button.b{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:6px 12px;font:600 13.5px inherit;cursor:pointer}
+button.b.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.b:active{transform:translateY(1px)}
+button.b[disabled]{opacity:.45;cursor:default}
+.cv{width:100%;display:block;border-radius:8px;touch-action:none}
+.hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.hd h2{font-size:14.5px;margin:0;font-weight:600;flex:1 1 auto;min-width:0}
+.hd .seg{flex:0 0 auto}
+.hd .note{flex:0 1 auto}
+.hd .note{font-size:12px;color:var(--mut)}
+.legend{display:flex;gap:13px;font-size:11.5px;color:var(--ink2);margin-top:6px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{width:12px;height:12px;display:inline-block;border-radius:3px}
+.sw.ln{height:3px;border-radius:2px;width:15px}
+.stat{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;font-size:13.5px;padding:2.5px 0;border-bottom:1px solid var(--grid)}
+.stat:last-child{border-bottom:none}
+.stat b{font-weight:600}
+.bigrow{display:flex;gap:18px;flex-wrap:wrap}
+.big{font-size:25px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.12}
+.big small{display:block;font-size:11.5px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.pill{display:inline-block;border-radius:9px;padding:1px 8px;font-size:11.5px;font-weight:700}
+.pill.ok{background:var(--green-t);color:var(--ok)}
+.pill.bad{background:var(--red-t);color:var(--bad)}
+.pill.mid{background:var(--gold-t);color:var(--gold)}
+.read{font-size:12.8px;line-height:1.55;color:var(--ink2)}
+.read b{color:var(--ink)}
+.keys{color:var(--mut);font-size:11.5px;margin-top:10px}
+.keys kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font:11px ui-monospace,monospace;background:var(--chipbg)}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:3px;font-size:13px;margin-top:4px}
+.cm div{padding:7px 4px;text-align:center;border-radius:5px;font-variant-numeric:tabular-nums}
+.cm .h{background:var(--chipbg);color:var(--ink2);font-weight:700;font-size:11.5px}
+.cm .rh{background:var(--chipbg);color:var(--ink2);font-weight:700;font-size:11.5px;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.cm .tp,.cm .tn{background:var(--green-t);font-weight:700}
+.cm .fp,.cm .fn{background:var(--red-t);font-weight:700}
+.cm .corner{background:none}
+.prog{height:4px;background:var(--grid);border-radius:3px;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .12s linear}
+.eqbox{overflow-x:auto;overflow-y:hidden;margin:2px 0 0;font-size:13px}
+.mjx-container{font-size:100%!important;vertical-align:-.12em}
+.legend .mjx-container, .stat .mjx-container{font-size:98%!important}
+.tiny{font-size:11.5px;color:var(--mut)}
+.seg{display:flex;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{flex:1;border:none;background:var(--panel);color:var(--ink2);padding:5px 6px;font:600 12px inherit;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--accent);color:#fff}
+@media(max-width:1180px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:820px){
+  .stage{grid-template-columns:1fr}
+  .rail{grid-template-columns:1fr}
+  body{padding:12px 12px 16px}
+}
+
+:root{--c5:#6b4f8a;--c6:#1f7a72}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c5:#a98cc4;--c6:#5cb8ad}}
+:root[data-theme="dark"]{--c5:#a98cc4;--c6:#5cb8ad}
+.steprow{display:flex;align-items:flex-start;gap:9px;padding:8px 9px;border-radius:8px;border:1px solid transparent;margin:3px 0}
+.steprow.live{background:var(--chipbg);border-color:var(--line)}
+.steprow .tag{flex:0 0 74px;font:700 10.5px "Avenir Next",system-ui;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--mut);padding-top:4px}
+.steprow.live .tag{color:var(--accent)}
+.steprow .tag.obj{color:var(--ink2)}
+.steprow.flat{opacity:.78;border-top:1px dashed var(--grid);border-radius:0;margin-top:8px;padding-top:11px}
+.eqin{flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;font-size:12.5px}
+.rail-eq .steprow{display:block;padding:7px 8px}
+.rail-eq .steprow .tag{display:block;flex:none;padding:0 0 3px}
+.rail-eq .eqin{display:block;font-size:11.5px}
+.rail-eq .steprow.flat{padding-top:9px}
+.stage{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1180px){.stage{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.stage{grid-template-columns:1fr}}
+</style>
+<div class="top">
+  <div>
+    <h1>Clustering Playground</h1>
+    <div class="sub">4190.428 Lecture 7 · step through K-means and a mixture of Gaussians, one half-iteration at a time</div>
+  </div>
+  <div class="modes">
+    <button class="tab" data-algo="kmeans">K-means</button>
+    <button class="tab" data-algo="gmm">Mixture of Gaussians</button>
+    <button class="tab on" data-algo="both">Side by side</button>
+    <button class="theme" id="themeBtn">☀︎ / ☾</button>
+  </div>
+</div>
+
+<div class="app">
+<div class="rail">
+
+  <div class="card">
+    <div class="lab">Dataset</div>
+    <div class="chips" id="dsChips"></div>
+    <div class="row"><label>points <span data-tex="n"></span></label><input type="range" id="n" min="30" max="900" step="10" value="240"><span class="val" id="nv">240</span></div>
+    <div class="row"><label>spread</label><input type="range" id="spread" min="0.1" max="1.2" step="0.05" value="0.45"><span class="val" id="spreadv">0.45</span></div>
+    <div class="btns"><button class="b primary" id="regen">↻ new data</button></div>
+  </div>
+
+  <div class="card">
+    <div class="lab">Clusters</div>
+    <div class="row"><label>how many <span data-tex="k"></span></label><input type="range" id="k" min="1" max="6" step="1" value="3"><span class="val" id="kv">3</span></div>
+    <div class="lab">Initialization</div>
+    <div class="chips" id="initChips"></div>
+    <div class="tiny" id="handHint" hidden style="margin-top:6px"></div>
+    <button class="chip" id="clearHand" hidden style="margin-top:6px">clear centres</button>
+    <div class="btns">
+      <button class="b primary" id="next">⏭ next step</button>
+      <button class="b" id="play">▶ run</button>
+      <button class="b" id="reset">⏮ reset</button>
+    </div>
+    <div class="keys">keys <kbd>space</kbd> next step · <kbd>p</kbd> run · <kbd>r</kbd> reset · <kbd>n</kbd> new data</div>
+  </div>
+
+  <div class="card" id="gmmCard">
+    <div class="lab">Mixture model</div>
+    <div class="lab" style="margin-top:6px">covariance <span data-tex="\Sigma_j"></span></div>
+    <div class="chips" id="covChips"></div>
+    <div class="row"><label>ridge <span data-tex="\log_{10}\varepsilon"></span></label><input type="range" id="reg" min="-6" max="-0.5" step="0.25" value="-3"><span class="val" id="regv">1e-3</span></div>
+    <div class="row"><label><span data-tex="\mathrm{E}"></span>-step temp <span data-tex="T"></span></label><input type="range" id="temp" min="-3" max="0" step="0.1" value="0"><span class="val" id="tempv">1</span></div>
+    <div class="btns"><button class="b" id="hardBtn">⚡ collapse to hard (T → 0)</button></div>
+    <div class="tiny" style="margin-top:6px">The E-step uses <span data-tex="T\Sigma_j"></span>. Slide <span data-tex="T\to 0"></span> and every
+      responsibility collapses onto its nearest centroid — the mixture <i>becomes</i> K-means. That is the
+      hard-assignment version: same two steps, no soft weights anywhere.</div>
+  </div>
+
+  <div class="card rail-eq" id="eqCard">
+    <div class="hd"><h2>The two steps</h2><div class="note">the live one is highlighted</div></div>
+    <div class="lab" id="hdKM" style="margin-top:4px">K-means</div>
+    <div id="eqKM">
+      <div class="steprow" id="rowKA"><span class="tag">1 · assign</span><span class="eqin" id="eqKA"></span></div>
+      <div class="steprow" id="rowKU"><span class="tag">2 · update</span><span class="eqin" id="eqKU"></span></div>
+      <div class="steprow flat"><span class="tag obj">objective</span><span class="eqin" id="eqKJ"></span></div>
+    </div>
+    <div class="lab" id="hdGM">Mixture of Gaussians</div>
+    <div id="eqGM">
+      <div class="steprow" id="rowGE"><span class="tag">1 · E-step</span><span class="eqin" id="eqGE"></span></div>
+      <div class="steprow" id="rowGM"><span class="tag">2 · M-step</span><span class="eqin" id="eqGM2"></span></div>
+      <div class="steprow flat"><span class="tag obj">objective</span><span class="eqin" id="eqGL"></span></div>
+    </div>
+    <div class="read" id="changed" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grid)"></div>
+  </div>
+
+  <div class="card">
+    <div class="lab">Inspect a point</div>
+    <div class="tiny" id="selHint">click any point on the left</div>
+    <canvas id="cvSel" class="cv" width="282" height="196" style="margin-top:6px"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="lab">Reading</div>
+    <div class="read" id="reading"></div>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="card wide">
+    <div class="hd">
+      <h2 id="stepTitle">Initialized</h2>
+      <div class="note" id="stepNote"></div>
+    </div>
+    <canvas id="cv" class="cv" width="1240" height="560"></canvas>
+    <div class="legend" id="leg"></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2 id="objTitle">The objective, one half-step at a time</h2>
+      <div class="note" id="objNote"></div></div>
+    <canvas id="cvObj" class="cv" width="620" height="290"></canvas>
+    <div class="legend" id="legObj"></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Local minima</h2><div class="note">many random restarts, run to convergence</div></div>
+    <canvas id="cvRestart" class="cv" width="620" height="270"></canvas>
+    <div class="btns"><button class="b" id="runRestart">▶ 60 restarts</button><span class="tiny" id="restartStat" style="align-self:center"></span></div>
+    <div class="prog"><i id="progR"></i></div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h2>Choosing <span data-tex="k"></span></h2><div class="note">the training objective cannot do it</div></div>
+    <canvas id="cvK" class="cv" width="620" height="270"></canvas>
+    <div class="legend" id="legK"></div>
+    <div class="btns"><button class="b" id="runK">▶ sweep k</button><span class="tiny" id="kStat" style="align-self:center"></span></div>
+    <div class="prog"><i id="progK"></i></div>
+  </div>
+</div>
+</div>
+
+<script>window.MathJax={tex:{},startup:{typeset:false},svg:{fontCache:'none'}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"
+ onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.min.js';s.onload=function(){try{window.__mjReady&&window.__mjReady()}catch(e){}};document.head.appendChild(s)})()"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const fmt=(v,k=3)=>!isFinite(v)?'–':(Math.abs(v)>=1000?v.toFixed(0):Math.abs(v)>=100?v.toFixed(1):Math.abs(v)>=1?v.toFixed(2):v.toFixed(k));
+/* ══════════════════════════ rng ══════════════════════════ */
+function RNG(seed){
+  let s=(seed>>>0)||1;
+  const u=()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296};
+  const n=()=>{let a=0,b=0;while(a<=0)a=u();while(b<=0)b=u();return Math.sqrt(-2*Math.log(a))*Math.cos(6.283185307*b)};
+  return {u,n};
+}
+
+/* ══════════════════════════ plotting toolkit ══════════════════════════ */
+function hex2rgb(h){
+  h=(h||'#000000').trim().replace('#','');
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0];
+}
+function P(id,W,H){
+  const cv=$(id), g=cv.getContext('2d');
+  const fit=()=>{const d=window.devicePixelRatio||1,bw=Math.round(W*d),bh=Math.round(H*d);
+    if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh}
+    g.setTransform(cv.width/W,0,0,cv.height/H,0,0);g.clearRect(0,0,W,H);};
+  return {cv,g,W,H,fit};
+}
+const AVN='"Avenir Next","Helvetica Neue",system-ui,sans-serif';
+const TNRF='"Times New Roman",Times,serif';
+/* ── every symbol on this page is real LaTeX ──────────────────────────────
+   Labels are written as prose with $…$ islands; the islands are typeset by
+   MathJax, cached as SVG images keyed by (tex, colour), and blitted onto the
+   canvas on the text baseline. Prose stays in Avenir Next.                */
+const MIMG={}; let mjWait=0;
+const EXR=0.482;                       /* px per ex, tuned to sit level with Avenir */
+function mathImg(tex,color){
+  const key=tex+'|'+color;
+  let r=MIMG[key]; if(r)return r;
+  r=MIMG[key]={ready:false,dead:false,img:null,w:1,h:1,d:0};
+  if(!(window.MathJax&&MathJax.tex2svg)){r.dead=true;return r}
+  try{
+    const svg=MathJax.tex2svg(tex,{display:false}).querySelector('svg');
+    if(!svg)throw 0;
+    r.w=parseFloat(svg.getAttribute('width'))||0;
+    r.h=parseFloat(svg.getAttribute('height'))||0;
+    r.d=-(parseFloat(svg.style.verticalAlign)||0);
+    if(!(r.w>0&&r.h>0)){r.dead=true;return r}
+    svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    const src=new XMLSerializer().serializeToString(svg).replace(/currentColor/g,color);
+    const img=new Image(); mjWait++;
+    const done=ok=>{ if(ok)r.ready=true; else r.dead=true;
+      if(--mjWait<=0){mjWait=0; try{render()}catch(_){}} };
+    img.onload=()=>done(true); img.onerror=()=>done(false);
+    img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(src)));
+    r.img=img;
+  }catch(_){r.dead=true}
+  return r;
+}
+const GK={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',
+  sigma:'σ',tau:'τ',phi:'φ',varphi:'φ',omega:'ω',Sigma:'Σ',ell:'ℓ',cdot:'·',times:'×',
+  ast:'*',mid:'|',hat:'',mathcal:'',mathrm:'',mathbf:'',rm:'',left:'',right:'',sqrt:'√'};
+function texFallback(t){            /* only used when MathJax never loads */
+  return t.replace(/\\([a-zA-Z]+)/g,(m,w)=>GK[w]!==undefined?GK[w]:w)
+          .replace(/[{}]/g,'').replace(/\^/g,'').replace(/_/g,'');
+}
+function lex(str){
+  const out=[]; String(str).split('$').forEach((seg,i)=>{ if(seg==='')return;
+    out.push(i%2?{tex:seg}:{t:seg}); }); return out;
+}
+function runW(g,str,size,color){
+  let w=0;
+  for(const r of lex(str)){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; w+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; w+=g.measureText(texFallback(r.tex)).width}
+    else w+=m.w*size*EXR;
+  }
+  return w;
+}
+function runText(g,x,ybase,str,size,align,color){
+  color=color||'#000000';
+  const runs=lex(str), ex=size*EXR;
+  let w=0;
+  for(const r of runs){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; w+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; w+=g.measureText(texFallback(r.tex)).width}
+    else w+=m.w*ex;
+  }
+  let cx=align==='center'?x-w/2:align==='right'?x-w:x;
+  const ta=g.textAlign, tb=g.textBaseline;
+  g.textAlign='left'; g.textBaseline='alphabetic'; g.fillStyle=color;
+  for(const r of runs){
+    if(r.t!==undefined){g.font='600 '+size+'px '+AVN; g.fillText(r.t,cx,ybase); cx+=g.measureText(r.t).width; continue}
+    const m=mathImg(r.tex,color);
+    if(m.dead){g.font='italic '+size+'px '+TNRF; const f=texFallback(r.tex);
+      g.fillText(f,cx,ybase); cx+=g.measureText(f).width; continue}
+    if(m.ready&&m.img){ const iw=m.w*ex, ih=m.h*ex;
+      g.drawImage(m.img,cx,ybase-(m.h-m.d)*ex,iw,ih); cx+=iw; }
+    else cx+=m.w*ex;                 /* still loading: leave the gap */
+  }
+  g.textAlign=ta; g.textBaseline=tb;
+  return w;
+}
+/* a single centred LaTeX snippet, sized by its cap height */
+function mathDraw(g,tex,cx,ybase,size,color){ return runText(g,cx,ybase,'$'+tex+'$',size,'center',color) }
+/* typeset every <span data-tex="…"> in the document (legends, stat rows, headings) */
+function typesetTex(root){
+  const list=(root||document).querySelectorAll('[data-tex]');
+  if(!list.length)return;
+  if(!(window.MathJax&&MathJax.tex2svg)){
+    list.forEach(el=>{if(!el.dataset.done){el.textContent=texFallback(el.dataset.tex);
+      el.style.fontFamily=TNRF;el.style.fontStyle='italic';}});
+    return;
+  }
+  if(MathJax.svgStylesheet&&!document.getElementById('MJX-SVG-styles')){
+    const st=MathJax.svgStylesheet(); st.id='MJX-SVG-styles'; document.head.appendChild(st);
+  }
+  list.forEach(el=>{ if(el.dataset.done)return;
+    try{ el.textContent=''; el.appendChild(MathJax.tex2svg(el.dataset.tex,{display:false})); el.dataset.done='1'; }catch(_){}
+  });
+}
+const T=tex=>'<span data-tex="'+tex.replace(/"/g,'&quot;')+'"></span>';
+function texify(html){                 /* $…$ islands → real LaTeX spans */
+  return String(html).split('$').map((seg,i)=>i%2?T(seg):seg).join('');
+}
+function setHTML(el,html){ el.innerHTML=texify(html); typesetTex(el); }
+function niceTicks(a,b,cnt){
+  const span=b-a; if(!(span>0))return [a];
+  const raw=span/cnt, mag=Math.pow(10,Math.floor(Math.log10(raw))), norm=raw/mag;
+  const st=(norm<1.5?1:norm<3?2:norm<7?5:10)*mag;
+  const out=[]; for(let v=Math.ceil(a/st)*st; v<=b+st*1e-9; v+=st) out.push(Math.abs(v)<st*1e-9?0:v);
+  return out;
+}
+function axes(pl,box,xd,yd,o){
+  o=o||{}; const g=pl.g, [L,T,W,H]=box;
+  const logy=!!o.logy, logx=!!o.logx;
+  const ty=v=>logy?Math.log10(Math.max(v,1e-12)):v;
+  const tx=v=>logx?Math.log10(Math.max(v,1e-12)):v;
+  const y0=ty(yd[0]), y1=ty(yd[1]), x0=tx(xd[0]), x1=tx(xd[1]);
+  const sx=x=>L+(tx(x)-x0)/(x1-x0)*W;
+  const sy=y=>T+H-(ty(y)-y0)/(y1-y0)*H;
+  g.save();
+  g.fillStyle=css('--panel'); g.fillRect(L,T,W,H);
+  g.strokeStyle=css('--grid'); g.lineWidth=1;
+  let xt=o.xticks;
+  if(!xt){
+    if(logx){ xt=[];
+      for(let e=-2;e<=4;e++)for(const m of [1,2,5]){const v=m*Math.pow(10,e);
+        if(v>=xd[0]&&v<=xd[1])xt.push(v);}
+      if(xt.length<2)xt=[xd[0],xd[1]];
+    } else xt=niceTicks(xd[0],xd[1],o.nxt||6);
+  }
+  let yt, numlab=false;
+  if(logy){
+    yt=[]; for(let e=Math.ceil(y0);e<=Math.floor(y1);e++)yt.push(Math.pow(10,e));
+    if(yt.length<3){
+      yt=[]; numlab=true;
+      for(let e=Math.floor(y0)-1;e<=Math.ceil(y1)+1;e++)for(const m of [1,2,5]){
+        const v=m*Math.pow(10,e); if(ty(v)>=y0-1e-9&&ty(v)<=y1+1e-9)yt.push(v);}
+    }
+    if(yt.length<2)yt=[yd[0],yd[1]];
+  }
+  else yt=o.yticks||niceTicks(yd[0],yd[1],o.nyt||5);
+  g.beginPath();
+  for(const x of xt){const px=Math.round(sx(x))+.5;g.moveTo(px,T);g.lineTo(px,T+H);}
+  for(const y of yt){const py=Math.round(sy(y))+.5;g.moveTo(L,py);g.lineTo(L+W,py);}
+  g.stroke();
+  g.strokeStyle=css('--line'); g.lineWidth=1.2; g.strokeRect(L+.5,T+.5,W-1,H-1);
+  const TS=11.5, mut=css('--mut'), ink2=css('--ink2');
+  for(const x of xt) runText(g,sx(x),T+H+5+TS*0.80,'$'+(o.xfmt?o.xfmt(x):numTex(x))+'$',TS,'center',mut);
+  if(!o.noyt)for(const y of yt){
+    const lab=o.yfmt?o.yfmt(y):(logy?(numlab?numTex(y):powTex(y)):numTex(y));
+    runText(g,L-7,sy(y)+TS*0.34,'$'+lab+'$',TS,'right',mut);
+  }
+  if(o.xlab)runText(g,L+W/2,T+H+34,o.xlab,11.5,'center',ink2);
+  if(o.ylab){g.save();g.translate(L-36,T+H/2);g.rotate(-Math.PI/2);
+    runText(g,0,0,o.ylab,11.5,'center',ink2);g.restore();}
+  g.restore();
+  return {sx,sy,box,clip:()=>{g.save();g.beginPath();g.rect(L,T,W,H);g.clip()},unclip:()=>g.restore()};
+}
+function numTex(v){
+  const a=Math.abs(v); if(a===0)return '0';
+  if(a>=1e4||a<1e-3){const e=Math.floor(Math.log10(a)), m=v/Math.pow(10,e);
+    return (Math.abs(m-1)<1e-9?'':(+m.toPrecision(2))+'\\!\\times\\!')+'10^{'+e+'}'}
+  return String(+v.toPrecision(3));
+}
+function powTex(v){ return '10^{'+Math.round(Math.log10(v))+'}' }
+function line(pl,A,pts,color,lw,dash){
+  const g=pl.g; g.save(); g.strokeStyle=color; g.lineWidth=lw||2;
+  if(dash)g.setLineDash(dash); g.lineJoin='round'; g.beginPath();
+  let started=false;
+  for(const q of pts){ if(!isFinite(q[1])){started=false;continue;}
+    const x=A.sx(q[0]),y=A.sy(q[1]);
+    if(!started){g.moveTo(x,y);started=true}else g.lineTo(x,y); }
+  g.stroke(); g.restore();
+}
+function band(pl,A,pts,lo,color){
+  const g=pl.g; g.save(); g.fillStyle=color; g.beginPath();
+  pts.forEach((q,i)=>{const x=A.sx(q[0]),y=A.sy(q[1]);i?g.lineTo(x,y):g.moveTo(x,y)});
+  for(let i=lo.length-1;i>=0;i--)g.lineTo(A.sx(lo[i][0]),A.sy(lo[i][1]));
+  g.closePath(); g.fill(); g.restore();
+}
+function dot(pl,A,x,y,r,fill,stroke){
+  const g=pl.g;g.beginPath();g.arc(A.sx(x),A.sy(y),r,0,6.284);
+  if(fill){g.fillStyle=fill;g.fill()} if(stroke){g.strokeStyle=stroke;g.lineWidth=1.6;g.stroke()}
+}
+function mark(pl,A,x,label,color,row){
+  const g=pl.g, L=A.box[0],T=A.box[1],W=A.box[2],H=A.box[3];
+  g.save();
+  g.strokeStyle=color; g.lineWidth=1.5; g.setLineDash([3,3]);
+  g.beginPath(); g.moveTo(A.sx(x),T); g.lineTo(A.sx(x),T+H); g.stroke();
+  g.setLineDash([]);
+  const w=runW(g,label,10.5)+12, px=clamp(A.sx(x)-w/2,L+3,L+W-w-3), py=T+4+(row||0)*17.5;
+  g.globalAlpha=.92; g.fillStyle=css('--panel');
+  g.beginPath(); if(g.roundRect)g.roundRect(px,py,w,16,4); else g.rect(px,py,w,16); g.fill();
+  g.globalAlpha=1; g.strokeStyle=color; g.lineWidth=1; g.stroke();
+  g.textBaseline='alphabetic';
+  runText(g,px+w/2,py+11.5,label,10.5,'center',color); g.restore();
+}
+function mtxt(pl,x,y,str,color,size,align){
+  const g=pl.g; g.save(); g.textBaseline='alphabetic';
+  runText(g,x,y,str,size||11,align||'left',color||css('--ink2')); g.restore();
+}
+function txt(pl,x,y,s,color,font,align,base){
+  const g=pl.g;g.save();g.fillStyle=color||css('--ink2');
+  g.font=font||'600 11px "Avenir Next",system-ui,sans-serif';
+  g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);g.restore();
+}
+
+
+/* ══════════════════════════ state ══════════════════════════ */
+const S={ algo:'both', ds:'blobs3', n:240, spread:.45, seed:1,
+  k:3, init:'kpp', cov:'full', reg:-3, temp:0, sel:-1, playing:false,
+  hand:[], drag:-1 };
+const LIM=2.65;
+const CK=['--blue','--green','--gold','--red','--c5','--c6'];
+const ck=j=>css(CK[j%6]);
+
+/* ══════════════════════════ data ══════════════════════════ */
+let PTS=[];                                   /* [{x,y}] */
+function genData(){
+  const r=RNG((S.seed*2654435761)>>>0), out=[], sp=S.spread;
+  const add=(x,y)=>out.push({x,y});
+  if(S.ds==='blobs2'){
+    const C=[[-1.05,-.70],[1.00,.70]];
+    for(let i=0;i<S.n;i++){const c=C[i%2];add(c[0]+sp*r.n(),c[1]+sp*r.n())}
+  } else if(S.ds==='blobs3'){
+    const C=[[-1.15,-.75],[1.05,-.85],[.15,1.2]];
+    for(let i=0;i<S.n;i++){const c=C[i%3];add(c[0]+sp*r.n(),c[1]+sp*r.n())}
+  } else if(S.ds==='aniso'){
+    /* two parallel cigars, offset PERPENDICULAR to their long axis — K-means has to cut
+       across the short direction but its straight bisector runs the wrong way */
+    const a=0.70, ca=Math.cos(a), sa=Math.sin(a), sl=1.05, ss=sp*0.30;
+    for(let i=0;i<S.n;i++){
+      const off=(i%2?1:-1)*0.60, u=sl*r.n(), v=ss*r.n()+off;
+      add(ca*u-sa*v, sa*u+ca*v);
+    }
+  } else if(S.ds==='unequal'){
+    const C=[[-1.3,-.6,.55,.55],[1.15,.9,.30,.30],[.55,-1.25,.18,.18]];
+    const share=[.72,.20,.08];
+    let q=0;
+    for(let g=0;g<3;g++){const m=Math.round(S.n*share[g]);
+      for(let i=0;i<m;i++){const c=C[g];add(c[0]+sp*c[2]*2.1*r.n(),c[1]+sp*c[3]*2.1*r.n())}}
+  } else if(S.ds==='moons'){
+    for(let i=0;i<S.n;i++){const s=i%2, t=r.u()*Math.PI;
+      if(s)add(1.5*Math.cos(t)-.65+sp*.45*r.n(), 1.1*Math.sin(t)-.42+sp*.45*r.n());
+      else add(.65-1.5*Math.cos(t)+sp*.45*r.n(), .42-1.1*Math.sin(t)+sp*.45*r.n());}
+  } else {                                   /* uniform — no structure at all */
+    for(let i=0;i<S.n;i++)add((r.u()*2-1)*1.9,(r.u()*2-1)*1.9);
+  }
+  PTS=out; S.sel=-1;
+}
+
+/* ══════════════════════════ 2×2 linear algebra ══════════════════════════ */
+const det2=M=>M[0]*M[3]-M[1]*M[2];
+const inv2=M=>{const d=det2(M)||1e-12;return [M[3]/d,-M[1]/d,-M[2]/d,M[0]/d]};
+function gauss2(x,y,mu,M){
+  const d=Math.max(det2(M),1e-300), I=inv2(M), dx=x-mu[0], dy=y-mu[1];
+  const q=dx*(I[0]*dx+I[1]*dy)+dy*(I[2]*dx+I[3]*dy);
+  return Math.exp(-.5*Math.max(q,0))/(6.283185307*Math.sqrt(d));
+}
+function logGauss2(x,y,mu,M){
+  const d=Math.max(det2(M),1e-300), I=inv2(M), dx=x-mu[0], dy=y-mu[1];
+  const q=dx*(I[0]*dx+I[1]*dy)+dy*(I[2]*dx+I[3]*dy);
+  return -.5*Math.max(q,0)-Math.log(6.283185307)-.5*Math.log(d);
+}
+function eig2(M){
+  const a=M[0],b=M[1],d=M[3], tr=a+d, dt=a*d-b*b;
+  const s=Math.sqrt(Math.max(tr*tr/4-dt,0));
+  const l1=Math.max(tr/2+s,1e-12), l2=Math.max(tr/2-s,1e-12);
+  let v=[b,l1-a];
+  if(Math.abs(b)<1e-12)v=(a>=d)?[1,0]:[0,1];
+  const nn=Math.hypot(v[0],v[1])||1;
+  return {l1,l2,ang:Math.atan2(v[1]/nn,v[0]/nn)};
+}
+const dataScale=()=>{
+  let vx=0,vy=0,mx=0,my=0;
+  for(const q of PTS){mx+=q.x/PTS.length;my+=q.y/PTS.length}
+  for(const q of PTS){vx+=(q.x-mx)**2/PTS.length;vy+=(q.y-my)**2/PTS.length}
+  return Math.max((vx+vy)/2,1e-6);
+};
+
+/* ══════════════════════════ initialization ══════════════════════════ */
+function initCenters(seed){
+  const r=RNG(seed>>>0||1), k=S.k, mu=[];
+  if(S.init==='manual'){                    /* whatever the user dropped on the canvas */
+    for(let j=0;j<Math.min(k,S.hand.length);j++)mu.push(S.hand[j].slice());
+    /* any centres not yet placed fall back to k-means++ on the remainder */
+    while(mu.length<k){
+      const d2=PTS.map(q=>{let m=1e18;for(const c of mu)m=Math.min(m,(q.x-c[0])**2+(q.y-c[1])**2);return m});
+      let tot=0;for(const v of d2)tot+=v;
+      if(!(tot>0)){mu.push([PTS[0].x,PTS[0].y]);continue}
+      let t=r.u()*tot,i=0; while(i<d2.length-1&&(t-=d2[i])>0)i++;
+      mu.push([PTS[i].x,PTS[i].y]);
+    }
+    return mu;
+  }
+  if(S.init==='bad'){                       /* all crammed into one corner on purpose */
+    for(let j=0;j<k;j++)mu.push([-1.55+.16*j+.10*r.n(), -1.35+.14*j+.10*r.n()]);
+    return mu;
+  }
+  if(S.init==='random'){
+    for(let j=0;j<k;j++)mu.push([PTS[Math.floor(r.u()*PTS.length)].x,PTS[Math.floor(r.u()*PTS.length)].y]);
+    return mu;
+  }
+  if(S.init==='far'){                       /* farthest-point (greedy) */
+    mu.push([PTS[Math.floor(r.u()*PTS.length)].x,PTS[Math.floor(r.u()*PTS.length)].y]);
+    while(mu.length<k){
+      let bi=0,bd=-1;
+      PTS.forEach((q,i)=>{let m=1e18;for(const c of mu)m=Math.min(m,(q.x-c[0])**2+(q.y-c[1])**2);
+        if(m>bd){bd=m;bi=i}});
+      mu.push([PTS[bi].x,PTS[bi].y]);
+    }
+    return mu;
+  }
+  /* k-means++ */
+  mu.push([PTS[Math.floor(r.u()*PTS.length)].x,PTS[Math.floor(r.u()*PTS.length)].y]);
+  while(mu.length<k){
+    const d2=PTS.map(q=>{let m=1e18;for(const c of mu)m=Math.min(m,(q.x-c[0])**2+(q.y-c[1])**2);return m});
+    let tot=0;for(const v of d2)tot+=v;
+    let t=r.u()*tot, i=0; while(i<d2.length-1&&(t-=d2[i])>0)i++;
+    mu.push([PTS[i].x,PTS[i].y]);
+  }
+  return mu;
+}
+
+/* ══════════════════════════ K-means ══════════════════════════ */
+function kmInit(seed){
+  return {mu:initCenters(seed), muPrev:null, c:new Int32Array(PTS.length).fill(-1),
+          phase:'assign', step:0, hist:[], moved:0, done:false};
+}
+function kmJ(K){
+  let J=0;
+  for(let i=0;i<PTS.length;i++){const c=K.c[i]; if(c<0)return NaN;
+    J+=(PTS[i].x-K.mu[c][0])**2+(PTS[i].y-K.mu[c][1])**2}
+  return J;
+}
+function kmStep(K){
+  if(K.done)return false;
+  if(K.phase==='assign'){
+    let moved=0;
+    for(let i=0;i<PTS.length;i++){
+      let b=0,bd=1e18;
+      for(let j=0;j<K.mu.length;j++){
+        const d=(PTS[i].x-K.mu[j][0])**2+(PTS[i].y-K.mu[j][1])**2;
+        if(d<bd){bd=d;b=j}
+      }
+      if(K.c[i]!==b){K.c[i]=b;moved++}
+    }
+    K.moved=moved; K.muPrev=null;
+    K.hist.push({v:kmJ(K),kind:'assign'});
+    if(moved===0&&K.step>0)K.done=true;
+    K.phase='update';
+  } else {
+    K.muPrev=K.mu.map(m=>m.slice());
+    const k=K.mu.length, sx=new Float64Array(k), sy=new Float64Array(k), cnt=new Float64Array(k);
+    for(let i=0;i<PTS.length;i++){const c=K.c[i];sx[c]+=PTS[i].x;sy[c]+=PTS[i].y;cnt[c]++}
+    for(let j=0;j<k;j++) if(cnt[j]>0)K.mu[j]=[sx[j]/cnt[j],sy[j]/cnt[j]];
+    K.empty=Array.from(cnt).filter(v=>v===0).length;
+    K.hist.push({v:kmJ(K),kind:'update'});
+    K.phase='assign';
+  }
+  K.step++;
+  return true;
+}
+function kmRun(K,max){
+  let it=0; while(!K.done&&it++<(max||400))kmStep(K);
+  return K;
+}
+
+/* ══════════════════════════ mixture of Gaussians ══════════════════════════ */
+function gmInit(seed){
+  const mu=initCenters(seed), k=S.k, sc=dataScale();
+  const Sig=[], phi=[];
+  for(let j=0;j<k;j++){Sig.push([sc,0,0,sc]);phi.push(1/k)}
+  return {phi,mu,Sig,W:null,phase:'E',step:0,hist:[],done:false,ll:NaN,elbo:NaN};
+}
+function gmLL(G){
+  let ll=0;
+  for(let i=0;i<PTS.length;i++){
+    let s=0;
+    for(let j=0;j<G.mu.length;j++)s+=G.phi[j]*gauss2(PTS[i].x,PTS[i].y,G.mu[j],G.Sig[j]);
+    ll+=Math.log(Math.max(s,1e-300));
+  }
+  return ll;
+}
+function gmElbo(G){                          /* Σ_i Σ_j w log(φ N) − w log w  */
+  if(!G.W)return NaN;
+  let e=0, k=G.mu.length;
+  for(let i=0;i<PTS.length;i++)for(let j=0;j<k;j++){
+    const w=G.W[i*k+j]; if(w<1e-12)continue;
+    e+=w*(Math.log(Math.max(G.phi[j],1e-300))+logGauss2(PTS[i].x,PTS[i].y,G.mu[j],G.Sig[j])-Math.log(w));
+  }
+  return e;
+}
+function gmEstep(G){
+  const k=G.mu.length, n=PTS.length, W=new Float64Array(n*k), T=Math.pow(10,S.temp);
+  const Se=G.Sig.map(M=>[M[0]*T,M[1]*T,M[2]*T,M[3]*T]);
+  for(let i=0;i<n;i++){
+    let lo=[-1e18],mx=-1e18;
+    const l=new Float64Array(k);
+    for(let j=0;j<k;j++){l[j]=Math.log(Math.max(G.phi[j],1e-300))+logGauss2(PTS[i].x,PTS[i].y,G.mu[j],Se[j]);
+      if(l[j]>mx)mx=l[j]}
+    let s=0;for(let j=0;j<k;j++){W[i*k+j]=Math.exp(l[j]-mx);s+=W[i*k+j]}
+    for(let j=0;j<k;j++)W[i*k+j]/=(s||1);
+  }
+  G.W=W;
+}
+function gmMstep(G){
+  const k=G.mu.length, n=PTS.length, W=G.W, eps=Math.pow(10,S.reg)*dataScale();
+  const Nj=new Float64Array(k);
+  for(let i=0;i<n;i++)for(let j=0;j<k;j++)Nj[j]+=W[i*k+j];
+  for(let j=0;j<k;j++){
+    const N=Math.max(Nj[j],1e-10);
+    let mx=0,my=0;
+    for(let i=0;i<n;i++){const w=W[i*k+j];mx+=w*PTS[i].x;my+=w*PTS[i].y}
+    G.mu[j]=[mx/N,my/N];
+    let a=0,b=0,d=0;
+    for(let i=0;i<n;i++){const w=W[i*k+j], dx=PTS[i].x-G.mu[j][0], dy=PTS[i].y-G.mu[j][1];
+      a+=w*dx*dx; b+=w*dx*dy; d+=w*dy*dy}
+    a/=N;b/=N;d/=N;
+    if(S.cov==='diag'){b=0}
+    else if(S.cov==='spher'){const s=(a+d)/2;a=s;d=s;b=0}
+    G.Sig[j]=[a+eps,b,b,d+eps];
+    G.phi[j]=N/n;
+  }
+  if(S.cov==='tied'||(S.cov==='spher'&&S.temp<=-2.5)){
+    /* one shared covariance. With spherical + hard assignments this is exactly the
+       σ→0 limit in the lecture, and the two panels then coincide step for step. */
+    let a=0,b=0,d=0;
+    for(let j=0;j<k;j++){const w=G.phi[j];a+=w*G.Sig[j][0];b+=w*G.Sig[j][1];d+=w*G.Sig[j][3]}
+    for(let j=0;j<k;j++)G.Sig[j]=[a,b,b,d];
+  }
+}
+function gmStep(G){
+  if(G.done)return false;
+  if(G.phase==='E'){
+    gmEstep(G);
+    G.ll=gmLL(G); G.elbo=gmElbo(G);
+    G.hist.push({v:G.ll,e:G.elbo,kind:'E'});
+    G.phase='M';
+  } else {
+    const before=G.ll;
+    gmMstep(G);
+    G.ll=gmLL(G); G.elbo=gmElbo(G);
+    G.hist.push({v:G.ll,e:G.elbo,kind:'M'});
+    if(isFinite(before)&&Math.abs(G.ll-before)<1e-7*Math.max(1,Math.abs(G.ll))&&G.step>2)G.done=true;
+    G.phase='E';
+  }
+  G.step++;
+  return true;
+}
+function gmRun(G,max){let it=0;while(!G.done&&it++<(max||400))gmStep(G);return G}
+function gmParams(k){
+  const per=S.cov==='full'?3:S.cov==='diag'?2:S.cov==='spher'?1:0;
+  return k*2 + (S.cov==='tied'?3:k*per) + (k-1);
+}
+
+/* ══════════════════════════ engine state ══════════════════════════ */
+let KM=null, GM=null;
+function resetAll(){
+  KM=kmInit(S.seed*7919+11); GM=gmInit(S.seed*7919+11);
+  RST=null; KSW=null;
+}
+function stepBoth(){
+  let any=false;
+  if(S.algo!=='gmm')any=kmStep(KM)||any;
+  if(S.algo!=='kmeans')any=gmStep(GM)||any;
+  return any;
+}
+
+/* ══════════════════════════ main canvas ══════════════════════════ */
+const pl=P('cv',1240,560), plSelC=P('cvSel',282,196),
+      plObj=P('cvObj',620,290), plRst=P('cvRestart',620,270), plK=P('cvK',620,270);
+const panels=()=>S.algo==='both'?[['kmeans',10,0],['gmm',10,1]]:[[S.algo,10,0]];
+function panelBox(i,cnt){
+  const G=14, W=(1240-2*10-(cnt-1)*G)/cnt;
+  return [10+i*(W+G),10,W,540];
+}
+function drawMain(){
+  pl.fit();
+  const g=pl.g, list=S.algo==='both'?['kmeans','gmm']:[S.algo];
+  list.forEach((kind,i)=>{
+    const [L,T,W,H]=panelBox(i,list.length);
+    const sx=x=>L+(x+LIM)/(2*LIM)*W, sy=y=>T+H-(y+LIM)/(2*LIM)*H;
+    g.save();
+    g.fillStyle=css('--panel'); g.fillRect(L,T,W,H);
+    g.beginPath(); g.rect(L,T,W,H); g.clip();
+    if(kind==='kmeans'&&KM){
+      field(g,L,T,W,H,(x,y,out)=>{                /* hard: nearest centroid, one colour per cell */
+        let bj=0,bd=1e18;
+        for(let j=0;j<KM.mu.length;j++){const d=(x-KM.mu[j][0])**2+(y-KM.mu[j][1])**2;if(d<bd){bd=d;bj=j}}
+        const c=hex2rgb(ck(bj)); out[0]=c[0];out[1]=c[1];out[2]=c[2];
+      });
+      for(let i2=0;i2<PTS.length;i2++){
+        const c=KM.c[i2];
+        g.beginPath(); g.arc(sx(PTS[i2].x),sy(PTS[i2].y),S.sel===i2?5.6:3.3,0,6.284);
+        g.fillStyle=c<0?css('--mut'):ck(c); g.fill();
+        if(S.sel===i2){g.strokeStyle=css('--ink');g.lineWidth=1.8;g.stroke()}
+      }
+      if(KM.muPrev)KM.muPrev.forEach((m,j)=>{
+        g.strokeStyle=ck(j); g.lineWidth=1.4; g.globalAlpha=.45; g.setLineDash([3,3]);
+        g.beginPath(); g.moveTo(sx(m[0]),sy(m[1])); g.lineTo(sx(KM.mu[j][0]),sy(KM.mu[j][1])); g.stroke();
+        g.setLineDash([]); g.globalAlpha=1;
+        cross(g,sx(m[0]),sy(m[1]),6,ck(j),1.4,.4);
+      });
+      KM.mu.forEach((m,j)=>cross(g,sx(m[0]),sy(m[1]),10,ck(j),3));
+    }
+    if(kind==='gmm'&&GM){
+      const k=GM.mu.length;
+      if(GM.W){                                   /* soft: the posterior itself, blended */
+        const Tt=Math.pow(10,S.temp);
+        const Se=GM.Sig.map(M=>[M[0]*Tt,M[1]*Tt,M[2]*Tt,M[3]*Tt]);
+        const cols=[];for(let j=0;j<k;j++)cols.push(hex2rgb(ck(j)));
+        const lg=new Float64Array(k);
+        field(g,L,T,W,H,(x,y,out)=>{
+          let mx=-1e18;
+          for(let j=0;j<k;j++){lg[j]=Math.log(Math.max(GM.phi[j],1e-300))+logGauss2(x,y,GM.mu[j],Se[j]);
+            if(lg[j]>mx)mx=lg[j]}
+          let sw=0;for(let j=0;j<k;j++){lg[j]=Math.exp(lg[j]-mx);sw+=lg[j]}
+          let r=0,g2=0,b2=0,top=0;
+          for(let j=0;j<k;j++){const w=lg[j]/(sw||1);
+            r+=w*cols[j][0];g2+=w*cols[j][1];b2+=w*cols[j][2]; if(w>top)top=w}
+          out[0]=r;out[1]=g2;out[2]=b2;
+          /* fade: full colour only where one component really owns the region, and
+             transparent through the band where the responsibilities are still split */
+          const conf=k>1?(top-1/k)/(1-1/k):1;
+          out[3]=0.012+0.20*Math.pow(clamp(conf,0,1),0.85);
+        });
+      }
+      for(let i2=0;i2<PTS.length;i2++){
+        let r=0,gg=0,bb=0,mxw=0;
+        if(GM.W){for(let j=0;j<k;j++){const w=GM.W[i2*k+j], c=hex2rgb(ck(j));
+          r+=w*c[0];gg+=w*c[1];bb+=w*c[2]; if(w>mxw)mxw=w}}
+        else{const c=hex2rgb(css('--mut'));r=c[0];gg=c[1];bb=c[2];mxw=1/k}
+        const pale=1-Math.min(1,(mxw-1/k)/(1-1/k+1e-9));
+        const bg=hex2rgb(css('--panel'));
+        const mix=t=>Math.round(t*.72*pale+0);
+        g.beginPath(); g.arc(sx(PTS[i2].x),sy(PTS[i2].y),S.sel===i2?5.6:3.3,0,6.284);
+        g.fillStyle='rgb('+Math.round(r+(bg[0]-r)*.62*pale)+','+Math.round(gg+(bg[1]-gg)*.62*pale)+','+
+                            Math.round(bb+(bg[2]-bb)*.62*pale)+')';
+        g.fill();
+        if(S.sel===i2){g.strokeStyle=css('--ink');g.lineWidth=1.8;g.stroke()}
+      }
+      for(let j=0;j<k;j++){
+        const e=eig2(GM.Sig[j]), c=ck(j);
+        const scx=W/(2*LIM), scy=H/(2*LIM);
+        for(const s of [1,2]){
+          g.save();
+          g.translate(sx(GM.mu[j][0]),sy(GM.mu[j][1]));
+          g.rotate(-e.ang);
+          g.scale(scx,scy);
+          g.beginPath(); g.ellipse(0,0,s*Math.sqrt(e.l1),s*Math.sqrt(e.l2),0,0,6.284);
+          g.restore();
+          g.strokeStyle=c; g.lineWidth=s===1?2.1:1.1; g.globalAlpha=s===1?.95:.55; g.stroke(); g.globalAlpha=1;
+        }
+        cross(g,sx(GM.mu[j][0]),sy(GM.mu[j][1]),9,c,2.6);
+        /* mixing weight as a small bar under the centre */
+        const bw=34*GM.phi[j];
+        g.fillStyle=c; g.globalAlpha=.8;
+        g.fillRect(sx(GM.mu[j][0])-17,sy(GM.mu[j][1])+13,Math.max(1.5,bw),3.5);
+        g.globalAlpha=.22; g.fillRect(sx(GM.mu[j][0])-17,sy(GM.mu[j][1])+13,34,3.5); g.globalAlpha=1;
+      }
+    }
+    g.restore();
+    g.strokeStyle=css('--line'); g.lineWidth=1.2; g.strokeRect(L+.5,T+.5,W-1,H-1);
+    const ttl=kind==='kmeans'?'K-means':'Mixture of Gaussians';
+    const sub=kind==='kmeans'
+      ? (KM?(KM.done?'converged':'next: '+(KM.phase==='assign'?'assign':'update')):'')
+      : (GM?(GM.done?'converged':'next: '+(GM.phase==='E'?'E-step':'M-step')):'');
+    g.save(); g.globalAlpha=.94; g.fillStyle=css('--panel');
+    const lw=Math.max(runW(g,ttl,13),runW(g,sub,11))+16;
+    if(g.roundRect){g.beginPath();g.roundRect(L+8,T+8,lw,36,5);g.fill()}
+    g.globalAlpha=1; g.strokeStyle=css('--line'); g.lineWidth=1; g.stroke(); g.restore();
+    mtxt(pl,L+16,T+23,ttl,css('--ink'),13,'left');
+    mtxt(pl,L+16,T+38,sub,css('--mut'),11,'left');
+  });
+  setHTML($('leg'), list.length===2
+    ? 'left: <b>hard</b> — a flat colour up to a crisp boundary &nbsp;·&nbsp; right: <b>soft</b> — the shade <b>fades out</b> '+
+      'wherever the '+T('k')+' responsibilities are still split, ellipses are '+T('1\\sigma')+' and '+T('2\\sigma')+' of each '+T('\\Sigma_j')
+    : (list[0]==='kmeans'
+      ? 'shading = nearest centroid · '+T('\\times')+' = centroid · dashed = where it moved from'
+      : 'the shade is the blended responsibility '+T('w_j^{(i)}')+', fading to nothing where no component owns the region'+
+        ' · ellipses are '+T('1\\sigma')+' and '+T('2\\sigma')+' · the bar under each '+T('\\times')+
+        ' is the mixing weight '+T('\\varphi_j')));
+}
+/* paint a 2-D scalar/colour field smoothly: build it small, let the GPU scale it */
+let _fieldCv=null,_fieldG=null,_fieldImg=null;
+function field(g,L,T,W,H,fn,alpha){
+  const N=150;
+  if(!_fieldCv){_fieldCv=document.createElement('canvas');_fieldG=_fieldCv.getContext('2d')}
+  if(_fieldCv.width!==N){_fieldCv.width=N;_fieldCv.height=N;_fieldImg=_fieldG.createImageData(N,N)}
+  const px=_fieldImg.data, out=[0,0,0,-1], A=Math.round((alpha===undefined?0.115:alpha)*255);
+  for(let b=0;b<N;b++)for(let a=0;a<N;a++){
+    const x=-LIM+2*LIM*(a+.5)/N, y=LIM-2*LIM*(b+.5)/N, o=(b*N+a)*4;
+    out[3]=-1; fn(x,y,out);
+    px[o]=out[0];px[o+1]=out[1];px[o+2]=out[2];
+    px[o+3]=out[3]>=0?Math.round(clamp(out[3],0,1)*255):A;
+  }
+  _fieldG.putImageData(_fieldImg,0,0);
+  g.save(); g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+  g.drawImage(_fieldCv,0,0,N,N,L,T,W,H); g.restore();
+}
+function cross(g,x,y,r,color,lw,alpha){
+  g.save(); g.globalAlpha=alpha||1; g.strokeStyle='#ffffff'; g.lineWidth=(lw||2)+2.4;
+  g.beginPath(); g.moveTo(x-r,y-r);g.lineTo(x+r,y+r);g.moveTo(x-r,y+r);g.lineTo(x+r,y-r); g.stroke();
+  g.strokeStyle=color; g.lineWidth=lw||2;
+  g.beginPath(); g.moveTo(x-r,y-r);g.lineTo(x+r,y+r);g.moveTo(x-r,y+r);g.lineTo(x+r,y-r); g.stroke();
+  g.restore();
+}
+
+/* ══════════════════════════ step header + equations ══════════════════════════ */
+const EQ={
+  KA:'c^{(i)} := \\arg\\min_j \\;\\lVert x^{(i)} - \\mu_j \\rVert^2',
+  KU:'\\mu_j := \\dfrac{\\sum_{i} \\mathbf{1}\\{c^{(i)}\\!=\\!j\\}\\, x^{(i)}}{\\sum_{i} \\mathbf{1}\\{c^{(i)}\\!=\\!j\\}}',
+  KJ:'J(c,\\mu) = \\sum_{i=1}^{n} \\lVert x^{(i)} - \\mu_{c^{(i)}} \\rVert^2',
+  GE:'w_j^{(i)} := \\dfrac{\\varphi_j\\, \\mathcal{N}(x^{(i)};\\mu_j,\\Sigma_j)}{\\sum_{l} \\varphi_l\\, \\mathcal{N}(x^{(i)};\\mu_l,\\Sigma_l)}',
+  GM:'\\varphi_j := \\tfrac1n\\!\\sum_i w_j^{(i)},\\quad \\mu_j := \\dfrac{\\sum_i w_j^{(i)} x^{(i)}}{\\sum_i w_j^{(i)}},\\quad \\Sigma_j := \\dfrac{\\sum_i w_j^{(i)} (x^{(i)}\\!-\\!\\mu_j)(x^{(i)}\\!-\\!\\mu_j)^{\\!\\top}}{\\sum_i w_j^{(i)}}',
+  GL:'\\ell = \\sum_{i=1}^{n} \\log \\sum_{j=1}^{k} \\varphi_j\\, \\mathcal{N}(x^{(i)};\\mu_j,\\Sigma_j)'
+};
+let eqDone=false;
+function drawEqs(){
+  if(eqDone)return;
+  const m={eqKA:EQ.KA,eqKU:EQ.KU,eqKJ:EQ.KJ,eqGE:EQ.GE,eqGM2:EQ.GM,eqGL:EQ.GL};
+  for(const id in m){const el=$(id); if(!el)continue; setHTML(el,'$'+m[id]+'$')}
+  eqDone=!!(window.MathJax&&MathJax.tex2svg);
+}
+function syncHand(){
+  const on=S.init==='manual';
+  $('handHint').hidden=!on; $('clearHand').hidden=!on;
+  if(!on)return;
+  const left=S.k-S.hand.length;
+  setHTML($('handHint'), left>0
+    ? 'click the canvas to drop '+(S.hand.length?'$'+left+'$ more centre'+(left===1?'':'s'):'all $'+S.k+'$ centres')+
+      ' — the rest are filled in by k-means++'
+    : 'all $'+S.k+'$ centres placed · <b>drag</b> any $\\times$ to move it and the run restarts from there');
+}
+function syncSteps(){
+  $('eqKM').hidden=S.algo==='gmm'; $('eqGM').hidden=S.algo==='kmeans';
+  $('hdKM').hidden=S.algo!=='both'; $('hdGM').hidden=S.algo!=='both';
+  $('gmmCard').hidden=S.algo==='kmeans';
+  const on=(id,v)=>$(id).classList.toggle('live',v);
+  on('rowKA',KM&&!KM.done&&KM.phase==='assign'); on('rowKU',KM&&!KM.done&&KM.phase==='update');
+  on('rowGE',GM&&!GM.done&&GM.phase==='E');      on('rowGM',GM&&!GM.done&&GM.phase==='M');
+  /* header */
+  const bits=[];
+  if(S.algo!=='gmm'&&KM) bits.push('K-means: '+(KM.step===0?'initialized':
+    KM.done?'converged after '+KM.step+' half-steps'
+           :'step '+KM.step+' ('+(KM.hist.length?KM.hist[KM.hist.length-1].kind:'')+')'));
+  if(S.algo!=='kmeans'&&GM) bits.push('mixture: '+(GM.step===0?'initialized':
+    GM.done?'converged after '+GM.step+' half-steps'
+           :'step '+GM.step+' ('+(GM.hist.length?GM.hist[GM.hist.length-1].kind+'-step':'')+')'));
+  $('stepTitle').textContent=bits.join('   ·   ')||'Initialized';
+  const notes=[];
+  if(S.algo!=='gmm'&&KM&&KM.hist.length)notes.push('$J = '+fmt(kmJ(KM))+'$');
+  if(S.algo!=='kmeans'&&GM&&GM.hist.length)notes.push('$\\ell = '+fmt(GM.ll)+'$');
+  setHTML($('stepNote'),notes.join(' &nbsp;·&nbsp; '));
+  /* what changed */
+  const c=[];
+  if(S.algo!=='gmm'&&KM&&KM.hist.length){
+    const h=KM.hist, last=h[h.length-1], prev=h.length>1?h[h.length-2]:null;
+    if(last.kind==='assign')
+      c.push('<b>Assign.</b> '+(KM.step<=1?'Every point picked its nearest centroid.'
+        :(KM.moved===0?'<b>Nothing</b> changed colour.':'$'+KM.moved+'$ point'+(KM.moved===1?'':'s')+' changed colour.'))+
+        (KM.moved===0&&prev?' $J$ is unchanged at $'+fmt(last.v)+'$.'
+          :prev?' $J$ fell from $'+fmt(prev.v)+'$ to $'+fmt(last.v)+'$ — and it can only fall, because each point moved to a <i>closer</i> centroid.'
+             :' $J = '+fmt(last.v)+'$.')+
+        (KM.done?' No point wants to move, so the algorithm has <b>converged</b> — at a local minimum, not necessarily the best one.':''));
+    else
+      c.push('<b>Update.</b> Each $\\times$ jumped to the mean of its own colour'+
+        (prev?', and $J$ fell from $'+fmt(prev.v)+'$ to $'+fmt(last.v)+'$ — the mean is the point that minimises the squared distance to a set, so this step is exact too.':'.')+
+        (KM.empty?' <b>One cluster went empty</b> — its centroid is stranded and will never move again.':''));
+  }
+  if(S.algo!=='kmeans'&&GM&&GM.hist.length){
+    const h=GM.hist, last=h[h.length-1], prev=h.length>1?h[h.length-2]:null;
+    if(last.kind==='E')
+      c.push('<b>E-step.</b> The parameters did <i>not</i> move, so $\\ell$ is unchanged at $'+fmt(last.v)+
+        '$. What changed is the bound: setting $Q$ to the posterior makes $\\mathrm{ELBO} = \\ell$ exactly '+
+        '($'+fmt(last.e)+'$ vs $'+fmt(last.v)+'$). That is the whole point of the E-step.');
+    else
+      c.push('<b>M-step.</b> Maximising that bound moved $\\ell$ from $'+(prev?fmt(prev.v):'–')+'$ to $'+fmt(last.v)+
+        '$'+(prev&&last.v>=prev.v-1e-9?' — <b>up</b>, as it must be':'')+'. The ELBO is now $'+fmt(last.e)+
+        '$, below $\\ell$ again, so the next E-step has slack to take up.'+
+        (GM.done?' It has stopped moving: <b>converged</b>.':''));
+  }
+  setHTML($('changed'),c.join('<br><br>'));
+}
+
+/* ══════════════════════════ objective chart ══════════════════════════ */
+function drawObj(){
+  plObj.fit();
+  const useK=S.algo!=='gmm', useG=S.algo!=='kmeans';
+  const hK=KM?KM.hist:[], hG=GM?GM.hist:[];
+  const nmax=Math.max(2,useK?hK.length:0,useG?hG.length:0);
+  if(!nmax||(useK&&!hK.length&&!useG)||(!useK&&useG&&!hG.length)){
+    mtxt(plObj,310,145,'press “next step”',css('--mut'),12,'center'); return;
+  }
+  if(S.algo==='both'||S.algo==='kmeans'){
+    const vals=hK.map(h=>h.v).filter(isFinite);
+    if(!vals.length){mtxt(plObj,310,145,'press “next step”',css('--mut'),12,'center');return}
+    const hi=Math.max.apply(null,vals)*1.06, lo=Math.min.apply(null,vals)*0.94;
+    const A=axes(plObj,[58,12,(S.algo==='both'?506:548),224],[0,Math.max(nmax-1,1)],[lo,hi],
+      {xlab:'half-step',ylab:'$J(c,\\mu)$',nxt:6,nyt:4});
+    A.clip();
+    line(plObj,A,hK.map((h,i)=>[i,h.v]),css('--ink'),2.4);
+    hK.forEach((h,i)=>dot(plObj,A,i,h.v,3.6,h.kind==='assign'?css('--blue'):css('--green')));
+    if(S.algo==='both'&&hG.length){
+      const lv=hG.map(h=>h.v).filter(isFinite);
+      if(lv.length>1){
+        const glo=Math.min.apply(null,lv), ghi=Math.max.apply(null,lv);
+        const pad=(ghi-glo)*.08+1e-9;
+        const by=v=>A.box[1]+A.box[3]-(v-(glo-pad))/((ghi+pad)-(glo-pad))*A.box[3];
+        const g2=plObj.g;
+        g2.save(); g2.strokeStyle=css('--gold'); g2.lineWidth=2.2; g2.setLineDash([6,4]); g2.beginPath();
+        hG.forEach((h,i)=>{const X=A.sx(i),Y=by(h.v);i?g2.lineTo(X,Y):g2.moveTo(X,Y)}); g2.stroke();
+        g2.setLineDash([]); g2.restore();
+        A.unclip();
+        for(const v of [glo,(glo+ghi)/2,ghi])
+          mtxt(plObj,A.box[0]+A.box[2]+7,by(v)+4,'$'+fmt(v,1)+'$',css('--gold'),10.5,'left');
+        A.clip();
+      }
+    }
+    A.unclip();
+    setHTML($('legObj'),'<span><span class="sw" style="background:var(--blue)"></span>after <b>assign</b> / <b>E</b></span>'+
+      '<span><span class="sw" style="background:var(--green)"></span>after <b>update</b> / <b>M</b></span>'+
+      '<span><span class="sw ln" style="background:var(--ink)"></span>'+T('J')+' (left axis, down)</span>'+
+      (S.algo==='both'?'<span><span class="sw ln" style="background:var(--gold)"></span>'+T('\\ell')+' (right axis, up)</span>':''));
+    $('objTitle').textContent=S.algo==='both'?'Both objectives, half-step by half-step'
+                                            :'The distortion, one half-step at a time';
+    setHTML($('objNote'),S.algo==='both'?T('J')+' falls, '+T('\\ell')+' rises':'');
+    return;
+  }
+  /* GMM: ℓ and the ELBO */
+  const vals=[];hG.forEach(h=>{if(isFinite(h.v))vals.push(h.v);if(isFinite(h.e))vals.push(h.e)});
+  if(!vals.length){mtxt(plObj,310,145,'press “next step”',css('--mut'),12,'center');return}
+  let hi=Math.max.apply(null,vals), lo=Math.min.apply(null,vals);
+  const pad=Math.max((hi-lo)*.12,Math.abs(hi)*.01+1e-6); hi+=pad; lo-=pad;
+  const A=axes(plObj,[64,12,542,224],[0,Math.max(hG.length-1,1)],[lo,hi],
+    {xlab:'half-step',ylab:'log-likelihood',nxt:6,nyt:4});
+  A.clip();
+  line(plObj,A,hG.map((h,i)=>[i,h.e]),css('--gold'),2,[5,4]);
+  line(plObj,A,hG.map((h,i)=>[i,h.v]),css('--ink'),2.6);
+  hG.forEach((h,i)=>dot(plObj,A,i,h.v,3.6,h.kind==='E'?css('--blue'):css('--green')));
+  A.unclip();
+  setHTML($('legObj'),'<span><span class="sw ln" style="background:var(--ink)"></span>'+T('\\ell(\\theta)')+'</span>'+
+    '<span><span class="sw ln" style="background:var(--gold)"></span>ELBO</span>'+
+    '<span><span class="sw" style="background:var(--blue)"></span>after E</span>'+
+    '<span><span class="sw" style="background:var(--green)"></span>after M</span>');
+  $('objTitle').textContent='Log-likelihood and the bound, half-step by half-step';
+  setHTML($('objNote'),'E makes the bound touch, M lifts both');
+}
+
+/* ══════════════════════════ point inspector ══════════════════════════ */
+function drawSel(){
+  plSelC.fit();
+  const g=plSelC.g;
+  if(S.sel<0||!PTS[S.sel]){ $('selHint').textContent='click any point on the left'; return }
+  const q=PTS[S.sel], k=S.k, kind=(S.algo==='kmeans')?'km':(S.algo==='gmm')?'gm':'both';
+  setHTML($('selHint'),'point at $x^{(i)} = ('+q.x.toFixed(2)+',\\, '+q.y.toFixed(2)+')$');
+  const rows=[];
+  if(kind!=='gm'&&KM){
+    const d=[];for(let j=0;j<k;j++)d.push((q.x-KM.mu[j][0])**2+(q.y-KM.mu[j][1])**2);
+    const mn=Math.min.apply(null,d);
+    rows.push({short:'K-means: squared distance, smallest wins',
+      vals:d,best:d.indexOf(mn),invert:true});
+  }
+  if(kind!=='km'&&GM&&GM.W){
+    const w=[];for(let j=0;j<k;j++)w.push(GM.W[S.sel*k+j]);
+    rows.push({short:'mixture: responsibilities, all kept',vals:w,
+      best:w.indexOf(Math.max.apply(null,w)),invert:false});
+  }
+  const H=196, rh=H/Math.max(1,rows.length), BX=34, BW=182;
+  rows.forEach((r,ri)=>{
+    const T0=ri*rh+2;
+    mtxt(plSelC,2,T0+11,r.short,css('--mut'),10,'left');
+    const mx=Math.max.apply(null,r.vals)||1;
+    const bh=Math.min(15,(rh-26)/k), gap=3;
+    for(let j=0;j<k;j++){
+      const y=T0+19+j*(bh+gap), w=Math.max(2,(r.vals[j]/mx)*BW);
+      g.fillStyle=ck(j); g.globalAlpha=(j===r.best?1:.38); g.fillRect(BX,y,w,bh); g.globalAlpha=1;
+      mtxt(plSelC,BX-5,y+bh*0.78,'$j='+(j+1)+'$',css('--ink2'),10,'right');
+      mtxt(plSelC,BX+w+5,y+bh*0.78,'$'+(r.invert?fmt(r.vals[j],2):r.vals[j].toFixed(3))+'$',
+           j===r.best?css('--ink'):css('--mut'),10,'left');
+    }
+  });
+}
+
+/* ══════════════════════════ restarts ══════════════════════════ */
+let RST=null, KSW=null;
+function runRestarts(){
+  const R=60, out=[];
+  $('runRestart').disabled=true;
+  let i=0;
+  const oldInit=S.init; S.init='random';
+  const step=()=>{
+    for(let t=0;t<6&&i<R;t++,i++){
+      if(S.algo!=='gmm'){const K=kmRun(kmInit(90001+i*7919)); out.push({j:kmJ(K)})}
+      else{const G=gmRun(gmInit(90001+i*7919)); out.push({j:-G.ll})}
+    }
+    $('progR').style.width=Math.round(100*i/R)+'%';
+    if(i<R)requestAnimationFrame(step);
+    else{ S.init=oldInit; RST={out,R,gmm:S.algo==='gmm'};
+      $('runRestart').disabled=false; $('progR').style.width='0%'; drawRestart(); reading(); }
+  };
+  requestAnimationFrame(step);
+}
+function drawRestart(){
+  plRst.fit();
+  if(!RST){ mtxt(plRst,310,130,'press “60 restarts”',css('--mut'),12,'center'); return }
+  const v=RST.out.map(o=>o.j).filter(isFinite).sort((a,b)=>a-b);
+  const best=v[0];
+  const cap=Math.min(v[v.length-1], best>0?best*2.0:best*0.5);   /* a single wild run must not flatten the rest */
+  const over=v.filter(x=>x>cap).length;
+  const lo=best*0.99, hi=Math.max(cap*1.02,lo*1.01);
+  const nb=20, bins=new Array(nb).fill(0);
+  for(const x of v)bins[clamp(Math.floor((x-lo)/(hi-lo+1e-12)*nb),0,nb-1)]++;
+  const A=axes(plRst,[54,12,552,198],[lo,hi],[0,Math.max.apply(null,bins)*1.18],
+    {xlab:RST.gmm?'final $-\\ell$ (lower is better)':'final $J(c,\\mu)$',ylab:'restarts',
+     nxt:5,nyt:4,yfmt:x=>String(Math.round(x))});
+  A.clip();
+  const g=plRst.g, bw=552/nb;
+  for(let i=0;i<nb;i++){ if(!bins[i])continue;
+    const x=A.sx(lo+(hi-lo)*i/nb);
+    g.fillStyle=css('--gold-t'); g.fillRect(x,A.sy(bins[i]),bw-1,A.sy(0)-A.sy(bins[i]));
+    g.strokeStyle=css('--gold'); g.lineWidth=1; g.strokeRect(x+.5,A.sy(bins[i])+.5,bw-2,A.sy(0)-A.sy(bins[i])-1);
+  }
+  A.unclip();
+  const worse=v.filter(x=>x>best*1.02).length;
+  mark(plRst,A,best,'best $'+fmt(best)+'$',css('--green'),0);
+  if(over)mtxt(plRst,600,26,'+'+over+' off scale →',css('--mut'),10.5,'right');
+  $('restartStat').textContent=worse+' of '+RST.R+' runs landed worse';
+}
+
+/* ══════════════════════════ choosing k ══════════════════════════ */
+function runKSweep(){
+  const ks=[1,2,3,4,5,6,7,8], J=[], L=[], BIC=[];
+  $('runK').disabled=true;
+  const k0=S.k; let i=0;
+  const step=()=>{
+    S.k=ks[i];
+    let bj=Infinity,bl=-Infinity;
+    for(let t=0;t<6;t++){
+      bj=Math.min(bj,kmJ(kmRun(kmInit(555+t*7919+i))));
+      bl=Math.max(bl,gmRun(gmInit(555+t*7919+i)).ll);
+    }
+    J.push(bj); L.push(bl); BIC.push(-2*bl+gmParams(ks[i])*Math.log(PTS.length));
+    i++; $('progK').style.width=Math.round(100*i/ks.length)+'%';
+    $('kStat').textContent=i+' / '+ks.length;
+    if(i<ks.length)requestAnimationFrame(step);
+    else{S.k=k0;KSW={ks,J,L,BIC};$('runK').disabled=false;$('progK').style.width='0%';drawK();reading()}
+  };
+  requestAnimationFrame(step);
+}
+function drawK(){
+  plK.fit();
+  if(!KSW){ mtxt(plK,310,130,'press “sweep k”',css('--mut'),12,'center'); return }
+  const {ks,J,BIC}=KSW;
+  const A=axes(plK,[50,12,504,198],[ks[0],ks[ks.length-1]],
+    [0,Math.max.apply(null,J)*1.1],{xlab:'number of clusters $k$',ylab:'$J$',
+     xticks:ks,nyt:4,yfmt:v=>numTex(v)});
+  A.clip(); line(plK,A,ks.map((k,i)=>[k,J[i]]),css('--ink'),2.6);
+  ks.forEach((k,i)=>dot(plK,A,k,J[i],3.4,css('--ink')));
+  A.unclip();
+  /* BIC on its own scale, drawn as a second series */
+  const bl=Math.min.apply(null,BIC), bh=Math.max.apply(null,BIC);
+  const by=v=>A.box[1]+A.box[3]-(v-bl)/(bh-bl+1e-9)*A.box[3];
+  const g=plK.g;
+  g.save(); g.beginPath(); g.rect(A.box[0],A.box[1],A.box[2],A.box[3]); g.clip();
+  g.strokeStyle=css('--gold'); g.lineWidth=2.2; g.setLineDash([6,4]); g.beginPath();
+  ks.forEach((k,i)=>{const X=A.sx(k),Y=by(BIC[i]);i?g.lineTo(X,Y):g.moveTo(X,Y)}); g.stroke();
+  g.setLineDash([]); g.restore();
+  let bi=0;for(let i=1;i<BIC.length;i++)if(BIC[i]<BIC[bi])bi=i;
+  for(const v of [bl,(bl+bh)/2,bh])
+    mtxt(plK,A.box[0]+A.box[2]+7,by(v)+4,'$'+numTex(v)+'$',css('--gold'),10.5,'left');
+  mark(plK,A,ks[bi],'BIC picks $k = '+ks[bi]+'$',css('--gold'),0);
+  setHTML($('legK'),'<span><span class="sw ln" style="background:var(--ink)"></span>'+T('J(k)')+
+    ' — falls forever, so it cannot choose</span>'+
+    '<span><span class="sw ln" style="background:var(--gold)"></span>BIC '+T('= -2\\ell + p\\log n')+
+    ' — has a real minimum</span>');
+}
+
+/* ══════════════════════════ reading ══════════════════════════ */
+function reading(){
+  let s='';
+  if(S.algo==='kmeans'||S.algo==='both'){
+    s+='<b>K-means is coordinate descent.</b> The assign step minimises $J$ over the assignments $c$ with the centroids $\\mu$ held fixed; '+
+       'the update step minimises the same $J$ over $\\mu$ with $c$ held fixed. Both are exact, so $J$ can only fall — '+
+       'which is the entire convergence proof. But $J$ is <b>not convex</b> in $(c,\\mu)$, so converging is not the same as finding the best clustering.';
+  }
+  if(S.algo==='gmm'){
+    s+='<b>The mixture is the soft version of the same loop.</b> The E-step replaces the hard label $c^{(i)}$ with a distribution $w^{(i)}$ over clusters; '+
+       'the M-step refits $\\varphi,\\mu,\\Sigma$ using those weights exactly where K-means used the 0/1 indicator. '+
+       'Two things K-means cannot do: a cluster gets a <b>shape</b> (its own $\\Sigma_j$) and a point is allowed to be <b>unsure</b>.';
+  }
+  if(S.algo==='both'){
+    s+='<br><br><b>Watch the two panels disagree.</b> K-means cuts straight lines halfway between centroids, so it gets elongated or '+
+       'overlapping clusters wrong. The mixture gets them right because each component carries a covariance. '+
+       'Slide the E-step temperature $T$ down and the right panel collapses onto the left — K-means <i>is</i> the mixture with vanishing, spherical covariances.';
+  }
+  if(S.init==='manual')
+    s+='<br><br><b>You are choosing the initialization.</b> Drag a centre and the whole run restarts from there. '+
+       'Put two centres inside one real cluster and watch both algorithms converge, happily, to something wrong — '+
+       'the objective has no way to notice.';
+  if(S.ds==='uniform')
+    s+='<br><br>This dataset has <b>no clusters at all</b>, and both algorithms still hand you '+S.k+' of them, confidently. '+
+       'Nothing in the objective can tell you the structure is not there.';
+  if(S.temp<=-2.5)
+    s+='<br><br><b>$T\\to 0$.</b> Every responsibility is now $0$ or $1$, so the M-step is just averaging over a hard partition — '+
+       'the same arithmetic K-means does. With <i>spherical</i> covariances they are additionally tied to one shared $\\sigma^2$, '+
+       'and then the two panels agree step for step: <b>K-means is the $\\sigma\\to 0$ limit of EM</b>. '+
+       'Switch the covariance back to <i>full</i> and the mixture immediately does something K-means cannot — it fits a shape.';
+  if(S.ds==='aniso'&&S.algo!=='kmeans')
+    s+='<br><br>These two clusters are elongated and overlapping — the case from the lecture. Compare where the straight K-means cut lands '+
+       'against the tilted ellipses.';
+  if(RST){
+    const v=RST.out.map(o=>o.j).filter(isFinite), best=Math.min.apply(null,v);
+    const worse=v.filter(x=>x>best*1.02).length;
+    s+='<br><br>Out of '+RST.R+' random restarts, <b>'+worse+'</b> ended up worse than the best one. '+
+       'You can detect that without any labels, because the objective is computable — so run it many times and keep the best. '+
+       'What you <i>cannot</i> do with the objective is choose $k$.';
+  }
+  if(KSW){
+    let bi=0;for(let i=1;i<KSW.BIC.length;i++)if(KSW.BIC[i]<KSW.BIC[bi])bi=i;
+    s+='<br><br>$J(k)$ falls monotonically — at $k=n$ every point is its own cluster and $J=0$. '+
+       'The mixture has a likelihood, so it can be penalised: BIC picks $k='+KSW.ks[bi]+'$. That is the one real advantage of '+
+       'writing the model down as a probability distribution.';
+  }
+  setHTML($('reading'),s);
+}
+
+/* ══════════════════════════ render ══════════════════════════ */
+function render(){ drawEqs(); drawMain(); syncHand(); syncSteps(); drawObj(); drawSel(); drawRestart(); drawK(); reading(); }
+
+/* ══════════════════════════ wiring ══════════════════════════ */
+function chips(host,items,get,set){
+  const el=$(host); el.innerHTML='';
+  items.forEach(([v,lab])=>{
+    const b=document.createElement('button'); b.className='chip'+(get()===v?' on':''); b.textContent=lab;
+    b.onclick=()=>{set(v);chips(host,items,get,set)};
+    el.appendChild(b);
+  });
+}
+chips('dsChips',[['blobs2','two blobs'],['blobs3','three blobs'],['aniso','elongated'],
+  ['unequal','unequal sizes'],['moons','moons'],['uniform','no structure']],
+  ()=>S.ds,v=>{S.ds=v;S.k=(v==='blobs2'||v==='aniso'||v==='moons')?2:3;
+    $('k').value=S.k;$('kv').textContent=S.k;
+    genData();resetAll();render()});
+chips('initChips',[['kpp','k-means++'],['random','random points'],['far','farthest point'],
+  ['bad','all in a corner'],['manual','place by hand']],
+  ()=>S.init,v=>{S.init=v;if(v==='manual')S.sel=-1;resetAll();render()});
+$('clearHand').onclick=()=>{S.hand=[];resetAll();render()};
+chips('covChips',[['full','full'],['diag','diagonal'],['spher','spherical'],['tied','tied']],
+  ()=>S.cov,v=>{S.cov=v;resetAll();render()});
+
+function slider(id,key,f,after){
+  const sl=$(id), vv=$(id+'v');
+  const upd=()=>{S[key]=parseFloat(sl.value);vv.textContent=f(S[key])};
+  sl.oninput=()=>{upd();(after||render)()}; upd();
+}
+slider('n','n',v=>String(v),()=>{genData();resetAll();render()});
+slider('spread','spread',v=>v.toFixed(2),()=>{genData();resetAll();render()});
+slider('k','k',v=>String(v),()=>{if(S.hand.length>S.k)S.hand.length=S.k;resetAll();render()});
+slider('reg','reg',v=>'1e'+(+v.toFixed(2)),()=>{resetAll();render()});
+slider('temp','temp',v=>v>=0?'1':(v<=-3?'→ 0':('1e'+(+v.toFixed(1)))),()=>{resetAll();render()});
+
+$('regen').onclick=()=>{S.seed=(S.seed*1103515245+12345)>>>0||1;genData();resetAll();render()};
+$('next').onclick=()=>{stepBoth();render()};
+$('reset').onclick=()=>{resetAll();render()};
+$('runRestart').onclick=runRestarts;
+$('hardBtn').onclick=()=>{
+  const hard=S.temp>-2.5;
+  S.temp=hard?-3:0; S.cov=hard?'spher':'full';
+  $('temp').value=S.temp; $('tempv').textContent=hard?'→ 0':'1';
+  chips('covChips',[['full','full'],['diag','diagonal'],['spher','spherical'],['tied','tied']],()=>S.cov,
+    v=>{S.cov=v;resetAll();render()});
+  $('hardBtn').textContent=hard?'↺ back to soft (T = 1)':'⚡ collapse to hard (T → 0)';
+  resetAll(); render();
+};
+$('runK').onclick=runKSweep;
+let playT=null;
+$('play').onclick=()=>{
+  if(playT){clearInterval(playT);playT=null;$('play').textContent='▶ run';return}
+  $('play').textContent='■ stop';
+  playT=setInterval(()=>{
+    if(!stepBoth()){clearInterval(playT);playT=null;$('play').textContent='▶ run'}
+    render();
+  },420);
+};
+document.querySelectorAll('.modes .tab').forEach(b=>{ if(!b.dataset.algo)return;
+  b.onclick=()=>{ S.algo=b.dataset.algo;
+    document.querySelectorAll('.modes .tab').forEach(x=>x.classList.toggle('on',x===b));
+    render(); };
+});
+function cvPos(ev){
+  const el=$('cv'), r=el.getBoundingClientRect();
+  const px=(ev.clientX-r.left)/r.width*1240, py=(ev.clientY-r.top)/r.height*560;
+  const list=S.algo==='both'?['kmeans','gmm']:[S.algo];
+  let pi=0;
+  for(let i=0;i<list.length;i++){const [L,,W]=panelBox(i,list.length); if(px>=L-6&&px<=L+W+6)pi=i}
+  const [L,T,W,H]=panelBox(pi,list.length);
+  return {px,py,pi,list,L,T,W,H,
+    sx:x=>L+(x+LIM)/(2*LIM)*W, sy:y=>T+H-(y+LIM)/(2*LIM)*H,
+    ix:clamp((px-L)/W*2*LIM-LIM,-LIM,LIM), iy:clamp(LIM-(py-T)/H*2*LIM,-LIM,LIM)};
+}
+$('cv').addEventListener('pointerdown',ev=>{
+  const c=cvPos(ev);
+  if(S.init==='manual'){
+    /* grab an existing centre? */
+    let gi=-1,gd=1e18;
+    S.hand.slice(0,S.k).forEach((m,j)=>{const d=(c.sx(m[0])-c.px)**2+(c.sy(m[1])-c.py)**2;
+      if(d<gd){gd=d;gi=j}});
+    if(gi>=0&&gd<26*26){S.drag=gi;$('cv').setPointerCapture(ev.pointerId);return}
+    if(S.hand.length<S.k){S.hand.push([c.ix,c.iy]);resetAll();render();return}
+  }
+  let best=-1,bd=1e18;
+  c.list.forEach((kind,i)=>{
+    const [L,T,W,H]=panelBox(i,c.list.length);
+    const sx=x=>L+(x+LIM)/(2*LIM)*W, sy=y=>T+H-(y+LIM)/(2*LIM)*H;
+    PTS.forEach((q,qi)=>{const d=(sx(q.x)-c.px)**2+(sy(q.y)-c.py)**2; if(d<bd){bd=d;best=qi}});
+  });
+  S.sel=(bd<400)?best:-1;
+  render();
+});
+$('cv').addEventListener('pointermove',ev=>{
+  if(S.drag<0)return;
+  const c=cvPos(ev);
+  S.hand[S.drag]=[c.ix,c.iy];
+  resetAll(); render();
+});
+const endDrag=()=>{if(S.drag>=0){S.drag=-1;render()}};
+$('cv').addEventListener('pointerup',endDrag);
+$('cv').addEventListener('pointercancel',endDrag);
+$('cv').style.cursor='pointer';
+const root=document.documentElement;
+try{const t=localStorage.getItem('l7c-theme');if(t)root.dataset.theme=t}catch(_){}
+$('themeBtn').onclick=()=>{const cur=root.dataset.theme==='dark'?'light':'dark';root.dataset.theme=cur;
+  try{localStorage.setItem('l7c-theme',cur)}catch(_){ }
+  for(const k in MIMG)delete MIMG[k];
+  document.querySelectorAll('[data-tex]').forEach(el=>{el.dataset.done=''});
+  eqDone=false; render()};
+addEventListener('keydown',e=>{
+  if(/input|select|textarea/i.test(e.target.tagName))return;
+  if(e.key===' '){$('next').click();e.preventDefault()}
+  if(e.key==='p')$('play').click();
+  if(e.key==='r')$('reset').click();
+  if(e.key==='n')$('regen').click();
+});
+addEventListener('resize',()=>render());
+window.__mjReady=()=>{eqDone=false;try{typesetTex()}catch(_){} try{render()}catch(_){}};
+
+genData(); resetAll(); typesetTex(); render();
+if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)
+  MathJax.startup.promise.then(()=>{try{window.__mjReady()}catch(_){}});
+else setTimeout(()=>{try{window.__mjReady()}catch(_){}},1400);
+
+</script>
