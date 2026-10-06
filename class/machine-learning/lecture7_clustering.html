@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Clustering Playground</title>
+<link rel="stylesheet" href="/assets/css/avenir.css">
 <style>
 :root{
   --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
@@ -27,7 +28,7 @@
   --ok:#7fc79b; --bad:#e0776d;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Avenir","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
 [hidden]{display:none!important}
 h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
 .sub{color:var(--ink2);font-size:13.5px;margin-top:2px}
@@ -111,7 +112,7 @@ button.b[disabled]{opacity:.45;cursor:default}
 :root[data-theme="dark"]{--c5:#a98cc4;--c6:#5cb8ad}
 .steprow{display:flex;align-items:flex-start;gap:9px;padding:8px 9px;border-radius:8px;border:1px solid transparent;margin:3px 0}
 .steprow.live{background:var(--chipbg);border-color:var(--line)}
-.steprow .tag{flex:0 0 74px;font:700 10.5px "Avenir Next",system-ui;text-transform:uppercase;letter-spacing:.06em;
+.steprow .tag{flex:0 0 74px;font:700 10.5px "Avenir Next","Avenir",system-ui;text-transform:uppercase;letter-spacing:.06em;
   color:var(--mut);padding-top:4px}
 .steprow.live .tag{color:var(--accent)}
 .steprow .tag.obj{color:var(--ink2)}
@@ -269,7 +270,7 @@ function P(id,W,H){
     g.setTransform(cv.width/W,0,0,cv.height/H,0,0);g.clearRect(0,0,W,H);};
   return {cv,g,W,H,fit};
 }
-const AVN='"Avenir Next","Helvetica Neue",system-ui,sans-serif';
+const AVN='"Avenir Next","Avenir","Helvetica Neue",system-ui,sans-serif';
 const TNRF='"Times New Roman",Times,serif';
 /* ── every symbol on this page is real LaTeX ──────────────────────────────
    Labels are written as prose with $…$ islands; the islands are typeset by
@@ -468,7 +469,7 @@ function mtxt(pl,x,y,str,color,size,align){
 }
 function txt(pl,x,y,s,color,font,align,base){
   const g=pl.g;g.save();g.fillStyle=color||css('--ink2');
-  g.font=font||'600 11px "Avenir Next",system-ui,sans-serif';
+  g.font=font||'600 11px "Avenir Next","Avenir",system-ui,sans-serif';
   g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);g.restore();
 }
 
@@ -1319,3 +1320,4 @@ if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)
 else setTimeout(()=>{try{window.__mjReady()}catch(_){}},1400);
 
 </script>
+<script>document.fonts&&document.fonts.ready.then(()=>dispatchEvent(new Event('resize')))</script>

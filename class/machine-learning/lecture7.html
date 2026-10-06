@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Evaluation Playground</title>
+<link rel="stylesheet" href="/assets/css/avenir.css">
 <style>
 :root{
   --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
@@ -27,7 +28,7 @@
   --ok:#7fc79b; --bad:#e0776d;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Avenir","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 18px}
 [hidden]{display:none!important}
 h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
 .sub{color:var(--ink2);font-size:13.5px;margin-top:2px}
@@ -665,7 +666,7 @@ function P(id,W,H){
     g.setTransform(cv.width/W,0,0,cv.height/H,0,0);g.clearRect(0,0,W,H);};
   return {cv,g,W,H,fit};
 }
-const AVN='"Avenir Next","Helvetica Neue",system-ui,sans-serif';
+const AVN='"Avenir Next","Avenir","Helvetica Neue",system-ui,sans-serif';
 const TNRF='"Times New Roman",Times,serif';
 /* ── every symbol on this page is real LaTeX ──────────────────────────────
    Labels are written as prose with $…$ islands; the islands are typeset by
@@ -864,7 +865,7 @@ function mtxt(pl,x,y,str,color,size,align){
 }
 function txt(pl,x,y,s,color,font,align,base){
   const g=pl.g;g.save();g.fillStyle=color||css('--ink2');
-  g.font=font||'600 11px "Avenir Next",system-ui,sans-serif';
+  g.font=font||'600 11px "Avenir Next","Avenir",system-ui,sans-serif';
   g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);g.restore();
 }
 
@@ -960,16 +961,16 @@ function drawBar(){
   for(const [v,c,lab] of parts){
     const w=BW*v/tot;
     g.fillStyle=c; g.fillRect(x,T,Math.max(0,w),BH);
-    if(w>46){ g.fillStyle='#fff'; g.font='700 11.5px "Avenir Next",system-ui';g.textAlign='center';g.textBaseline='middle';
+    if(w>46){ g.fillStyle='#fff'; g.font='700 11.5px "Avenir Next","Avenir",system-ui';g.textAlign='center';g.textBaseline='middle';
       g.fillText(Math.round(100*v/tot)+'%',x+w/2,T+BH/2); }
     x+=w;
   }
   g.strokeStyle=css('--line');g.lineWidth=1;g.strokeRect(L+.5,T+.5,BW-1,BH-1);
-  txt(plBar,L,20,'expected test MSE = '+fmt(MC.test),css('--ink'),'700 12px "Avenir Next",system-ui');
+  txt(plBar,L,20,'expected test MSE = '+fmt(MC.test),css('--ink'),'700 12px "Avenir Next","Avenir",system-ui');
   const tr=BW*Math.min(1,MC.train/tot);
   g.fillStyle=css('--green-t');g.fillRect(L,T+BH+8,tr,10);
   g.fillStyle=css('--green');g.fillRect(L,T+BH+8,Math.max(2,tr),10);
-  txt(plBar,L+Math.max(2,tr)+7,T+BH+17,'training MSE '+fmt(MC.train),css('--green'),'700 11px "Avenir Next",system-ui');
+  txt(plBar,L+Math.max(2,tr)+7,T+BH+17,'training MSE '+fmt(MC.train),css('--green'),'700 11px "Avenir Next","Avenir",system-ui');
 }
 function drawSweep(){
   plSw.fit();
@@ -1703,3 +1704,4 @@ else setTimeout(()=>{try{window.__mjReady()}catch(_){}},1400);
 /* the SVG labels inherit their colour at rasterise time, so a theme flip needs fresh ones */
 const _mjClear=()=>{for(const k in MIMG)delete MIMG[k]};
 </script>
+<script>document.fonts&&document.fonts.ready.then(()=>dispatchEvent(new Event('resize')))</script>

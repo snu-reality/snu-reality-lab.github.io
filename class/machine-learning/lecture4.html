@@ -1,5 +1,6 @@
 <!doctype html>
 <title>Feature Playground</title>
+<link rel="stylesheet" href="/assets/css/avenir.css">
 <style>
 :root{
   --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2430; --ink2:#4d5866; --mut:#8a93a0;
@@ -20,7 +21,7 @@
   --orange-t:rgba(143,191,95,.16); --accent:#5b86cf; --chipbg:#262d37;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15.5px/1.45 "Avenir Next","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 10px}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.45 "Avenir Next","Avenir","Helvetica Neue",system-ui,sans-serif;margin:0;padding:14px 16px 10px}
 [hidden]{display:none!important}
 h1{font-size:21px;margin:0;font-weight:600;letter-spacing:.2px}
 .sub{color:var(--ink2);font-size:14px;margin-top:2px}
@@ -253,7 +254,7 @@ function drawLift1D(){
   const yb=(0.5+0.3056*a)*H; const ly=v=>yb-v*(H/3.6);
   cx.strokeStyle=css('--ink2');cx.lineWidth=1.6;
   cx.beginPath();cx.moveTo(lx(-LIM),ly(0));cx.lineTo(lx(LIM),ly(0));cx.stroke();
-  cx.fillStyle=css('--mut');cx.font='15px "Avenir Next",sans-serif';
+  cx.fillStyle=css('--mut');cx.font='15px "Avenir Next","Avenir",sans-serif';
   if(!S.noText)cx.fillText('x',lx(LIM)-20,ly(0)+24);
   if(a>0.01){
     cx.save();cx.globalAlpha=a;
@@ -416,7 +417,7 @@ function draw3d(){
   }
   // origin-anchored axis triad
   const O=proj(-2.2,-2.2,0);
-  cx.strokeStyle=css('--mut');cx.lineWidth=1.6;cx.fillStyle=css('--mut');cx.font='13px "Avenir Next",sans-serif';
+  cx.strokeStyle=css('--mut');cx.lineWidth=1.6;cx.fillStyle=css('--mut');cx.font='13px "Avenir Next","Avenir",sans-serif';
   let e=proj(2.2,-2.2,0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText('x₁',e[0]+4,e[1]);
   e=proj(-2.2,2.2,0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText('x₂',e[0]+4,e[1]);
   e=proj(-2.2,-2.2,2.0);cx.beginPath();cx.moveTo(O[0],O[1]);cx.lineTo(e[0],e[1]);cx.stroke();cx.fillText(zLabel(),e[0]+5,e[1]);
@@ -669,3 +670,4 @@ function tick(){ if(S.playing){const steps=S.built.p>60?5:10;for(let i=0;i<steps
 setDS('xor');setPhi('linear');tabSync();render();requestAnimationFrame(tick);
 if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)MathJax.startup.promise.then(()=>{try{updateModel()}catch(_){} fSig='';try{updateF()}catch(_){}});
 </script>
+<script>document.fonts&&document.fonts.ready.then(()=>dispatchEvent(new Event('resize')))</script>

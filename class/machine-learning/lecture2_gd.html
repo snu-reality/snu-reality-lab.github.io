@@ -1,4 +1,5 @@
 <title>Gradient Descent Playground</title>
+<link rel="stylesheet" href="/assets/css/avenir.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
 <style>
 :root{
@@ -38,7 +39,7 @@ html,body{margin:0;padding:0}
 [hidden]{display:none!important}
 body{
   background:var(--plane); color:var(--ink);
-  font-family:"Avenir Next",Avenir,"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-family:"Avenir Next","Avenir","Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   font-size:15px; line-height:1.45; min-height:100vh;
 }
 .wrap{max-width:1420px;margin:0 auto;padding:20px 24px 28px}
@@ -542,7 +543,7 @@ function drawField(ballPos){
   const mx=X(minPt[0]),my=Y(minPt[1]);
   fx.strokeStyle=css('--ink'); fx.lineWidth=2;
   fx.beginPath();fx.moveTo(mx-6,my-6);fx.lineTo(mx+6,my+6);fx.moveTo(mx+6,my-6);fx.lineTo(mx-6,my+6);fx.stroke();
-  fx.font='700 13px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fx.font='700 13px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   fx.fillStyle=css('--ink2'); fx.fillText('θ*',mx+9,my-8);
   /* planned (faint) */
   for(let i=k;i<traj.length-1;i++) arrow(traj[i],traj[i+1],css('--accent-soft'),2.4,[6,5]);
@@ -643,7 +644,7 @@ function draw3D(ballPos){
   fx.moveTo(Fc.p[0],Fc.p[1]); fx.lineTo(outV.p[0],outV.p[1]);   /* θ₂ out of the origin */
   fx.moveTo(jb[0],jb[1]); fx.lineTo(jt[0],jt[1]); fx.stroke();  /* J up from the origin  */
   solidHead(Fc.p,outU.p,12); solidHead(Fc.p,outV.p,12); solidHead(jb,jt,12);
-  fx.font='800 20px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fx.font='800 20px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   const past=(p,q,d)=>{ const dx=q[0]-p[0],dy=q[1]-p[1],dl=Math.hypot(dx,dy)||1;
     return [Math.max(26,Math.min(W-26,q[0]+dx/dl*d)), Math.max(22,Math.min(H-20,q[1]+dy/dl*d))]; };
   const lu=past(Fc.p,outU.p,26), lv=past(Fc.p,outV.p,26);
@@ -655,7 +656,7 @@ function draw3D(ballPos){
   fx.strokeStyle=css('--ink');fx.lineWidth=2.4;
   fx.beginPath();fx.moveTo(mp[0]-7,mp[1]-7);fx.lineTo(mp[0]+7,mp[1]+7);
   fx.moveTo(mp[0]+7,mp[1]-7);fx.lineTo(mp[0]-7,mp[1]+7);fx.stroke();
-  fx.font='800 16px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fx.font='800 16px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   fx.lineWidth=4.5;fx.lineJoin='round';fx.strokeStyle=css('--surface');fx.strokeText('θ*',mp[0]+11,mp[1]-9);
   fx.fillStyle=css('--ink');fx.fillText('θ*',mp[0]+11,mp[1]-9);
   /* planned faint */
@@ -706,7 +707,7 @@ function drawFit(p){
   const sy=v=>fit.height-padB-(v-y0)/(y1-y0)*(fit.height-padT-padB);
   fc.strokeStyle=css('--hair');fc.lineWidth=1;
   for(let w=50;w<=75;w+=5){fc.beginPath();fc.moveTo(padL,sy(w));fc.lineTo(fit.width-padR,sy(w));fc.stroke();}
-  fc.fillStyle=css('--muted');fc.font='600 11px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fc.fillStyle=css('--muted');fc.font='600 11px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   for(let w=50;w<=75;w+=5)fc.fillText(w+' kg',6,sy(w)+4);
   const a=p[0],b=p[1];
   const yhat = mode==='pow' ? (x=>a*Math.pow(x,b)) : (x=>a*x+b);
@@ -743,7 +744,7 @@ function drawFit(p){
   fc.fillStyle=css('--muted');
   const lab = mode==='pow' ? 'height (h / h̄)' : (dataStd? 'height (z-score)' : 'height (cm)');
   fc.fillText(lab, fit.width-padR-fc.measureText(lab).width, fit.height-9);
-  fc.fillStyle=css('--ink2');fc.font='700 12px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  fc.fillStyle=css('--ink2');fc.font='700 12px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   fc.fillText(mode==='pow' ? 'ŷ = '+fmt(a)+'·x̃^'+fmt(b) : 'ŷ = '+fmt(a)+'·x + '+fmt(b), padL+4, padT+12);
 }
 const curve=document.getElementById('curve'), cc=curve.getContext('2d');
@@ -757,7 +758,7 @@ function drawCurve(){
   const sy=v=>curve.height-padB-(v-lo)/(hi-lo)*(curve.height-padT-padB);
   cc.strokeStyle=css('--hair');cc.lineWidth=1;
   cc.beginPath();cc.moveTo(padL,sy(lo));cc.lineTo(curve.width-padR,sy(lo));cc.stroke();
-  cc.fillStyle=css('--muted');cc.font='600 11px "Avenir Next",Avenir,"Nunito Sans",sans-serif';
+  cc.fillStyle=css('--muted');cc.font='600 11px "Avenir Next","Avenir","Nunito Sans",sans-serif';
   cc.fillText(fmt(hi),4,sy(hi)+4); cc.fillText(fmt(lo),4,sy(lo)+4);
   /* planned faint */
   cc.strokeStyle=css('--series');cc.globalAlpha=0.4;cc.lineWidth=2.2;cc.setLineDash([5,4]);
@@ -956,3 +957,4 @@ seed=(Date.now()>>>3)||1;
 setMode('random');
 setView('3d');
 </script>
+<script>document.fonts&&document.fonts.ready.then(()=>dispatchEvent(new Event('resize')))</script>
