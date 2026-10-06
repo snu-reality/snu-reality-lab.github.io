@@ -1,0 +1,202 @@
+/* Avenir webfont — Mac은 시스템 Avenir(local) 우선, 없는 환경(Windows 등)은 웹폰트 사용.
+   600/700 요청은 Mac과 동일하게 Heavy(800)로 매칭됨. */
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Light"), local("Avenir-Light"),
+       url("/assets/fonts/Avenir/Avenir-Light.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Light Oblique"), local("Avenir-LightOblique"),
+       url("/assets/fonts/Avenir/Avenir-LightOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-LightOblique.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Book"), local("Avenir-Book"),
+       url("/assets/fonts/Avenir/Avenir-Book.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Book.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Book Oblique"), local("Avenir-BookOblique"),
+       url("/assets/fonts/Avenir/Avenir-BookOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-BookOblique.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Medium"), local("Avenir-Medium"),
+       url("/assets/fonts/Avenir/Avenir-Medium.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Medium Oblique"), local("Avenir-MediumOblique"),
+       url("/assets/fonts/Avenir/Avenir-MediumOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-MediumOblique.woff") format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Heavy"), local("Avenir-Heavy"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Heavy Oblique"), local("Avenir-HeavyOblique"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff") format("woff");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Black"), local("Avenir-Black"),
+       url("/assets/fonts/Avenir/Avenir-Black.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Black.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir";
+  src: local("Avenir Black Oblique"), local("Avenir-BlackOblique"),
+       url("/assets/fonts/Avenir/Avenir-BlackOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-BlackOblique.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* "Avenir Next" — Mac/iOS는 시스템 Avenir Next, 없는 환경은 위 Avenir 웹폰트로 대체 */
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-UltraLight"),
+       url("/assets/fonts/Avenir/Avenir-Light.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-UltraLightItalic"),
+       url("/assets/fonts/Avenir/Avenir-LightOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-LightOblique.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Regular"), local("AvenirNext-Regular"),
+       url("/assets/fonts/Avenir/Avenir-Book.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Book.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Italic"), local("AvenirNext-Italic"),
+       url("/assets/fonts/Avenir/Avenir-BookOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-BookOblique.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Medium"), local("AvenirNext-Medium"),
+       url("/assets/fonts/Avenir/Avenir-Medium.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-MediumItalic"),
+       url("/assets/fonts/Avenir/Avenir-MediumOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-MediumOblique.woff") format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Demi Bold"), local("AvenirNext-DemiBold"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-DemiBoldItalic"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff") format("woff");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Bold"), local("AvenirNext-Bold"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-BoldItalic"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("Avenir Next Heavy"), local("AvenirNext-Heavy"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-Heavy.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  src: local("AvenirNext-HeavyItalic"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff2") format("woff2"),
+       url("/assets/fonts/Avenir/Avenir-HeavyOblique.woff") format("woff");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
