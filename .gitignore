@@ -1,1 +1,4 @@
 *.DS_Store*
+_to_delete/
+*.lock
+*.bak_*
