@@ -101,6 +101,22 @@
     }
     .dark .res-list { border-top-color: #e2e8f0; }
 
+    .res-section { margin-top: 2.6rem; }
+    .res-section:first-child { margin-top: 1.6rem; }
+    .res-section .res-list { margin-top: 0.6rem; }
+    .res-section-title {
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #64748b;
+      display: flex; align-items: baseline; gap: 0.6rem;
+    }
+    .dark .res-section-title { color: #94a3b8; }
+    .res-section-note { font-size: 0.8rem; font-weight: 400; letter-spacing: 0; text-transform: none; }
+    .badge-beta {
+      font-size: 0.66rem; letter-spacing: 0.08em; padding: 0.08rem 0.4rem;
+      border: 1px solid currentColor; border-radius: 999px;
+    }
+
     .res {
       position: relative;
       display: grid;
@@ -197,7 +213,7 @@
       <p>If you've recently joined, open any link below and request access — Suyeon will approve.</p>
     </div>
 
-    <div id="resList" class="res-list"></div>
+    <div id="resList"></div>
   </main>
 
   <footer class="border-t border-[#b8c4dc] dark:border-[#3d3d3d]">
@@ -231,7 +247,7 @@
         return;
       }
       var arrowSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>';
-      root.innerHTML = rows.map(function(r) {
+      var renderRow = function(r) {
         return (
           '<a class="res" href="' + r.url + '" target="_blank" rel="noopener">' +
             '<div class="res-body">' +
@@ -240,6 +256,24 @@
             '</div>' +
             '<div class="res-arrow">' + arrowSVG + '</div>' +
           '</a>'
+        );
+      };
+      var sections = (Array.isArray(window.INTERNAL_SECTIONS) ? window.INTERNAL_SECTIONS : []).slice();
+      var known = sections.map(function(s) { return s.id; });
+      var orphans = rows.filter(function(r) { return known.indexOf(r.section) < 0; });
+      if (orphans.length) sections.push({ id: '__other', title: sections.length ? 'Other' : '' });
+      root.innerHTML = sections.map(function(sec) {
+        var items = sec.id === '__other' ? orphans : rows.filter(function(r) { return r.section === sec.id; });
+        if (!items.length) return '';
+        var isBeta = sec.id === 'beta';
+        return (
+          '<section class="res-section">' +
+            (sec.title ? '<h2 class="res-section-title">' +
+              (isBeta ? '<span class="badge-beta">BETA</span>' : sec.title) +
+              (sec.note ? '<span class="res-section-note">' + sec.note + '</span>' : '') +
+            '</h2>' : '') +
+            '<div class="res-list">' + items.map(renderRow).join('') + '</div>' +
+          '</section>'
         );
       }).join('');
     })();
