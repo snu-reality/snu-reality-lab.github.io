@@ -607,6 +607,75 @@
     .hero-stage.live .hero-hint { opacity: 1; }
     .hero-stage.touched .hero-hint { opacity: 0; }
 
+
+    /* --- talk abstract modal --- */
+    .abs-link {
+      color: #003380;
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(0, 51, 128, 0.45);
+    }
+    .abs-link:hover { border-bottom-style: solid; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.45);
+      overflow-y: auto;
+    }
+    .modal-overlay[hidden] { display: none; }
+    .modal-card {
+      position: relative;
+      width: 100%;
+      max-width: 720px;
+      max-height: 82vh;
+      overflow-y: auto;
+      padding: 30px 34px 26px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 12px 44px rgba(0, 0, 0, 0.28);
+      line-height: 1.65;
+      text-align: left;
+    }
+    .modal-card h3 {
+      margin: 0 0 4px;
+      padding-right: 28px;
+      color: #003380;
+      font-size: 1.15rem;
+    }
+    .modal-speaker {
+      margin: 0 0 16px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .modal-card p { margin: 0 0 12px; }
+    .modal-ref {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid #e3e6ea;
+      color: #555;
+      font-size: 0.85rem;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      border: 0;
+      background: none;
+      color: #888;
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .modal-close:hover { color: #003380; }
+    @media (max-width: 600px) {
+      .modal-card { padding: 24px 20px 20px; max-height: 86vh; }
+    }
   </style>
   <link rel="stylesheet" href="/assets/css/avenir.css">
 </head>
@@ -872,7 +941,7 @@
         <tr>
           <td>10/29</td><td>Lecture&nbsp;15</td>
           <td><strong>Generative adversarial networks (GANs)</strong></td>
-          <td></td><td class="col-readings"></td>
+          <td>[<a href="https://drive.google.com/file/d/1V-_YiurunDXUrrMwKlJenb1GZNoUDdI5/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td><td class="col-readings">[<a href="lecture15_gan_toy.html" target="_blank" rel="noopener">GAN vis.</a>]</td>
         </tr>
 
         <tr>
@@ -932,7 +1001,7 @@
         </tr>
         <tr>
           <td>11/26</td><td>Lecture&nbsp;23</td>
-          <td><strong>Guest lecture</strong><br>Sungyoon Kim (Stanford University)</td>
+          <td><strong>Guest lecture</strong><br>Sungyoon Kim (Stanford University)<br><a class="abs-link" href="#" data-abs="abs-sungyoon">Modern Optimizers and Theory of Loss Landscapes</a></td>
           <td></td><td class="col-readings"></td>
         </tr>
 
@@ -1958,6 +2027,57 @@
     updateGeometry();
     wake();
     window.addEventListener('resize', function () { resize(); wake(); });
+  })();
+  </script>
+
+  <div class="modal-overlay" id="abs-sungyoon" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="abs-sungyoon-title">
+      <button class="modal-close" type="button" aria-label="Close">&times;</button>
+      <h3 id="abs-sungyoon-title">Modern Optimizers and Theory of Loss Landscapes</h3>
+      <p class="modal-speaker">Sungyoon Kim (Stanford University) &middot; November&nbsp;26, 2026</p>
+      <p>Optimization is at the core of training ML models, hence finding an efficient optimization
+        algorithm has long been an important challenge. In this talk, I will discuss the efforts to
+        develop better optimization algorithms, as well as the theoretical efforts to understand why
+        they work. For the first half of the talk I will go through the history of how optimizers
+        evolved, starting from AdaGrad and Adam to more recent optimizers such as Shampoo, Muon and
+        its variants. I will discuss the motivations behind these algorithms, their empirical
+        performance, and their computational costs.</p>
+      <p>Despite their empirical success, why these methods work remains poorly understood. Unlike
+        convex optimization, where rigorous theory provides convergence guarantees and explains
+        acceleration, neural network training lacks a similarly clear theoretical understanding. For
+        the second half of the talk I will focus on loss landscapes to understand at least some parts
+        of the training dynamics and solutions found by these optimizers. We will see a classical
+        result of Haeffele &amp; Vidal [1], mode connectivity, implicit bias of optimizers and their
+        combinations.</p>
+      <p class="modal-ref">[1] Haeffele, Benjamin D., and Ren&eacute; Vidal. &ldquo;Global optimality in
+        neural network training.&rdquo; 2017 IEEE Conference on Computer Vision and Pattern Recognition
+        (CVPR). IEEE, 2017.</p>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    function close(overlay) {
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-abs]');
+      if (link) {
+        e.preventDefault();
+        var overlay = document.getElementById(link.getAttribute('data-abs'));
+        if (overlay) { overlay.hidden = false; document.body.style.overflow = 'hidden'; }
+        return;
+      }
+      var overlay = e.target.closest('.modal-overlay');
+      if (overlay && (e.target === overlay || e.target.closest('.modal-close'))) close(overlay);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      Array.prototype.forEach.call(document.querySelectorAll('.modal-overlay'), function (o) {
+        if (!o.hidden) close(o);
+      });
+    });
   })();
   </script>
 </body>
