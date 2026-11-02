@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gaussian Wave Splatting for Computer-Generated Holography — SNU Reality Lab</title>
+  <meta name="description" content="Gaussian Wave Splatting turns Gaussian scene representations from neural rendering into holograms with accurate occlusion and view-dependent effects. SIGGRAPH 2025." />
+  <meta property="og:title" content="Gaussian Wave Splatting for Computer-Generated Holography" />
+  <meta property="og:description" content="From Gaussian splats to holograms — SIGGRAPH 2025." />
+  <meta property="og:image" content="https://reality.snu.ac.kr/publications/gaussian-wave-splatting/assets/teaser.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../../favicon/favicon.ico" />
+  <link rel="stylesheet" href="../../assets/css/avenir.css" />
+  <link rel="stylesheet" href="../../assets/css/project.css?v=11" />
+  <script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-L7781B19XD');</script>
+  <script defer blocking="render" src="../../data/publications.js?v=20261103a"></script>
+  <script defer blocking="render" src="../../assets/js/project-page.js?v=15"></script>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../../" aria-label="Reality Lab"><img src="../../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img"></a>
+        <a href="../../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="../../team/">Team</a></li>
+        <li><a href="../" class="active">Publications</a></li>
+        <li><a href="../../teaching/">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" class="nav-logo-wrap" aria-label="Seoul National University">
+        <img src="../../logo/snu_ui.png" alt="SNU" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <div class="pp-shell">
+    <aside class="pp-side" id="pp-side"></aside>
+    <main class="pp-main" id="pp-main"></main>
+  </div>
+
+  <footer class="pp-footer">
+    <div class="inner">
+      <span>© <span id="year"></span> SNU Reality Lab.</span>
+      <button type="button" id="themeToggle" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+  </footer>
+
+  <script>
+  window.PROJECT = {
+    pubId: "pub-siggraph-2025-gws",
+    youtube: "ttDCDbhEf7Q",
+    related: ["pub-sig2026-holopathtracer", "pub-siggraph-2024-parallax", "pub-sigasia2021-nh3d", "pub-sig2022-time"],
+    tldr: "A novel efficient computer-generated holography algorithm to turn Gaussian splats into holograms.",
+    abstract: "State-of-the-art neural rendering methods optimize Gaussian scene representations from a few photographs for novel-view synthesis. Building on these representations, we develop an efficient algorithm, dubbed Gaussian Wave Splatting, to turn these Gaussians into holograms. Unlike existing computer-generated holography (CGH) algorithms, Gaussian Wave Splatting supports accurate occlusions and view-dependent effects for photorealistic scenes by leveraging recent advances in neural rendering. Specifically, we derive a closed-form solution for a 2D Gaussian-to-hologram transform that supports occlusions and alpha blending. Inspired by classic computer graphics techniques, we also derive an efficient approximation of the aforementioned process in the Fourier domain that is easily parallelizable and implement it using custom CUDA kernels. By integrating emerging neural rendering pipelines with holographic display technology, our Gaussian-based CGH framework paves the way for next-generation holographic displays.",
+    sections: [
+      {
+        id: "overview", title: "Overview",
+        blocks: [
+          { type: "figure", src: "assets/teaser.jpg", wide: true, plain: true,
+            caption: "<b>Pipeline.</b> Gaussian splatting reconstructs a scene from a handful of casually captured photographs (left). Gaussian Wave Splatting converts that representation into a hologram that a spatial light modulator can display, reproducing natural defocus and parallax (right)." }
+        ]
+      },
+      {
+        id: "comparison", title: "Point clouds vs. Gaussians",
+        blocks: [
+          { type: "compare",
+            a: { label: "Point cloud" }, b: { label: "Gaussians (GWS)" },
+            scenes: [
+              { label: "Kitchen", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_full_matched_focal_stack_insets.mp4" },
+              { label: "Garden", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/garden_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/garden_full_matched_focal_stack_insets.mp4" },
+              { label: "Room", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/room_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/room_full_matched_focal_stack_insets.mp4" },
+              { label: "Counter", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/counter_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/counter_full_matched_focal_stack_insets.mp4" },
+              { label: "Bicycle", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/bicycle_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/bicycle_full_matched_focal_stack_insets.mp4" },
+              { label: "Stump", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/stump_pc_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/stump_full_matched_focal_stack_insets.mp4" }
+            ],
+            caption: "Experimentally captured focal stacks. Drag to compare; pick a scene above." }
+        ]
+      },
+      {
+        id: "mesh-comparison", title: "Meshes vs. Gaussians",
+        blocks: [
+          { type: "compare",
+            a: { label: "Polygon-based CGH" }, b: { label: "Gaussians (GWS)" },
+            scenes: [
+              { label: "Kitchen", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_full_matched_focal_stack_insets.mp4" },
+              { label: "Garden", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/garden_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/garden_full_matched_focal_stack_insets.mp4" },
+              { label: "Room", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/room_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/room_full_matched_focal_stack_insets.mp4" },
+              { label: "Counter", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/counter_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/counter_full_matched_focal_stack_insets.mp4" },
+              { label: "Bicycle", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/bicycle_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/bicycle_full_matched_focal_stack_insets.mp4" },
+              { label: "Stump", a: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/stump_mesh_match_focal_stack_insets.mp4", b: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/stump_full_matched_focal_stack_insets.mp4" }
+            ],
+            caption: "Experimentally captured focal stacks. Drag to compare; pick a scene above." }
+        ]
+      },
+      {
+        id: "method", title: "Method",
+        blocks: [
+          { type: "text", html: "<p>Each optimized Gaussian is mapped from world space into hologram space through model, view, projective and hologram transforms, where its wavefront has a closed-form expression. Occlusion is handled by alpha-blending wavefronts, and a Fourier-domain approximation makes the whole process parallel on the GPU.</p>" },
+          { type: "figure", src: "assets/holographics_ver8.jpg", plain: true,
+            caption: "<b>Coordinate transforms.</b> From canonical Gaussian space to the hologram plane." }
+        ]
+      }
+    ]
+  };
+  </script>
+</body>
+</html>

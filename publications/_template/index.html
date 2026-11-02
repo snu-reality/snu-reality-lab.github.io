@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TEMPLATE — SNU Reality Lab</title>
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="One-sentence summary for search results." />
+  <meta property="og:title" content="Paper Title" />
+  <meta property="og:description" content="One-sentence summary for link previews." />
+  <meta property="og:image" content="https://reality.snu.ac.kr/publications/your-slug/assets/teaser.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../../favicon/favicon.ico" />
+  <link rel="stylesheet" href="../../assets/css/avenir.css" />
+  <link rel="stylesheet" href="../../assets/css/project.css?v=11" />
+  <script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-L7781B19XD');</script>
+  <script defer blocking="render" src="../../data/publications.js?v=20261103a"></script>
+  <script defer blocking="render" src="../../assets/js/project-page.js?v=15"></script>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand-group">
+        <a href="../../" aria-label="Reality Lab"><img src="../../logo/black-1x.png" alt="Reality Lab" class="nav-lab-logo-img"></a>
+        <a href="../../" class="brand">SNU <br> REALITY <br> LAB</a>
+      </div>
+      <ul>
+        <li><a href="../../team/">Team</a></li>
+        <li><a href="../" class="active">Publications</a></li>
+        <li><a href="../../teaching/">Teaching</a></li>
+      </ul>
+      <a href="https://en.snu.ac.kr" target="_blank" rel="noopener" class="nav-logo-wrap" aria-label="Seoul National University">
+        <img src="../../logo/snu_ui.png" alt="SNU" class="nav-logo" />
+      </a>
+    </div>
+  </nav>
+
+  <div class="pp-shell">
+    <aside class="pp-side" id="pp-side"></aside>
+    <main class="pp-main" id="pp-main"></main>
+  </div>
+
+  <footer class="pp-footer">
+    <div class="inner">
+      <span>© <span id="year"></span> SNU Reality Lab.</span>
+      <button type="button" id="themeToggle" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+  </footer>
+
+  <script>
+  window.PROJECT = {
+    pubId: "",
+
+    longTitle: "Paper Title: A Short and Memorable Subtitle",
+    shortTitle: "Paper Title",
+    venue: "SIGGRAPH 2027",
+    authors: "First Author*, Second Author*, Suyeon Choi",
+    links: [
+      { label: "Paper", url: "" },
+      { label: "Supp",  url: "" },
+      { label: "Code",  url: "https://github.com/" },
+      { label: "Video", url: "https://www.youtube.com/watch?v=ttDCDbhEf7Q" }
+    ],
+    bibtex: "@article{author2027paper,\n  title={Paper Title},\n  author={Author, First and Author, Second and Choi, Suyeon},\n  journal={ACM Transactions on Graphics (TOG)},\n  year={2027}\n}",
+
+    youtube: "ttDCDbhEf7Q",
+    related: ["pub-siggraph-2025-gws", "pub-sig2022-time"],
+    tldr: "One-line summary.",
+    abstract: "Paste the abstract here.",
+
+    sections: [
+      { id: "overview", title: "Overview", blocks: [
+        { type: "text", html: "<p>Text.</p>" },
+        { type: "figure", src: "../gaussian-wave-splatting/assets/teaser.jpg", wide: true, plain: true,
+          caption: "<b>Figure title.</b> Caption text." }
+      ]},
+      { id: "interactive", title: "Interactive results", blocks: [
+        { type: "scrub", src: "../gaussian-wave-splatting/assets/garden_focal_scrub.mp4", min: "Near", max: "Far",
+          caption: "Drag to refocus." },
+        { type: "compare",
+          a: { src: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_pc_match_focal_stack_insets.mp4", label: "Baseline" },
+          b: { src: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_full_matched_focal_stack_insets.mp4",        label: "Ours" },
+          caption: "Drag across to compare." },
+        { type: "gallery", items: [
+          { label: "Scene A", src: "https://bchao1.github.io/gaussian-wave-splatting/static/videos/kitchen_full_matched_focal_stack_insets.mp4", caption: "Caption for scene A." },
+          { label: "Scene B", src: "../gaussian-wave-splatting/assets/garden_focal_scrub.mp4",      caption: "Caption for scene B." }
+        ]}
+      ]},
+      { id: "method", title: "Method", blocks: [
+        { type: "grid", cols: 2, items: [
+          { src: "../gaussian-wave-splatting/assets/holographics_ver8.jpg", caption: "Left figure." },
+          { src: "../gaussian-wave-splatting/assets/fig2_oit.jpg",          caption: "Right figure." }
+        ]}
+      ]},
+    ],
+    acknowledgements: "Funding sources and thanks."
+  };
+  </script>
+</body>
+</html>

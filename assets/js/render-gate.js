@@ -1,0 +1,1 @@
+/* Render gate: a deferred, render-blocking script so the first frame is painted only after the page has finished parsing (and its inline scripts have built the cards). Keeps cross-page view transitions seamless. */

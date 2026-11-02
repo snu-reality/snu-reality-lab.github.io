@@ -177,12 +177,18 @@
       color: #475569;
     }
     .dark .teach-description { color: #cbd5e1; }
-  </style>
+      @view-transition { navigation: auto; }
+    ::view-transition-group(*) { animation-duration: 520ms; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 320ms; }
+    ::view-transition-group(course-hero) { animation-duration: 600ms; animation-timing-function: cubic-bezier(.22,1,.36,1); }
+    ::view-transition-old(course-hero), ::view-transition-new(course-hero) { height: 100%; object-fit: cover; }
+</style>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="../data/teaching.js"></script>
   <script src="../data/flip.js"></script>
   <script src="../data/teaser-hero.js"></script>
   <link rel="stylesheet" href="/assets/css/avenir.css">
+  <script defer blocking="render" src="../assets/js/render-gate.js"></script>
 </head>
 <body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
 
@@ -309,5 +315,35 @@
     });
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+<script>
+  window.addEventListener('pageshow', function () { document.querySelectorAll('.pub-teaser, .teach-teaser').forEach(function (el) { if (el.style.viewTransitionName === 'course-hero') el.style.viewTransitionName = ''; }); });
+  window.addEventListener('pagereveal', function (e) {
+    if (!e.viewTransition) return;
+    var f = null;
+    try { f = JSON.parse(sessionStorage.getItem('flip-hero-back') || 'null'); sessionStorage.removeItem('flip-hero-back'); } catch (err) {}
+    if (!f || Date.now() - f.t > 4000) return;
+    var a = Array.prototype.filter.call(document.querySelectorAll('a'), function (x) {
+      return new RegExp(f.key + '\\/?(index\\.html)?$').test(x.getAttribute('href') || '');
+    })[0];
+    var card = a && a.closest('.pub-card, .teach-card');
+    var t = card && card.querySelector('.pub-teaser, .teach-teaser');
+    if (!t) return;
+    t.style.viewTransitionName = 'course-hero';
+    e.viewTransition.finished.finally(function () { t.style.viewTransitionName = ''; });
+  });
+  // Remember the clicked course card's teaser so the course page can grow it into its header image.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if (!a) return;
+    var m = (a.getAttribute('href') || '').match(/\/class\/([^\/?#]+)\/?(index\.html)?$/);
+    if (!m) return;
+    var card = a.closest('.pub-card, .teach-card');
+    var t = card && card.querySelector('.pub-teaser, .teach-teaser');
+    if (!t) return;
+    var r = t.getBoundingClientRect();
+    try { sessionStorage.setItem('flip-hero', JSON.stringify({ key: '/class/' + m[1], x: r.left, y: r.top, w: r.width, h: r.height })); } catch (err) {}
+    if (window.CSSViewTransitionRule) t.style.viewTransitionName = 'course-hero';
+  }, true);
+</script>
 </body>
 </html>

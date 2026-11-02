@@ -2080,5 +2080,35 @@
     });
   })();
   </script>
+<script>
+  // Grow the header image out of the course card that was clicked.
+  (function () {
+    var f = null;
+    try { f = JSON.parse(sessionStorage.getItem('flip-hero') || 'null'); sessionStorage.removeItem('flip-hero'); } catch (e) {}
+    if (!f || location.pathname.indexOf(f.key) < 0) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var h = document.querySelector('.hero-image');
+    if (!h) return;
+    function go() {
+      var r = h.getBoundingClientRect();
+      if (!r.width) return;
+      var c = h.cloneNode();
+      c.removeAttribute('class');
+      c.style.cssText = 'position:fixed;z-index:2000;margin:0;object-fit:cover;border-radius:8px;pointer-events:none;' +
+        'left:' + f.x + 'px;top:' + f.y + 'px;width:' + f.w + 'px;height:' + f.h + 'px;';
+      document.body.appendChild(c);
+      h.style.visibility = 'hidden';
+      c.getBoundingClientRect();
+      requestAnimationFrame(function () {
+        c.style.transition = 'all 650ms cubic-bezier(.22,1,.36,1)';
+        c.style.left = r.left + 'px'; c.style.top = r.top + 'px';
+        c.style.width = r.width + 'px'; c.style.height = r.height + 'px';
+        c.style.borderRadius = getComputedStyle(h).borderRadius || '0px';
+      });
+      setTimeout(function () { h.style.visibility = ''; c.remove(); }, 700);
+    }
+    if (h.complete) go(); else h.addEventListener('load', go, { once: true });
+  })();
+</script>
 </body>
 </html>

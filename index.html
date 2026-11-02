@@ -47,6 +47,8 @@
     ::view-transition-group(*) { animation-duration: 520ms; }
     ::view-transition-old(root),
     ::view-transition-new(root) { animation-duration: 320ms; }
+    ::view-transition-group(pub-hero) { animation-duration: 560ms; animation-timing-function: cubic-bezier(.22,1,.36,1); }
+    ::view-transition-old(pub-hero), ::view-transition-new(pub-hero) { height: 100%; object-fit: cover; }
 
     /* ---------- Group photo face overlays ----------
        Each member's face position is defined in data/team.js (facePosition).
@@ -877,10 +879,13 @@
         background: #4a4a4a;
       }
     }
-  </style>
+      ::view-transition-group(course-hero) { animation-duration: 600ms; animation-timing-function: cubic-bezier(.22,1,.36,1); }
+    ::view-transition-old(course-hero), ::view-transition-new(course-hero) { height: 100%; object-fit: cover; }
+</style>
   <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="/assets/css/avenir.css">
+  <script defer blocking="render" src="assets/js/render-gate.js"></script>
 </head>
 <body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
   <!-- Sticky Navbar (same style as computational-imaging-2026.html) -->
@@ -990,7 +995,7 @@
       runInitialAnimation();
     });
   </script>
-  <script src="data/publications.js"></script>
+  <script src="data/publications.js?v=20261103a"></script>
   <script src="data/news.js"></script>
   <script src="data/teaching.js"></script>
   <script src="data/team.js"></script>
@@ -1178,7 +1183,8 @@
             var projectLink = pub.projectLink || pub.teaserLink || '';
             var arxivLink = pub.arxivLink || '';
             // Whole-card click target — project page first, teaser link as fallback.
-            var cardLink = pub.projectLink || pub.teaserLink || '';
+            var internalLink = pub.slug ? 'publications/' + pub.slug + '/' : '';
+            var cardLink = internalLink || pub.projectLink || pub.teaserLink || '';
             if (cardLink) {
               card.dataset.link = cardLink;
               card.style.cursor = 'pointer';
@@ -1188,19 +1194,27 @@
             var teaserContent;
             if (pub.teaserImage) {
               var isVideo = /\.mp4$/i.test(pub.teaserImage);
+              var fitCls = pub.teaserFit === 'contain' ? 'object-contain bg-white' : 'object-cover';
               teaserContent = isVideo
-                ? '<video src="' + pub.teaserImage + '" class="w-full h-full object-cover" autoplay muted loop playsinline></video>'
-                : '<img src="' + pub.teaserImage + '" alt="' + (pub.shortTitle || '') + ' teaser" class="w-full h-full object-cover" loading="lazy" />';
+                ? '<video src="' + pub.teaserImage + '" class="w-full h-full ' + fitCls + '" autoplay muted loop playsinline></video>'
+                : '<img src="' + pub.teaserImage + '" alt="' + (pub.shortTitle || '') + ' teaser" class="w-full h-full ' + fitCls + '" loading="lazy" />';
             } else {
               teaserContent = 'Teaser';
             }
-            var teaserInner = pub.teaserLink
-              ? '<a href="' + pub.teaserLink + '" target="_blank" rel="noopener" class="block w-full h-full">' + teaserContent + '</a>'
-              : teaserContent;
+            var teaserInner = internalLink
+              ? '<a href="' + internalLink + '" class="block w-full h-full">' + teaserContent + '</a>'
+              : pub.teaserLink
+                ? '<a href="' + pub.teaserLink + '" target="_blank" rel="noopener" class="block w-full h-full">' + teaserContent + '</a>'
+                : teaserContent;
             var linksHtml = '';
             var projectLabel = (pub.venue === 'Nature' || pub.venue === 'Nature Photonics') ? 'Article' : 'Project Page';
-            if (projectLink) linksHtml += '<a class="pub-link" href="' + escapeHtml(projectLink) + '" target="_blank" rel="noopener">' + projectLabel + '</a> ';
-            if (arxivLink) linksHtml += '<a class="pub-link" href="' + escapeHtml(arxivLink) + '" target="_blank" rel="noopener">Arxiv</a> ';
+            if (internalLink) linksHtml += '<a class="pub-link" href="' + escapeHtml(internalLink) + '">Project Page</a> ';
+            else if (projectLink) linksHtml += '<a class="pub-link" href="' + escapeHtml(projectLink) + '" target="_blank" rel="noopener">' + projectLabel + '</a> ';
+            (Array.isArray(pub.links) ? pub.links : []).forEach(function(l) {
+              if (/^project page$/i.test(l.label)) return;
+              linksHtml += '<a class="pub-link" href="' + escapeHtml(l.url) + '" target="_blank" rel="noopener">' + escapeHtml(l.label) + '</a> ';
+            });
+            if (!Array.isArray(pub.links) && arxivLink) linksHtml += '<a class="pub-link" href="' + escapeHtml(arxivLink) + '" target="_blank" rel="noopener">Arxiv</a> ';
             linksHtml += '<button type="button" class="pub-link-button js-open-bibtex" data-pub-id="' + escapeHtml(pubId) + '" data-pub-title="' + escapeHtml(pub.shortTitle || pub.longTitle || 'Publication') + '">BibTeX</button>';
             card.innerHTML =
               '<div class="pub-card-main">' +
@@ -1225,6 +1239,66 @@
       }
 
       renderHomePublications();
+
+    // Shrink the project-page hero back into its card when returning from a project page.
+    // Browsers with cross-document view transitions: name the matching card's teaser
+    // before the first frame so the hero morphs straight into it.
+    window.addEventListener('pagereveal', function (e) {
+      document.querySelectorAll('.pub-teaser').forEach(function (el) { if (el.style.viewTransitionName === 'pub-hero') el.style.viewTransitionName = ''; });
+      if (!e.viewTransition) return;
+      var f = null;
+      try { f = JSON.parse(sessionStorage.getItem('flip-teaser-back') || 'null'); } catch (err) {}
+      if (!f || Date.now() - f.t > 4000) return;
+      try { sessionStorage.removeItem('flip-teaser-back'); } catch (err) {}
+      var t = document.querySelector('.pub-card[data-pub-id="' + f.id + '"] .pub-teaser');
+      if (!t) return;
+      t.style.viewTransitionName = 'pub-hero';
+      e.viewTransition.finished.finally(function () { t.style.viewTransitionName = ''; });
+    });
+    function playTeaserBack() {
+      var f = null;
+      try { f = JSON.parse(sessionStorage.getItem('flip-teaser-back') || 'null'); sessionStorage.removeItem('flip-teaser-back'); } catch (err) {}
+      if (!f || Date.now() - f.t > 4000) return;
+      if (window.CSSViewTransitionRule) return;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var card = document.querySelector('.pub-card[data-pub-id="' + f.id + '"]');
+      var t = card && card.querySelector('.pub-teaser');
+      if (!t) return;
+      var to = t.getBoundingClientRect();
+      if (!to.width || to.bottom < 0 || to.top > window.innerHeight) return;
+      var s = f.w / to.width;
+      var dx = f.x - to.left;
+      var dy = (f.y + f.h / 2) - (to.top + to.height * s / 2);
+      t.style.transformOrigin = '0 0';
+      t.style.position = 'relative';
+      t.style.zIndex = '60';
+      t.style.transition = 'none';
+      t.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+      t.getBoundingClientRect();
+      requestAnimationFrame(function () {
+        t.style.transition = 'transform 560ms cubic-bezier(.22,1,.36,1)';
+        t.style.transform = 'none';
+        setTimeout(function () { t.style.transition = ''; t.style.transform = ''; t.style.zIndex = ''; t.style.position = ''; t.style.transformOrigin = ''; }, 620);
+      });
+    }
+    // Wait for layout (Tailwind's runtime styles) before measuring the card.
+    if (document.readyState === 'complete') setTimeout(playTeaserBack, 30);
+    else window.addEventListener('load', function () { setTimeout(playTeaserBack, 30); }, { once: true });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) playTeaserBack(); });
+
+    // Remember where the clicked card's teaser was, so the project page can grow it into place.
+    document.addEventListener('click', function(e) {
+      var card = e.target && e.target.closest ? e.target.closest('.pub-card') : null;
+      if (!card) return;
+      var a = e.target.closest('a');
+      var dest = a ? a.getAttribute('href') : card.dataset.link;
+      if (!dest || !/publications\/[^\/]+\/(index\.html)?$/.test(dest)) return;
+      var t = card.querySelector('.pub-teaser');
+      if (!t) return;
+      var r = t.getBoundingClientRect();
+      try { sessionStorage.setItem('flip-teaser', JSON.stringify({ id: card.dataset.pubId, x: r.left, y: r.top, w: r.width, h: r.height })); } catch (err) {}
+      if (window.CSSViewTransitionRule) t.style.viewTransitionName = 'pub-hero';
+    }, true);
       // FLIP back from /publications/ if we just came from there.
       if (window.FLIP) {
         FLIP.play('#publicationCards .pub-card', 'pubId',
@@ -1303,6 +1377,7 @@
           if (e.target.closest('a, button')) return;
           var card = e.target.closest('.pub-card');
           if (!card || !card.dataset.link) return;
+          if (!/^https?:/i.test(card.dataset.link)) { window.location.href = card.dataset.link; return; }
           window.open(card.dataset.link, '_blank', 'noopener');
         });
       }
@@ -2087,5 +2162,35 @@
       peopleGrid.appendChild(card);
     }
   </script>
+<script>
+  window.addEventListener('pageshow', function () { document.querySelectorAll('.pub-teaser, .teach-teaser').forEach(function (el) { if (el.style.viewTransitionName === 'course-hero') el.style.viewTransitionName = ''; }); });
+  window.addEventListener('pagereveal', function (e) {
+    if (!e.viewTransition) return;
+    var f = null;
+    try { f = JSON.parse(sessionStorage.getItem('flip-hero-back') || 'null'); sessionStorage.removeItem('flip-hero-back'); } catch (err) {}
+    if (!f || Date.now() - f.t > 4000) return;
+    var a = Array.prototype.filter.call(document.querySelectorAll('a'), function (x) {
+      return new RegExp(f.key + '\\/?(index\\.html)?$').test(x.getAttribute('href') || '');
+    })[0];
+    var card = a && a.closest('.pub-card, .teach-card');
+    var t = card && card.querySelector('.pub-teaser, .teach-teaser');
+    if (!t) return;
+    t.style.viewTransitionName = 'course-hero';
+    e.viewTransition.finished.finally(function () { t.style.viewTransitionName = ''; });
+  });
+  // Remember the clicked course card's teaser so the course page can grow it into its header image.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if (!a) return;
+    var m = (a.getAttribute('href') || '').match(/\/class\/([^\/?#]+)\/?(index\.html)?$/);
+    if (!m) return;
+    var card = a.closest('.pub-card, .teach-card');
+    var t = card && card.querySelector('.pub-teaser, .teach-teaser');
+    if (!t) return;
+    var r = t.getBoundingClientRect();
+    try { sessionStorage.setItem('flip-hero', JSON.stringify({ key: '/class/' + m[1], x: r.left, y: r.top, w: r.width, h: r.height })); } catch (err) {}
+    if (window.CSSViewTransitionRule) t.style.viewTransitionName = 'course-hero';
+  }, true);
+</script>
 </body>
 </html>
