@@ -3,33 +3,33 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
 <style>
 :root{
-  --plane:#f9f9f7; --surface:#fcfcfb;
-  --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
-  --hair:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
-  --accent:#eb6834; --accent-soft:rgba(235,104,52,.30);
-  --series:#2a78d6;
-  --chip:#f0efec;
-  --ramp0:#fcfcfb; --ramp1:#cde2fb; --ramp2:#86b6ef; --ramp3:#3987e5; --ramp4:#1c5cab; --ramp5:#0d366b;
+  --plane:#f5f6f8; --surface:#ffffff;
+  --ink:#1c2430; --ink2:#4d5866; --muted:#8a93a0;
+  --hair:#dde2e9; --axis:#b4bcc7; --ring:rgba(28,36,48,.10);
+  --accent:#a87b2f; --accent-soft:rgba(168,123,47,.30);
+  --series:#003380;
+  --chip:#eef1f5;
+  --ramp0:#ffffff; --ramp1:#dce4f2; --ramp2:#a9bbdb; --ramp3:#6f8cba; --ramp4:#345a99; --ramp5:#003380;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --plane:#0d0d0d; --surface:#1a1a19;
-    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
-    --hair:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12);
-    --accent:#f07a45; --accent-soft:rgba(240,122,69,.35);
-    --series:#3987e5;
-    --chip:#262624;
-    --ramp0:#1a1a19; --ramp1:#12305a; --ramp2:#1c5cab; --ramp3:#3987e5; --ramp4:#86b6ef; --ramp5:#cde2fb;
+    --plane:#12151a; --surface:#1b2028;
+    --ink:#e7eaef; --ink2:#b4bcc7; --muted:#78828e;
+    --hair:#303845; --axis:#3d4654; --ring:rgba(231,234,239,.12);
+    --accent:#d3a75a; --accent-soft:rgba(211,167,90,.35);
+    --series:#5b86cf;
+    --chip:#262d37;
+    --ramp0:#1b2028; --ramp1:#1d2c48; --ramp2:#2a4a80; --ramp3:#5b86cf; --ramp4:#9fb8e3; --ramp5:#dce4f2;
   }
 }
 :root[data-theme="dark"]{
-  --plane:#0d0d0d; --surface:#1a1a19;
-  --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
-  --hair:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.12);
-  --accent:#f07a45; --accent-soft:rgba(240,122,69,.35);
-  --series:#3987e5;
-  --chip:#262624;
-  --ramp0:#1a1a19; --ramp1:#12305a; --ramp2:#1c5cab; --ramp3:#3987e5; --ramp4:#86b6ef; --ramp5:#cde2fb;
+  --plane:#12151a; --surface:#1b2028;
+  --ink:#e7eaef; --ink2:#b4bcc7; --muted:#78828e;
+  --hair:#303845; --axis:#3d4654; --ring:rgba(231,234,239,.12);
+  --accent:#d3a75a; --accent-soft:rgba(211,167,90,.35);
+  --series:#5b86cf;
+  --chip:#262d37;
+  --ramp0:#1b2028; --ramp1:#1d2c48; --ramp2:#2a4a80; --ramp3:#5b86cf; --ramp4:#9fb8e3; --ramp5:#dce4f2;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -322,7 +322,7 @@ function draw3D(){
     quads.push({a,b,c,d, depth:(a.pt[2]+b.pt[2]+c.pt[2]+d.pt[2])/4});
   }
   quads.sort((q1,q2)=>q2.depth-q1.depth);
-  const dark=css('--plane')==='#0d0d0d';
+  const dark=css('--plane')==='#12151a';
   const L=[-0.45,-0.5,0.74];
   for(const q of quads){
     const zn=(q.a.zn+q.b.zn+q.c.zn+q.d.zn)/4;
@@ -337,7 +337,7 @@ function draw3D(){
     fx.moveTo(q.a.pt[0],q.a.pt[1]);fx.lineTo(q.b.pt[0],q.b.pt[1]);
     fx.lineTo(q.c.pt[0],q.c.pt[1]);fx.lineTo(q.d.pt[0],q.d.pt[1]);
     fx.closePath();fx.fill();
-    fx.strokeStyle=dark?'rgba(255,255,255,0.07)':'rgba(11,11,11,0.07)';
+    fx.strokeStyle=dark?'rgba(231,234,239,0.07)':'rgba(28,36,48,0.07)';
     fx.lineWidth=0.6; fx.stroke();
   }
   /* data points, depth-aware size */
@@ -393,8 +393,8 @@ function draw2D(){
     for(let i=0;i<=200;i++){const x=-XR+2*XR*i/200;const yy=Math.min(y1,Math.max(y0,F.hi2(x)));i?fx.lineTo(sx(x),sy(yy)):fx.moveTo(sx(x),sy(yy));}
     for(let i=200;i>=0;i--){const x=-XR+2*XR*i/200;const yy=Math.min(y1,Math.max(y0,F.lo2(x)));fx.lineTo(sx(x),sy(yy));}
     fx.closePath();
-    const dark=css('--plane')==='#0d0d0d';
-    fx.fillStyle=dark?'rgba(200,200,200,0.16)':'rgba(110,110,110,0.15)';
+    const dark=css('--plane')==='#12151a';
+    fx.fillStyle=dark?'rgba(180,188,199,0.16)':'rgba(91,101,112,0.15)';
     fx.fill();
   }
   /* grid + axes */

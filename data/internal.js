@@ -26,9 +26,15 @@ window.INTERNAL_RESOURCES = [
   },
   {
     section: "lab",
-    title: "Lab Handbook",
+    title: "Group Handbook",
     url: "https://docs.google.com/document/d/1Eqvjj1_XSiQXCjRgv8caJgvUUP8LCCjPJJ5T3dw6PfA?usp=drive_fs",
     description: "Living reference for how we work — IT, GitHub, drive, Slack, reimbursements."
+  },
+  {
+    section: "lab",
+    title: "Lab Handbook",
+    url: "https://docs.google.com/document/d/1dvS5Axzv8B3Q3x2Vwj8QaQDFhGDtkmLiCywqF3-E1eA/edit?tab=t.0",
+    description: "Reference for how we work on hardware in the lab — access, safety, equipment settings."
   },
   {
     section: "lab",

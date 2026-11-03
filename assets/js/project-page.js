@@ -172,7 +172,7 @@
   var teaser = '';
   if (P.youtube) {
     teaser = '<figure class="pp-teaser"><div class="pp-embed"><iframe src="https://www.youtube.com/embed/' + esc(P.youtube) +
-      '?rel=0" title="Video" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></figure>';
+      '?rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '" title="Video" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></figure>';
   } else if (P.teaser) {
     var paper = pageLinks().filter(function (l) { return /^(paper|arxiv)$/i.test(l.label) && l.url; })[0];
     var heroMedia = media(P.teaser.src);
@@ -185,6 +185,7 @@
   var tldr = P.tldr ? '<p class="pp-tldr">' + P.tldr + '</p>' : '';
   var cite = D.bibtex ? '<section class="pp-section" id="citation"><h2>Citation</h2><div class="pp-bib"><pre>' + esc(D.bibtex) + '</pre><button type="button">Copy</button></div></section>' : '';
 
+  window.PROJECT_TITLE = D.shortTitle || D.longTitle || '';
   var main = document.getElementById('pp-main');
   main.innerHTML = head + teaser + tldr + sections.map(renderSection).join('') + cite;
 
