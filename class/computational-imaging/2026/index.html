@@ -1,0 +1,1358 @@
+<!--
+  Barebones Course Website Template
+
+  This template provides a simple structure for an academic course homepage.
+  It uses Seoul National University’s blue (#003380) as an accent color,
+  complemented by a clean white background. The layout includes a header,
+  navigation bar, and several sections commonly found on university course
+  websites—overview, logistics, schedule, materials, and office hours.
+
+  To use this file:
+    • Open it in a browser to preview the design.
+    • Replace the placeholder text and links with actual course content.
+    • Modify or remove sections as needed to suit your course.
+    • For more customization, adjust the CSS within the <style> tag.
+
+  Color rationale:
+    Seoul National University’s official brand uses a distinctive blue hue.
+    According to a description of the university’s logo on the branding
+    information website logotyp.us, “the Seoul National University logo
+    features an abstract symbol rendered in blue (#003380)”【109237020576305†L52-L59】.
+    This template adopts that color for headers, navigation, table borders
+    and highlights to evoke a visual connection to SNU.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="../../../favicon/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../../../favicon/favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../../../favicon/favicon-512.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7781B19XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-L7781B19XD');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4190.762 Topics in Computer Graphics: Computational Imaging – Seoul National University</title>
+  <style>
+  /* Define CSS variables so the hero image height can mirror the header height. */
+    :root {
+      /* Increase the header height so that the teaser image can be taller.
+         A taller hero image provides a more engaging visual above the
+         navigation bar, similar to other course homepages. */
+      --header-height: 300px;
+      /* Increase the hero image height independently of the header so it can
+         occupy more vertical space without altering the header layout. The height
+         is set 10% larger than before to create a more impactful teaser image. */
+      --hero-height: 420px;
+    }
+    /*
+      Smooth scrolling for in-page anchor links.
+      Applying this rule to the html element ensures that when a link
+      with a fragment identifier (e.g., #schedule) is clicked, the browser
+      scrolls smoothly instead of jumping directly to the target.
+    */
+    html {
+      scroll-behavior: smooth;
+    }
+    /*
+      Basic reset and typography
+    */
+    body {
+      margin: 0;
+      padding: 0;
+      /* Use Avenir if available; fall back to Helvetica and system sans‑serif fonts */
+      font-family: "Avenir Next", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #ffffff; /* keep the page predominantly white */
+      color: #000000; /* primary text color changed to black */
+      line-height: 1.6;
+    }
+
+    /*
+      Global hyperlink styling: use SNU blue for links and underline on hover.
+      Navigation links have separate styles defined below.
+    */
+    a {
+      color: #003380;
+    }
+    a:hover,
+    a:focus {
+      text-decoration: underline;
+    }
+
+    /*
+      Header styling
+    */
+    header {
+      background-color: #ffffff; /* keep the header white */
+      color: #000000; /* black text */
+      border-bottom: none;
+      /* Reduce padding around the title to minimize excess white space above and below it.
+         Specify separate values so the bottom padding can be smaller than the top. */
+      padding: 1rem 1rem 0;
+      /* Add a small margin beneath the header so the teaser image doesn’t touch the title directly. */
+      margin-bottom: 0.5rem;
+      text-align: center;
+      position: relative; /* allow absolute positioning of the logo */
+      /* The header’s height will adapt to its content, eliminating unused space between
+         the title and the teaser image. We remove the minimum height to prevent a large
+         gap below the title when the content is shorter than the defined header height. */
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+
+    /* Smaller subtitle inside the main heading */
+    header h1 .subtitle {
+      font-size: 0.8em;
+      display: block;
+    }
+    header p {
+      margin: 0.3rem 0 0;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+
+    header .logo {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 80px;
+      height: auto;
+    }
+    header .lab-logo {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      transform-origin: center;
+    }
+    header .lab-logo .logo-img {
+      width: 80px;
+      height: auto;
+      display: block;
+    }
+
+    /*
+      Navigation bar styles
+      The navigation is a horizontal list of anchor links that scroll to
+      different sections of the page. On hover, the link background darkens.
+    */
+    nav {
+      /* The navigation bar sits beneath the hero image. It remains sticky at the top
+         of the viewport and uses a white background with a thin blue underline.
+         By default, it spans the full width of the page to ensure it stays visible
+         while scrolling. */
+      background-color: #ffffff;
+      border-bottom: 2px solid #003380;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+      /* Remove default padding so child containers can control alignment. */
+      padding: 0;
+    }
+    nav .nav-inner {
+      /* Limit the inner navigation container to the same width as the content and
+         center it within the full-width sticky bar. It hides horizontal overflow
+         so that the list can slide without clipping outside the container. */
+      max-width: 1080px;
+      margin: 0 auto;
+      /* Hide horizontal overflow so the nav list can be translated via CSS
+         transforms.  We deliberately hide the scrollbar because the
+         navigation movement is controlled programmatically. */
+      /* Allow nav items to extend beyond the container when sliding so that
+         text remains fully visible instead of being clipped at the
+         container’s edges.  We rely on a transform to translate the list,
+         and overflow must be visible for the effect to work. */
+      overflow: visible;
+      /* Pad the navigation inner container so the left edge of the nav text aligns
+         with the padding used in the sections (1rem). This ensures the nav text
+         aligns with the corresponding section headings. */
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      /* No padding on the ul itself; padding is applied on the nav container
+         so that translation aligns the active link with the nav’s left edge. */
+      padding: 0;
+      /* Remove width constraint so the list can slide horizontally beyond the viewport. */
+      width: max-content;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      transition: transform 0.12s ease-out;
+      min-height: 100%;
+    }
+    nav li {
+      /* Do not stretch navigation items; let them take only as much width as they need */
+      flex: none;
+    }
+    nav a {
+      display: block;
+      padding: 0.35rem 0;
+      text-align: left;
+      text-decoration: none;
+      color: #000000;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: font-size 0.15s ease, font-weight 0.15s ease;
+    }
+    nav a.active {
+      font-family: "Avenir Next", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+      box-sizing: border-box;
+    }
+    nav a:hover,
+    nav a:focus {
+      color: #000000;
+    }
+
+    /*
+      Section styles
+    */
+    section {
+      padding: 1.28rem 1rem;
+      max-width: 1080px;
+      margin: auto;
+    }
+    section h2 {
+      border-bottom: none;
+      margin: 0 0 0.3rem 0;
+      padding: 0;
+      font-family: "Avenir Next", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+      box-sizing: border-box;
+    }
+
+    /*
+      Section elements maintain default scroll behavior. The headings may be
+      covered by the sticky navigation bar when navigated via hash links as
+      requested.
+    */
+
+    #previous-offerings p,
+    #previous-offerings h3,
+    #previous-offerings ul { margin: 0.4rem 0; }
+    #previous-offerings h3 { margin-top: 0.6rem; margin-bottom: 0.25rem; }
+    #previous-offerings ul { padding-left: 1.4rem; }
+    #previous-offerings li { margin: 0.15rem 0; }
+
+    #coursework h3 { margin-top: 0.9rem; margin-bottom: 0.35rem; }
+    #coursework h3:first-of-type { margin-top: 0.5rem; }
+    #coursework p, #coursework ul { margin: 0.5rem 0; }
+    #coursework li { margin: 0.25rem 0; }
+
+    /*
+      Table styles for schedule and other tabular information
+    */
+    .schedule-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    table td, table th {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    th, td {
+      border: 1px solid #003380;
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+    }
+    /* Schedule table: no vertical borders, compact first 3 columns, description column wide */
+    .schedule-wrap table th,
+    .schedule-wrap table td {
+      border-left: none;
+      border-right: none;
+    }
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child { width: 3%; }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) { width: 5%; }
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(3) { width: 10%; }
+    .schedule-wrap table th:nth-child(4),
+    .schedule-wrap table td:nth-child(4) { width: 55%; }
+    .schedule-wrap table th:nth-child(5),
+    .schedule-wrap table td:nth-child(5) { width: 15%; }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) { width: 24%; }
+    .schedule-wrap table td:nth-child(4) strong { font-weight: 700; }
+    th {
+      background-color: #f1f6ff; /* light tint for header cells */
+      color: #000000;
+    }
+    /* HW out row: light sky blue */
+    tbody tr.row-hw-out {
+      background-color: #e0f4ff;
+    }
+    /* Due week row: light gray */
+    tbody tr.row-due {
+      background-color: #e8e8e8;
+    }
+    /* Children's Day (어린이날) week: red */
+    tbody tr.row-childrens-day {
+      background-color: #ffcdd2;
+    }
+    /* Midterm and project presentation: light green (연두색) */
+    tbody tr.row-midterm,
+    tbody tr.row-project-presentation {
+      background-color: #c8e6c9;
+    }
+    /* Week column: do not encroach; only Week cells (col-week) stay white; header row fully colored */
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child {
+      min-width: 2.8em;
+      white-space: nowrap;
+    }
+    .schedule-wrap table tbody td.col-week {
+      background-color: #ffffff !important;
+    }
+
+    /*
+      Image placeholder styling
+      This div provides a dashed outline area for inserting a course-related image.
+      It is centered on the page with a subtle grey border and italicized text
+      instructing the viewer that an image will be placed here. Adjust the
+      dimensions as needed when replacing the placeholder with a real image.
+    */
+    /*
+      Hero image styling
+      The course teaser image spans the full width of the page and maintains
+      its aspect ratio. It sits above the navigation bar.
+    */
+    .hero-image {
+      width: 100%;
+      height: auto;
+      /* Do not allow the teaser image to exceed the height of the header area.
+         It uses a separate CSS variable so it can be taller than the header. */
+      max-height: var(--hero-height);
+      object-fit: cover;
+      display: block;
+      margin: 0;
+    }
+
+    /*
+      Instructor avatars and layout
+      The instructors section uses a flex container to lay out each instructor
+      side-by-side on larger screens and wrap them on smaller screens.
+      Avatars are circular placeholders with initials; you can replace the
+      initials with actual photos by setting the background-image property.
+    */
+    /*
+      Instructor and TA card styling
+      Align avatars and names to the left for a more traditional listing, similar to
+      Stanford’s EE367 website. Each card uses flexbox to place the circular avatar
+      beside the person’s name.
+    */
+    .instructor-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .instructor-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    /* Generic avatar styling for placeholders when a profile photo is not available. */
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: #c6d4f8; /* light blue background for placeholders */
+      color: #003380;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .instructor-card .info {
+      text-align: left;
+    }
+
+    /*
+      Separator between name and role. A light blue vertical line visually
+      distinguishes the person’s name from their role on a single line.
+    */
+    /* Separator between instructor and TA in the staff row.  The separator stretches to
+       match the height of the taller staff card so the vertical line spans beyond
+       the profile pictures. */
+    .staff-row .separator {
+  /* Let the separator stretch the full height of the staff row so the
+     vertical line extends above and below the profile pictures.  We
+     remove the fixed height and allow flexbox to stretch the element. */
+  align-self: stretch;
+  border-left: 2px solid #c6d4f8;
+  margin: 0 1rem;
+    }
+
+    /* Course staff layout: display the instructor and TA side by side */
+    .staff-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .staff-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 160px;
+    }
+    .staff-card .role-title {
+      /* Enlarge the role label to improve readability */
+      font-size: 1.3rem;
+      color: #000000;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+    .staff-card .name {
+      margin-top: 0.3rem;
+      /* Enlarge the staff member name for emphasis */
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    .staff-card-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+    .staff-card-link:hover {
+      text-decoration: underline;
+    }
+    .staff-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /*
+      Footer styling
+    */
+    footer {
+      background-color: #ffffff; /* white footer */
+      /* Use black text throughout the footer for consistency with the rest of the page. */
+      color: #000000;
+      border-top: 2px solid #003380;
+      text-align: right;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+  /* Responsive adjustments */
+  /*
+    Hide the SNU logo when the viewport width is narrow so it doesn’t intrude
+    into the page content.  On smaller screens the logo can overlap the
+    navigation or body text, so we remove it below this breakpoint.  The
+    breakpoint is set slightly above the content width (900px) to ensure
+    adequate breathing room.
+  */
+  @media (max-width: 1120px) {
+    header .logo,
+    header .lab-logo {
+      display: none;
+    }
+  }
+
+  /* Schedule table: smaller text, padding, and adjusted column ratios on mobile */
+  @media (max-width: 768px) {
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child { width: 4%; }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) { width: 7%; }
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(3) { width: 9%; }
+    .schedule-wrap table th:nth-child(4),
+    .schedule-wrap table td:nth-child(4) { width: 59%; }
+    .schedule-wrap table th:nth-child(5),
+    .schedule-wrap table td:nth-child(5) { width: 8%; }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) { width: 12%; }
+    .schedule-wrap table th,
+    .schedule-wrap table td {
+      font-size: 0.76rem;
+      padding: 0.24rem 0.3rem;
+      line-height: 1.3;
+    }
+    .schedule-wrap table th:nth-child(1),
+    .schedule-wrap table th:nth-child(3),
+    .schedule-wrap table td:nth-child(1),
+    .schedule-wrap table td:nth-child(3) {
+      font-size: 0.68rem;
+      padding: 0.22rem 0.26rem;
+    }
+    .schedule-wrap table th:nth-child(2),
+    .schedule-wrap table td:nth-child(2) {
+      font-size: 0.74rem;
+      padding: 0.22rem 0.26rem;
+    }
+    .schedule-wrap table th:first-child,
+    .schedule-wrap table td:first-child {
+      min-width: 2em;
+    }
+    .schedule-wrap table th:nth-child(6),
+    .schedule-wrap table td:nth-child(6) {
+      font-size: 0.52rem !important;
+      padding: 0.18rem 0.2rem;
+      line-height: 1.2;
+    }
+    .schedule-wrap table tbody td:nth-child(6) {
+      font-size: 0.52rem !important;
+      padding: 0.18rem 0.2rem;
+      line-height: 1.2;
+    }
+    .schedule-wrap table td:nth-child(6) a,
+    .schedule-wrap table tbody td:nth-child(6) a {
+      font-size: 0.52rem !important;
+    }
+    .schedule-wrap td.col-readings,
+    .schedule-wrap td.col-readings a {
+      font-size: 0.52rem !important;
+    }
+  }
+      @view-transition { navigation: auto; }
+    ::view-transition-group(*) { animation-duration: 520ms; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 320ms; }
+    ::view-transition-group(course-hero) { animation-duration: 600ms; animation-timing-function: cubic-bezier(.22,1,.36,1); }
+    ::view-transition-old(course-hero), ::view-transition-new(course-hero) { height: 100%; object-fit: cover; }
+    .hero-image { view-transition-name: course-hero; }
+</style>
+  <link rel="stylesheet" href="/assets/css/avenir.css">
+  <script defer src="../../../assets/js/analytics.js"></script>
+</head>
+<body>
+  <!-- Header with course title and subtitle -->
+  <header>
+    <a href="https://reality.snu.ac.kr/" target="_blank" rel="noopener" class="lab-logo" aria-label="Reality Lab">
+      <img src="../../../logo/blue-1x.png" alt="Reality Lab logo" class="logo-img">
+    </a>
+    <!-- Load the Seoul National University logo directly from the official repository and wrap it in a hyperlink to the university website. -->
+    <a href="https://en.snu.ac.kr/" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Seoul_national_university_emblem.svg/500px-Seoul_national_university_emblem.svg.png" alt="SNU logo" class="logo">
+    </a>
+    <h1>4190.762: Topics in Computer Graphics -<br><span class="subtitle">Computational Imaging</span></h1>
+    <p>Spring 2026</p>
+  </header>
+
+  <!-- Course teaser image loaded from the provided URL. The height will not exceed the header height. -->
+  <img class="hero-image" src="https://engineering.stanford.edu/sites/default/files/styles/card_1900x950/public/media/image/resize_tfoe_wetzstein_0.jpg.webp?h=e4ba68eb&itok=EkGNOhMk" alt="Course teaser image">
+
+  <!-- Navigation bar with section anchors. A wrapper (.nav-inner) constrains the
+       navigation items to the same width as the main content while allowing
+       the bar itself to span the full viewport. -->
+  <nav>
+    <div class="nav-inner">
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#logistics">Logistics</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#coursework">Coursework</a></li>
+        <li><a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- The hero image above the navigation bar serves as the teaser graphic for the course. -->
+
+  <!-- Overview section -->
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>
+      This course examines the core methodologies and applications of <strong>computational imaging</strong> with an
+      emphasis on solving inverse problems such as image restoration, filtering, single‑pixel imaging, neural
+      rendering and light‑field imaging.  Representative case studies—including denoising and deconvolution—span
+      a broad spectrum of approaches from classical image processing algorithms to modern data‑driven methods
+      based on generative models.  Students will learn how to combine optimization theory with deep learning
+      through proximal‑gradient techniques such as half‑quadratic splitting (HQS) and the alternating direction
+      method of multipliers (ADMM).
+    </p>
+    <p>
+      Course assignments include Python‑based programming and image processing implementations.  These hands‑on
+      exercises develop practical skills for applying theoretical concepts to real‑world computational imaging
+      problems.  A term project provides an opportunity to explore a topic of interest in greater depth.
+    </p>
+    <p>Topics include:</p>
+    <ul>
+      <li>Human visual perception</li>
+      <li>Digital cameras and image signal processors (ISPs)</li>
+      <li>Denoising, deconvolution and other inverse imaging problems</li>
+      <li>Convolutional neural networks and diffusion models for inverse problems</li>
+      <li>Proximal gradient methods and formal optimization techniques (HQS, ADMM)</li>
+      <li>High dynamic range and computational photography</li>
+      <li>Light field and plenoptic imaging</li>
+      <li>Time‑of‑flight and non‑line‑of‑sight imaging</li>
+      <li>End‑to‑end optimization of optics and image processing</li>
+      <li>Other emerging topics in computational imaging</li>
+    </ul>
+  </section>
+
+  <!-- Course staff section: show the instructor and TA side by side with a light blue vertical line between them. -->
+  <section id="instructors">
+    <div class="staff-row">
+      <!-- Instructor card -->
+      <div class="staff-card">
+        <div class="role-title">Instructors</div>
+        <a href="https://choisuyeon.github.io/" target="_blank" rel="noopener" class="staff-card-link">
+        <img src="https://choisuyeon.github.io/assets/images/profile2.jpg" alt="Instructor photo" class="staff-photo" onerror="this.onerror=null; this.style.backgroundColor='#c6d4f8'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='1.5rem'; this.style.color='#ffffff'; this.style.borderRadius='50%'; this.src='';">
+        <!-- Display the instructor’s name below the photo. The name is provided as text without identifying the
+             person in the image; it simply labels the role for clarity. -->
+        <div class="name">Suyeon Choi</div>
+        </a>
+      </div>
+      <span class="separator"></span>
+      <!-- Teaching Assistant card -->
+      <div class="staff-card" style="flex-direction: column; align-items: flex-start;">
+        <div class="role-title" style="align-self: flex-start;">Teaching&nbsp;Assistants</div>
+        <!-- <div class="avatar"></div> -->
+        <img src="../uihwan.jpg" alt="Instructor photo" class="staff-photo" style="align-self: flex-start;" onerror="this.onerror=null; this.style.backgroundColor='#c6d4f8'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='1.5rem'; this.style.color='#ffffff'; this.style.borderRadius='50%'; this.src='';">
+        <!-- Display the TA’s name below the placeholder avatar. The name labels the role and does not identify the person in the image. -->
+        <div class="name" style="align-self: flex-start;">Uihwan Jeong</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Logistics section -->
+  <section id="logistics">
+    <h2>Logistics</h2>
+    <p><strong>Lectures</strong>: Tuesdays and Thursdays, 3:30–4:45 pm in Rm 209, Bldg 302.</p>
+    <p>
+      <strong>Instructor office hours</strong>: Tuesdays 4:45-5:30 pm in Rm 321, Bldg 302 starting on March 3; discussion about projects, lecture material, etc.
+    </p>
+    <p>
+      <strong>TA office hours</strong>: Thursdays 5:00-6:00 pm in Rm 416, Bldg 301; starting on March 12; questions about homework, labs and lectures.
+    </p>
+    <p>
+      <strong>Textbook</strong>: There is no textbook for the course; links to readings and course notes are provided in the <a href="#schedule">Schedule</a>.
+    </p>
+    <p>
+      <strong>Contact</strong>: Course announcements and general information will be posted on the course forum on <a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a>.
+      Please make a private eTL post if you need to contact the instructors directly.
+    </p>
+  </section>
+
+  <!-- Schedule section -->
+  <section id="schedule">
+    <h2>Schedule</h2>
+    <p>The table below outlines the weekly topics and key milestones.</p>
+    <div class="schedule-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Wk</th>
+          <th>Date</th>
+          <th>Event</th>
+          <th>Description</th>
+          <th>Files</th>
+          <th class="col-readings">Readings</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Schedule based on the course syllabus.  Dates are in month/day format. -->
+        <tr>
+          <td rowspan="2" class="col-week">1</td>
+          <td>3/3</td>
+          <td>Lecture&nbsp;1</td>
+          <td><strong>Introduction and fast forward</strong><br>Overview of class, logistics, discussion of project ideas</td>
+          <td>[<a href="https://drive.google.com/file/d/1BK2yICVqJWmgVac-5-uo6DGXZa6f6j1O/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>3/5</td>
+          <td>Lecture&nbsp;2</td>
+          <td><strong>The human visual system</strong><br>perception of color, depth, contrast, resolution, and more</td>
+          <td>[<a href="https://drive.google.com/file/d/1Vl5AkKggEpFi1clTZfTBEbYlgzjs-4NH/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td class="col-readings"><a href="https://drive.google.com/file/d/11ZXvEW_RNvCgngLbtuCURZ9P7MSyYViM/view?usp=sharing" target="_blank" rel="noopener">Hybrid Images Paper</a></td>
+        </tr>
+        <tr>
+          <td rowspan="3" class="col-week">2</td>
+          <td>3/10</td>
+          <td>Lecture&nbsp;3</td>
+          <td><strong>Math review</strong><br>sampling, optimization, deconvolution, and related topics</td>
+          <td>[<a href="https://drive.google.com/file/d/1XcC4Elh8jt6yr5g-Fl5GVLLvqvWv7CXs/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://www.youtube.com/watch?v=KuXjwB4LzSA" target="_blank" rel="noopener">Videos on convolution</a> & <br>
+            <a href="https://www.youtube.com/watch?v=spUNpyF58BY" target="_blank" rel="noopener">Fourier Transform</a> <br>
+            <a href="https://see.stanford.edu/materials/lsoftaee261/book-fall-07.pdf" target="_blank" rel="noopener">Fourier Transform book</a></td>
+        </tr>
+        <tr>
+          <td>3/12</td>
+          <td>Lecture&nbsp;4</td>
+          <td><strong>Digital photography I</strong><br>natural and linear perspective, pinholes and lenses, <br>
+            ray optics, aperture, depth of field, exposure, sensor noise</td>
+          <td>[<a href="https://drive.google.com/file/d/1uMrg5RJ_lL95jTcJZozhozIhjfAQ3VZX/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://graphics.stanford.edu/courses/cs178/" target="_blank" rel="noopener">Marc Levoy's course on digital photography</a> <br>
+          <a href="https://www.degruyterbrill.com/document/doi/10.1515/aot-2021-0023/html?srsltid=AfmBOopCdcDHXk8CZj1PzI8JW6jT4t9-LLG72_VNbQpgzS1wYX4F6Asa" target="_blank" rel="noopener">Smartphone Imaging Survey</a></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>3/13</td>
+          <td>HW&nbsp;1&nbsp;out</td>
+          <td></td>
+          <td>[link] <br> 
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">3</td>
+          <td>3/17</td>
+          <td>Lecture&nbsp;5</td>
+          <td><strong>Digital photography II</strong><br>
+            camera ISPs, demosaicking, denoising, deconvolution</td>
+            <td>[<a href="https://drive.google.com/file/d/1cICK0_fMCcyY_PmzV6LHMHrM46DNyFF2/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://drive.google.com/file/d/1bzV34jU_jvlAuPvrPR9o4cB9jBjHMqWW/view?usp=sharing" target="_blank" rel="noopener">Demosaicking Paper</a><br>
+          <a href="https://drive.google.com/file/d/1BvQ4b3uduzELKIQ9rSLpJolioNzI-6UZ/view?usp=sharing" target="_blank" rel="noopener">Non-local Means Paper</a><br>
+          <a href="https://drive.google.com/file/d/1VSbizabjYLHdfez_U1hyYRzFH_SEPf1D/view?usp=sharing" target="_blank" rel="noopener">Intro to Bilateral Filtering</a></td>
+        </tr>
+        <tr>
+          <td>3/19</td>
+          <td>Lecture&nbsp;6</td>
+          <td><strong>Great ideas in computational photography</strong><br>HDR, tone mapping, coded apertures, flutter shutter</td>
+          <td>[<a href="https://drive.google.com/file/d/14rLvtcPOZCTYoEUmXqDuP7yJLlkK7tda/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://drive.google.com/file/d/1rOfBhlj0XER1QC85BzCBOT5sl3eY36BB/view?usp=sharing" target="_blank" rel="noopener">HDR Imaging Paper</a><br>
+          <a href="https://drive.google.com/file/d/1B33aLsHH7eArcdN8TZaTGFCAm2VCQWej/view?usp=sharing" target="_blank" rel="noopener">Tone Mapping Paper</a><br>
+          <a href="https://drive.google.com/file/d/1TjdS_Y3UFT2xmLnnXFauDqI-QwXSEU5B/view?usp=sharing" target="_blank" rel="noopener">Ext. Depth of Field Paper</a><br>
+          <a href="https://drive.google.com/file/d/1DWwUc50Zk9Xel3kS_cwkjdVCh7Oc1mLI/view?usp=sharing" target="_blank" rel="noopener">Flutter Shutter Paper</a><br>
+          <a href="https://www.computationalimaging.org/publications/deep-optics-depth/" target="_blank" rel="noopener">Learned Coded Apertures</a><br>
+          <a href="https://www.computationalimaging.org/publications/neural-sensors/" target="_blank" rel="noopener">Neural Sensors</a></td>
+        </tr>
+        <tr>
+          <td rowspan="4">4</td>
+          <td>3/24</td>
+          <td>Lecture&nbsp;7</td>
+          <td><strong>Introduction to neural networks</strong><br>MLPs, CNNs, ResNets, denoising with CNNs</td>
+          <td>[<a href="https://drive.google.com/file/d/1jYHsQNobrMUhjm0xU2i8zkJMgwMASpuf/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://cs231n.github.io//linear-classify/" target="_blank" rel="noopener">Linear classifiers</a><br>
+            <a href="http://cs231n.stanford.edu/handouts/linear-backprop.pdf" target="_blank" rel="noopener">Backpropagation notes</a><br>
+            <a href="https://cs231n.github.io/optimization-2/" target="_blank" rel="noopener">Optimization notes</a>
+          </td>
+        </tr>
+        <tr>
+          <td>3/26</td>
+          <td>Lecture&nbsp;8</td>
+          <td><strong>Solving inverse problems with neural networks</strong><br>UNet, deconvolution with CNNs, and more</td>
+          <td>[<a href="https://drive.google.com/file/d/1Tuq6a3ygCCd70K6DdyDlliL20OvS7rv7/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://openaccess.thecvf.com/content_cvpr_2018/papers/Ulyanov_Deep_Image_Prior_CVPR_2018_paper.pdf" target="_blank" rel="noopener">Deep Image Prior</a></td>
+        </tr>
+        <tr class="row-due">
+          <td>3/27</td>
+          <td>HW&nbsp;1&nbsp;due</td>
+          <td>Homework&nbsp;1 due at 11:59&nbsp;pm</td>
+          <td>[HW 1 solutions]</td>
+          <td></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>3/27</td>
+          <td>HW&nbsp;2&nbsp;out</td>
+          <td></td>
+          <td>[link]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2">5</td>
+          <td>3/31</td>
+          <td>Lecture&nbsp;9</td>
+          <td><strong>Image deconvolution with HQS</strong><br>natural image priors and half‑quadratic splitting</td>
+          <td>[<a href="https://drive.google.com/file/d/1qMhXPk-IZoGNLkbUlQ-OR9LVwtTz4o7O/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://drive.google.com/file/d/10fHnerw1X6BJIzIZOCuNAjRmJsoZevgd/view?usp=sharing" target="_blank" rel="noopener">Notes on deconvolution</a><br>
+            <a href="https://drive.google.com/file/d/1HtxXyIgOZU8i2_0DkoZSf4rmYAxS_gx-/view?usp=sharing" target="_blank" rel="noopener">Notes on noise</a></td>
+        </tr>
+        <tr>
+          <td>4/2</td>
+          <td>Lecture&nbsp;10</td>
+          <td><strong>Solving regularized inverse problems with ADMM</strong><br>single‑pixel imaging and general inverse problems</td>
+          <td>[<a href="https://drive.google.com/file/d/1zz06Zm3mpZfnxSIRV-o9N9KAw4NKYhWx/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://drive.google.com/file/d/1wbh0B2ifXwI7ZJP0hftam8iTkuPifwIu/view?usp=sharing" target="_blank" rel="noopener">Notes on ADMM</a></td>
+        </tr>
+        <tr>
+          <td rowspan="4" class="col-week">6</td>
+          <td>4/7</td>
+          <td>Lecture&nbsp;11</td>
+          <td>Survey on final project topics</td>
+          <td>[<a href="https://drive.google.com/file/d/1GIIGAWhXzj2Zl-M0wti0RIuhaIrlgUmm/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4/9</td>
+          <td>Lecture&nbsp;12</td>
+          <td><strong>Introduction to diffusion models</strong><br>score‑based generative modeling and image generation</td>
+          <td>[<a href="https://drive.google.com/file/d/1mn5jP8REBndlYhFgrnRQ7pAGVutSKGu-/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td><a href="https://drive.google.com/file/d/16IGpbWwPSTv0DiXdWWR4JBpelvfuyFyO/view?usp=sharing" target="_blank" rel="noopener">Score-based Generative Modeling paper</a><br>
+            <a href="https://drive.google.com/file/d/1_VD1PXZz49FQ5hAJ-R4zCoRzigb40zuh/view?usp=sharing" target="_blank" rel="noopener">EDM paper</a></td>
+        </tr>
+        <tr class="row-due">
+          <td>4/10</td>
+          <td>HW&nbsp;2&nbsp;due</td>
+          <td>Homework&nbsp;2 due at 11:59&nbsp;pm</td>          
+          <td>[HW 2 solutions]</td>
+          <td></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>4/10</td>
+          <td>HW&nbsp;3&nbsp;out</td>
+          <td></td>
+          <td>[link]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="3" class="col-week">7</td>
+          <td>4/14</td>
+          <td>Lecture&nbsp;13</td>
+          <td><strong>Solving inverse problems with diffusion model‑based priors</strong></td>
+          <td>[<a href="https://drive.google.com/file/d/1FPcV6B6ej05bt1G6UEdLMq4VFLAOzTPH/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4/16</td>
+          <td>Lecture&nbsp;14</td>
+          <td><strong>Focal stacks and depth from (de)focus</strong><br>autofocus, depth from focus/defocus, ...</td>
+          <td>[<a href="https://drive.google.com/file/d/1QjiGCTUA5_uEVSjzBm9YPCXc_E1KGEcb/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr class="row-due">
+          <td>4/17</td>
+          <td>Project proposal &amp;</td>
+          <td>Project proposal due at 11:59&nbsp;pm</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="4" class="col-week">8</td>
+          <td>4/21</td>
+          <td>Lecture&nbsp;15</td>
+          <td><strong>Light field imaging</strong><br>plenoptic function, light field cameras, image from light fields, ...</td>
+          <td>[<a href="https://drive.google.com/file/d/1rBlzRM0eAEWPO4KkxwzYIRinMb9oh_h9/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4/23</td>
+          <td>Lecture&nbsp;16</td>
+          <td><strong>Light transport I</strong><br>scene reflectance and photometry, shape from intensity, applications in graphics</td>
+          <td>[<a href="https://drive.google.com/file/d/1Vv6dBrzSUVu9lW6x4r5ugcXzHON8TkwN/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr class="row-due">
+          <td>4/24</td>
+          <td>HW&nbsp;3 due</td>
+          <td>Homework&nbsp;3 due at 11:59&nbsp;pm</td>
+          <td>[HW 3 solutions]</td>
+          <td></td>
+        </tr>
+        <tr class="row-hw-out">
+          <td>4/24</td>
+          <td>HW&nbsp;4&nbsp;out</td>
+          <td></td>
+          <td>[link]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">9</td>
+          <td>4/28</td>
+          <td>Lecture&nbsp;17</td>
+          <td><strong>Light transport II</strong><br>forward and inverse light transport, light transport matrix</td>
+          <td>[<a href="https://drive.google.com/file/d/1u0hxBdDxrzf2c20_NhZsWSyjo-51viGr/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4/30</td>
+          <td>Lecture&nbsp;18</td>
+          <td><strong>Time‑of‑flight imaging</strong><br>lidar, non‑line‑of‑sight imaging, ultrafast imaging</td>
+          <td>[<a href="https://drive.google.com/file/d/11QcML29gPxwPBeX-z-YW4Dw2mRgrTV1e/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+         <td></td>
+          <td></td>
+        </tr>
+        <tr class="row-childrens-day">
+          <td rowspan="3" class="col-week">10</td>
+          <td>5/5</td>
+          <td>No class</td>
+          <td>Children’s Day (어린이날)</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="row-midterm">
+          <td>5/7</td>
+          <td>Midterm</td>
+          <td>In‑class exam</td><td></td>
+          <td></td>
+        </tr>
+        <tr class="row-due">
+          <td>5/10</td>
+          <td>HW&nbsp;4&nbsp;due</td>
+          <td>Homework&nbsp;4 due at 11:59&nbsp;pm</td>
+          <td>[HW 4 solutions]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">11</td>
+          <td>5/12</td>
+          <td>Lecture&nbsp;19</td>
+          <td><strong>Introduction to wave optics and nano optics</strong><br>free‑space propagation, diffractive optical elements, metasurfaces, diffraction limit, lensless imaging</td>
+          <td>[<a href="https://drive.google.com/file/d/1D6S3Dlyr83JxAB2Y65qNO6wF5W_1aJ4T/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>5/14</td>
+          <td>Lecture&nbsp;20</td>
+          <td><strong>Differentiable physics </strong><br>Differentiable optics, simulators, differentiable rendering, surrogate gradients</td>
+          <td>[<a href="https://drive.google.com/file/d/1cmQYdsZ4EZXnEFdS-SE1JDk03D7ac_Dr/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">12</td>
+          <td>5/19</td>
+          <td>Lecture&nbsp;21</td>
+          <td><strong>Neural representations</strong><br>data structures, scene representations, Neural Radiance Fields, 3D Gaussian splatting</td>
+          <td>[<a href="https://drive.google.com/file/d/1hAFRXM-Vs7xIja4q76r8wR6PueVJmk_F/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>5/21</td>
+          <td>Lecture&nbsp;22</td>
+          <td><strong>Deep optics</strong><br>end‑to‑end optimization of optics and image processing using AI</td>
+          <td></td>
+          <td>[<a href="https://open-turing.github.io/" target="_blank" rel="noopener">Open Turing Lecture on 3D Computer Graphics</a>]</td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">13</td>
+          <td>5/26</td>
+          <td>Lecture&nbsp;23</td>
+          <td><strong>Phase retrieval and holography</strong><br>phase retrieval, computer‑generated holography</td>
+          <td>[<a href="https://drive.google.com/file/d/1mBSgwLiV2x4kgMtQB0BE0JwYwP74Ze6n/view?usp=sharing" target="_blank" rel="noopener">slides</a>]</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>5/28</td>
+          <td>Lecture&nbsp;24</td>
+          <td><strong>Wrap up and discussion</strong></td><td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td rowspan="2" class="col-week">14</td>
+          <td>6/2</td>
+          <td>Final project</td>
+          <td>Work on final project</td>
+          <td>Default project <br> on eTL</td>
+          <td><a href="https://docs.google.com/presentation/d/1-P8KexAYgg0bn2bJ9zXGs3L95ySuJvnL/edit?usp=sharing&ouid=114941632523007999466&rtpof=true&sd=true" target="_blank" rel="noopener">Poster template</a><br>
+            <a href="https://drive.google.com/file/d/1mstWyTsH6U6NCFhYCrmCvI3HbIlw3pnx/view?usp=sharing" target="_blank" rel="noopener">ICCP 2026 LaTeX template</a></td>
+        </tr>
+        <tr>
+          <td>6/4</td>
+          <td>Final project</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="row-due">
+          <td rowspan="3" class="col-week">15</td>
+          <td>6/8</td>
+          <td>Final project due</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="row-project-presentation">
+          <td>6/9</td>
+          <td></td>
+          <td>Final project presentations, at 301 1st floor</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <!-- <tr class="row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td> -->
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <!-- Coursework -->
+  <section id="coursework">
+    <h2>Coursework</h2>
+
+    <h3>Helpful Background</h3>
+    <ul>
+      <li><strong>Coding Experience (especially Python):</strong> All assignments will be in Python. Even though we don't assume prior experience in Python, you should familiarize yourself, for example by working through some online Python tutorials.</li>
+      <li><strong>Calculus, Linear Algebra:</strong> Basic understanding of matrix algebra (e.g., least squares, orthogonality, SVD) will be helpful (e.g., <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=F31.201">공학수학1/2</a>, <a href=https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=881.007&lang=ko>선형대수학</a>).</li>
+      <li><strong>Statistical Signal Processing:</strong> Familiarity with probability theory and Bayes' theorem (e.g., <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=430.314">확률과정의 기초</a>, <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=M2608.002700">확률그래프모델</a>).</li>
+      <li><strong>Discrete Signal Processing:</strong> Basic understanding of discrete Fourier transform, convolution theorem (e.g., <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=430.306">신호 및 시스템</a>, <a href="https://likesnu.snu.ac.kr/usr/course/courseDetail.do?course_cd=M2608.002800">디지털 신호처리</a>).</li>
+    </ul>
+
+    <h3>eTL</h3>
+    <p>All assignments and the final project proposal and report should be submitted on <a href="https://etl.snu.ac.kr/" target="_blank" rel="noopener">eTL</a>. If you work as a team, make sure to indicate your team member in the submission.</p>
+
+    <h3>Assignments (50%)</h3>
+    <p>There will be 4 homework assignments (see <a href="#schedule">Schedule</a>) in this class. These assignments will contain some theoretical questions and also implementations of techniques that we will discuss in class. Please refer to assignment writeups (available in the Files tab in Schedule) for details. After you finish, submit your code and report on eTL.</p>
+    <p><strong>Collaboration Policy:</strong> Students are permitted to work together on homework assignments in small groups. However, while students can discuss the assignments together, they must compose their solutions individually. Students must not view or copy code of other students or solutions available on the internet. Names of collaborators must be listed on submitted assignments. Submitting plagiarized solutions is an academic offense and can have severe penalties.</p>
+    <p><strong>AI Assistants Policy:</strong> Generative AI may be used as a supplementary learning tool in this course. Students may use generative AI to explore ideas or topics needed to complete assignments and to analyze data. However, if generative AI is used to complete an assignment, the name of the tool used, the process of its use, and the generated content must be clearly stated in the assignment.</p>
+   
+    <h3>Midterm (20%)</h3>
+    <p>There will be an in-class midterm (80 mins long) on <strong>May 7</strong>.</p>
+ 
+    <h3>Final Project (30%)</h3>
+    <p>The final project grade takes into account your poster presentation (organization of poster, clarity of presentation, ability to answer questions), your source code submission (code organization and documentation), and your final project report (appropriate format and length, abstract, introduction, related work, description of your method, quantitative and qualitative evaluation of your method, results, discussion &amp; conclusion, bibliography).</p>
+    <p>You can work in teams of up to 2 students for the project. Submit only one proposal and final report for each team. The expected amount of work is relative to the number of team members, so if two teams work on a similar project, we'd expect less work from a smaller team. Before you start to work on the proposal or the report, take a look at some of the past project proposals and reports to get a sense for what's expected (see link at the bottom of this page).</p>
+    <p>The project proposal is a 1–2 page document that should contain the following elements: clear motivation of your idea, a discussion of related work along at least 3 scientific references (i.e., scientific papers not blog articles or websites), an overview of what exactly your project is about and what the final goals are, milestones for your team with a timeline and intermediate goals. Once you send us your proposal, we may ask you to revise it.</p>
+    <p>The final project report should look like a short (~6 pages) conference paper. We expect the following sections, which are standard practice for conference papers: abstract, introduction, related work, theory (i.e., your approach), analysis and evaluation, results, discussion and conclusion, references. To make your life easier, we provide a LaTeX template that you can use to get started on your report (see schedule for link).</p>
+  
+  </section>
+
+  <!-- Previous Course Offerings -->
+  <section id="previous-offerings">
+    <h2>Previous Course Offerings</h2>
+    <p>
+      This course is adapted from the Computational Imaging course designed by Gordon Wetzstein and offered at
+      <a href="https://stanford.edu/class/ee367/" target="_blank" rel="noopener">Stanford University (EE367)</a> and
+      <a href="https://www.cs.toronto.edu/~lindell/teaching/2529/index.html" target="_blank" rel="noopener">University of Toronto (CSC2529, by David Lindell)</a>.
+      Below you can find links to pinhole camera photos and course projects from these previous iterations of the course.
+    </p>
+    <h3>Pinhole Camera Gallery</h3>
+    <p>Links to notable pinhole camera photos:</p>
+    <ul>
+      <li><a href="https://stanford.edu/class/ee367/PinholeGallery/2025.html" target="_blank" rel="noopener">Winter 2025 (Stanford)</a></li>
+      <li><a href="../pinhole_gallery/2026.html" target="_blank" rel="noopener">Spring 2026 (SNU)</a></li>
+    
+    </ul>
+    <h3>Previous Course Projects</h3>
+    <ul>
+      <li><a href="https://stanford.edu/class/ee367/Winter2025/projects2025.html" target="_blank" rel="noopener">Winter 2025 (Stanford)</a></li>
+    </ul>
+  </section>
+
+  <section id="Acknowledgements">
+    <h2>Acknowledgements
+    </h2>
+    <p>
+      The course is adapted from <a href="https://stanford.edu/class/ee367/" target="_blank" rel="noopener">EE367 at Stanford University</a> by Gordon Wetzstein. Some of the materials used in class build on that from other instructors, including Yannis Gkioulekas, Marc Levoy, Fredo Durand, Ramesh Raskar, Shree Nayar, Paul Debevec, Matthew O'Toole, David Lindell and others, as noted in the slides. Feel free to use these slides for academic or research purposes, but please maintain all acknowledgments. This webpage is based on the website for <a href="https://cs231n.stanford.edu/index.html" target="_blank" rel="noopener">CS231N</a> and <a href="https://stanford.edu/class/ee367/" target="_blank" rel="noopener">EE367</a> at Stanford University.
+    </p>
+    <p> The course banner is taken from <a href="https://www.shutterstock.com/ko/g/denniro">here</a> (Shutterstock/denniro).</p>
+  </section>
+  <!-- Footer -->
+  <footer>
+    4190.762: Topics in Computer Graphics - Computational Imaging · Spring&nbsp;2026 · Seoul National University
+  </footer>
+
+  <!-- Lab logo: rotate on load, hover = keep spinning, mouseleave = settle at discrete angle -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const labLogo = document.querySelector('header .lab-logo');
+      if (!labLogo) return;
+      const discreteAngles = [0, 60, 120, 180, 240, 300];
+      let currentAngle = 0;
+      let hoverRaf = null;
+      let isSettling = false;
+      const degPerSec = 220;
+      function applyAngle(deg) {
+        labLogo.style.transform = 'rotate(' + deg + 'deg)';
+      }
+      function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+      function randomDiscrete() {
+        return discreteAngles[Math.floor(Math.random() * discreteAngles.length)];
+      }
+      function nearestDiscrete(angle) {
+        let n = ((angle % 360) + 360) % 360;
+        const idx = Math.round(n / 60) % 6;
+        return discreteAngles[idx];
+      }
+      function shortestPath(from, toD) {
+        let n = from % 360;
+        if (n < 0) n += 360;
+        let diff = toD - n;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        return from + diff;
+      }
+      function runInitialAnimation() {
+        const duration = 2000;
+        const cycles = 2;
+        const endDeg = randomDiscrete();
+        const totalDeg = cycles * 360 + endDeg;
+        const startTime = performance.now();
+        function tick(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const eased = easeOutCubic(t);
+          currentAngle = totalDeg * eased;
+          applyAngle(currentAngle);
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+      function startHoverSpin() {
+        if (isSettling) return;
+        let lastTime = performance.now();
+        function spin(now) {
+          const dt = (now - lastTime) / 1000;
+          lastTime = now;
+          currentAngle += degPerSec * dt;
+          applyAngle(currentAngle);
+          hoverRaf = requestAnimationFrame(spin);
+        }
+        hoverRaf = requestAnimationFrame(spin);
+      }
+      function stopHoverSpinAndSettle() {
+        if (hoverRaf != null) {
+          cancelAnimationFrame(hoverRaf);
+          hoverRaf = null;
+        }
+        isSettling = true;
+        const startAngle = currentAngle;
+        const targetD = nearestDiscrete(startAngle);
+        const targetAngle = shortestPath(startAngle, targetD);
+        const duration = 400;
+        const startTime = performance.now();
+        function tick(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const eased = easeOutCubic(t);
+          currentAngle = startAngle + (targetAngle - startAngle) * eased;
+          applyAngle(currentAngle);
+          if (t < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            currentAngle = targetAngle;
+            isSettling = false;
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+      labLogo.addEventListener('mouseenter', startHoverSpin);
+      labLogo.addEventListener('mouseleave', stopHoverSpinAndSettle);
+      runInitialAnimation();
+    });
+  </script>
+  <!-- Script to animate navigation bar positioning, font sizes, and scroll offsets -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nav = document.querySelector('nav');
+      const navInner = document.querySelector('nav .nav-inner');
+      const navUl = navInner && navInner.querySelector('ul');
+      const navLinks = Array.from(document.querySelectorAll('nav a'));
+      if (!nav || !navInner || !navUl || !navLinks.length) return;
+
+      const sections = navLinks.map(link => {
+        const href = link.getAttribute('href') || '';
+        const id = href.replace(/^#/, '').trim();
+        return id ? document.getElementById(id) : null;
+      });
+
+      let navPositions = [];
+      let sectionOffsets = [];
+      let navInnerPadLeft = 0;
+
+      function getUlTranslateX() {
+        const style = getComputedStyle(navUl);
+        const m = style.transform.match(/matrix\(([^)]+)\)/);
+        if (!m) return 0;
+        const parts = m[1].split(/,\s*/);
+        return parts.length >= 6 ? parseFloat(parts[4]) : 0;
+      }
+
+      function computePositions() {
+        const innerStyles = getComputedStyle(navInner);
+        navInnerPadLeft = parseFloat(innerStyles.paddingLeft) || 0;
+        navPositions = navLinks.map(link => link.parentElement.offsetLeft);
+        sectionOffsets = sections.map(section => {
+          if (!section) return Infinity;
+          const h2 = section.querySelector('h2');
+          if (!h2) return Infinity;
+          const rect = h2.getBoundingClientRect();
+          return rect.top + window.pageYOffset;
+        });
+      }
+
+      // Scroll so the section h2 is exactly at viewport top (under the nav), so nav text and h2 text overlap
+      function scrollToSection(target) {
+        const h2 = target && target.querySelector('h2');
+        if (!h2) return;
+        const h2Top = h2.getBoundingClientRect().top + window.pageYOffset;
+        const y = Math.max(0, h2Top - 18);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+
+      // Interpolate nav position and font sizes based on scroll position
+      function updateNavOnScroll() {
+        const navHeight = nav.getBoundingClientRect().height;
+        // Compute the scroll position relative to the top of the document plus nav height.
+        // Determine the current scroll position relative to the document, offset by the
+        // height of the sticky navigation bar.  This represents the y‑coordinate
+        // at which the top of the content is visible just below the nav bar.
+        const scrollY = window.pageYOffset;
+        let currentIndex = 0;
+        for (let i = 0; i < sectionOffsets.length; i++) {
+          if (scrollY >= sectionOffsets[i]) {
+            currentIndex = i;
+          } else {
+            break;
+          }
+        }
+        const nextIndex = Math.min(currentIndex + 1, sections.length - 1);
+        // Compute interpolation factor t between the current section and the next
+        // section.  t ranges from 0 (top of current section) to 1 (top of next
+        // section) and is used to smoothly interpolate navigation position and
+        // font sizes.  When currentIndex === nextIndex (i.e., at the last
+        // section), t remains 0.
+        let t = 0;
+        const startOffset = sectionOffsets[currentIndex];
+        const endOffset = sectionOffsets[nextIndex];
+        const denom = endOffset - startOffset;
+        if (denom > 0 && currentIndex !== nextIndex) {
+          t = (scrollY - startOffset) / denom;
+          // Clamp t between 0 and 1.
+          t = Math.max(0, Math.min(1, t));
+        }
+        // Compute the desired translation so the active link aligns with the inner
+        // container’s left edge.  We translate the list in the negative
+        // direction so that the current navigation link sits flush against
+        // the left margin of the nav container.  We clamp the translation
+        // between the limits of the container so that the list never scrolls
+        // beyond its bounds.  If the list is narrower than its container,
+        // we still allow translation within the available space.
+        // Determine the horizontal position of the current and next
+        // navigation items relative to the left padding of the nav-inner
+        // container.  We compute these values dynamically using
+        // getBoundingClientRect() so they account for any changes in
+        // font size or layout (e.g., when the active item grows).
+        // Target X = nav-inner content left (same as section h2). getBoundingClientRect() returns
+        // positions after the ul's transform, so subtract current translateX to get base (layout) positions.
+        const innerRect = navInner.getBoundingClientRect();
+        const targetX = innerRect.left + navInnerPadLeft;
+        const currentTranslateX = getUlTranslateX();
+        const currentLink = navLinks[currentIndex];
+        const nextLink = navLinks[nextIndex];
+        const currentLinkRect = currentLink ? currentLink.getBoundingClientRect() : { left: targetX };
+        const nextLinkRect = nextLink ? nextLink.getBoundingClientRect() : { left: targetX };
+        const currentBaseLeft = currentLinkRect.left - currentTranslateX;
+        const nextBaseLeft = nextLinkRect.left - currentTranslateX;
+        const interpBaseLeft = currentBaseLeft + (nextBaseLeft - currentBaseLeft) * t;
+        const translation = targetX - interpBaseLeft;
+        navUl.style.transform = `translateX(${translation}px)`;
+        // Update font sizes and weights for each nav link based on interpolation between sections.
+        navLinks.forEach((link, index) => {
+          if (index === currentIndex || index === nextIndex) {
+            let size, weight;
+            const baseSize = 1.1;
+            const maxSize = 1.7;
+            if (index === currentIndex && currentIndex !== nextIndex) {
+              size = maxSize - (maxSize - baseSize) * t;
+              weight = 700 - 200 * t;
+            } else if (index === nextIndex && currentIndex !== nextIndex) {
+              size = baseSize + (maxSize - baseSize) * t;
+              weight = 500 + 200 * t;
+            } else {
+              // When currentIndex === nextIndex
+              size = maxSize;
+              weight = 700;
+            }
+            link.style.fontSize = `${size}rem`;
+            link.style.fontWeight = weight;
+          } else {
+            link.style.fontSize = '1.1rem';
+            link.style.fontWeight = 500;
+          }
+        });
+      }
+
+      // Attach click handlers to nav links (only intercept in-page anchors)
+      navLinks.forEach((link, idx) => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href') || '';
+          if (href.startsWith('#')) {
+            e.preventDefault();
+            const target = sections[idx];
+            if (target) {
+              scrollToSection(target);
+            }
+          }
+          // External links (e.g. eTL): let default navigation happen
+        });
+      });
+
+      // Recompute positions on load and on resize
+      computePositions();
+      // Recompute positions once all assets (like images) have loaded to ensure
+      // section offsets reflect the final layout.
+      window.addEventListener('load', computePositions);
+      window.addEventListener('resize', computePositions);
+      // Instead of relying on scroll events, continuously update the navigation
+      // bar on each animation frame.  This ensures smooth interpolation of
+      // navigation positions and font sizes regardless of whether scroll
+      // events fire (which can be unreliable on local file URLs).  The
+      // updateNavOnScroll function will be invoked at roughly 60fps.
+      function navLoop() {
+        updateNavOnScroll();
+        requestAnimationFrame(navLoop);
+      }
+      requestAnimationFrame(navLoop);
+      // Trigger an initial update
+      updateNavOnScroll();
+    });
+  </script>
+<script>
+  // Let the course list shrink the header back into its card.
+  window.addEventListener('pagehide', function () {
+    try { sessionStorage.setItem('flip-hero-back', JSON.stringify({ key: '/class/computational-imaging', t: Date.now() })); } catch (e) {}
+  });
+  // Grow the header image out of the course card that was clicked.
+  (function () {
+    var f = null;
+    try { f = JSON.parse(sessionStorage.getItem('flip-hero') || 'null'); sessionStorage.removeItem('flip-hero'); } catch (e) {}
+    if (!f || location.pathname.indexOf(f.key) < 0) return;
+    if (window.CSSViewTransitionRule) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var h = document.querySelector('.hero-image');
+    if (!h) return;
+    function go() {
+      var r = h.getBoundingClientRect();
+      if (!r.width) return;
+      var c = h.cloneNode();
+      c.removeAttribute('class');
+      c.style.cssText = 'position:fixed;z-index:2000;margin:0;object-fit:cover;border-radius:8px;pointer-events:none;' +
+        'left:' + f.x + 'px;top:' + f.y + 'px;width:' + f.w + 'px;height:' + f.h + 'px;';
+      document.body.appendChild(c);
+      h.style.visibility = 'hidden';
+      c.getBoundingClientRect();
+      requestAnimationFrame(function () {
+        c.style.transition = 'all 650ms cubic-bezier(.22,1,.36,1)';
+        c.style.left = r.left + 'px'; c.style.top = r.top + 'px';
+        c.style.width = r.width + 'px'; c.style.height = r.height + 'px';
+        c.style.borderRadius = getComputedStyle(h).borderRadius || '0px';
+      });
+      setTimeout(function () { h.style.visibility = ''; c.remove(); }, 700);
+    }
+    if (h.complete) go(); else h.addEventListener('load', go, { once: true });
+  })();
+</script>
+</body>
+</html>
